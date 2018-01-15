@@ -18,14 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="data\flora.db" />
     <None Remove="data\key.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="data\flora.db">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +52,12 @@
 
   <ItemGroup>
     <Folder Include="data\roles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp1.1\data\flora.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
