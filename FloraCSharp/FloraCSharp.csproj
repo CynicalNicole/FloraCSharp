@@ -18,7 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="data\flora.db" />
     <None Remove="data\key.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="data\flora.db">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,9 +54,6 @@
   <ItemGroup>
     <None Update="data\config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="data\flora.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
