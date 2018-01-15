@@ -147,6 +147,13 @@ namespace FloraCSharp.Modules
             }
         }
 
+        [Command("TestUpdate"), Summary("I added this cause I'm a little bitch")]
+        [RequireUserPermission(GuildPermission.MentionEveryone)]
+        public async Task TestUpdate()
+        {
+            await Context.Channel.SendSuccessAsync("This shit worked like a charm.");
+        }
+
         [Command("RateUser"), Summary("Rates a given user")]
         [Alias("Rate")]
         public async Task RateUser([Summary("User to rate")] IGuildUser user)
