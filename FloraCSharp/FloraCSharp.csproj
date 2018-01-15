@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <StartupObject>FloraCSharp.Program</StartupObject>
+    <Copyright>CynicalPopcorn</Copyright>
+    <Description>A C# Discord Bot for Weebnation</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Modules\FloraModuleBase.cs" />
+    <Compile Remove="Services\IBotCredentials.cs" />
+    <Compile Remove="Services\ReactionHandler.cs" />
+    <Compile Remove="Services\Reactions.cs" />
+    <Compile Remove="Services\RequireSetBotOwner.cs" />
+    <Compile Remove="Services\UserSavedRoles.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="data\key.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="data\flora.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="data\roles\" />
+  </ItemGroup>
+
+</Project>
