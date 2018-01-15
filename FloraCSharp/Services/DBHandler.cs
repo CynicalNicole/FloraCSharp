@@ -16,9 +16,9 @@ namespace FloraCSharp.Services
 
         private DBHandler()
         {
-            connectionString = "Filename=./data/flora.db";
+            connectionString = "Filename=data/flora.db";
             var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlite("Filename=./data/flora.db");
+            optionsBuilder.UseSqlite(connectionString);
             options = optionsBuilder.Options;
         }
 

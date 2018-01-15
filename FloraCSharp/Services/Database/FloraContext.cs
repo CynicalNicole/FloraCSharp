@@ -10,7 +10,7 @@ namespace FloraCSharp.Services.Database
         public FloraContext Create(DbContextFactoryOptions options)
         {
             var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlite("Filename=./data/flora.db");
+            optionsBuilder.UseSqlite("Filename=data/flora.db");
             return new FloraContext(optionsBuilder.Options);
         }
     }
