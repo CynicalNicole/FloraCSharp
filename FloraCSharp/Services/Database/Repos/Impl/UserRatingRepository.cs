@@ -23,7 +23,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             }
             catch (Exception ex)
             {
-                logger.Log("No User Rating Found", "UserRating");
+                logger.Log("No User Rating Found - " + ex.Message.ToString(), "UserRating");
                 return null;
             }
         }
