@@ -160,6 +160,8 @@ namespace FloraCSharp.Modules
                 return;
             }
 
+            _cooldowns.AddOrUpdate(Context.User.Id, curTime, (i, d) => curTime);
+
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
             bool isAvailable = false;
