@@ -5,8 +5,7 @@ using FloraCSharp.Services;
 using FloraCSharp.Services.ExternalDB;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
@@ -17,12 +16,13 @@ namespace FloraCSharp.Modules
     {
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
+        private static ConcurrentDictionary<ulong, DateTime> _cooldowns;
 
         public InfiniteDie(FloraRandom random, FloraDebugLogger logger)
         {
             _random = random;
             _logger = logger;
-
+            _cooldowns = new ConcurrentDictionary<ulong, DateTime>();
         }
 
         [Command]
@@ -151,6 +151,15 @@ namespace FloraCSharp.Modules
         [Alias("Add")]
         public async Task Create(ulong side, [Remainder] string content)
         {
+            DateTime curTime = DateTime.Now;
+            DateTime lastMessage;
+
+            if(_cooldowns.TryGetValue(Context.User.Id, out lastMessage) || (lastMessage + new TimeSpan(3,0,0) > curTime))
+            {
+                await Context.Channel.SendErrorAsync($"Sorry, you may only add a side every 3 hours.");
+                return;
+            }
+
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
             bool isAvailable = false;
