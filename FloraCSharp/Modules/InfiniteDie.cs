@@ -395,6 +395,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} successfully cleared.");
         }
 
         [Command("AdminClear"), Summary("Clear a side")]
@@ -437,6 +439,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} forcefully cleared.");
         }
 
         [Command("Unclaim"), Summary("Unclaim a side")]
@@ -480,6 +484,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} successfully unclaimed.");
         }
 
         [Command("AdminUnclaim"), Summary("Unclaim a side")]
@@ -522,6 +528,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} forcefully unclaimed.");
         }
 
         [Command("Delete"), Summary("Unclaims and clears a side")]
@@ -574,6 +582,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} successfully deleted.");
         }
 
         [Command("AdminDelete"), Summary("Unclaims and clears a side")]
@@ -624,6 +634,8 @@ namespace FloraCSharp.Modules
                 await cmd.ExecuteNonQueryAsync();
                 _conn.Close();
             }
+
+            await Context.Channel.SendSuccessAsync($"Side ${side} forcefully deleted.");
         }
     }
 }
