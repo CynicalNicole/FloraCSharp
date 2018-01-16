@@ -9,7 +9,7 @@ namespace FloraCSharp.Services
     {
         private ConcurrentDictionary<string, ConcurrentDictionary<ulong, DateTime>> _cooldowns = new ConcurrentDictionary<string, ConcurrentDictionary<ulong, DateTime>>();
 
-        private void SetupCommandCooldowns(string CommandName)
+        public void SetupCommandCooldowns(string CommandName)
         {
             _cooldowns.AddOrUpdate(CommandName, new ConcurrentDictionary<ulong, DateTime>(), (i, d) => new ConcurrentDictionary<ulong, DateTime>());
         }

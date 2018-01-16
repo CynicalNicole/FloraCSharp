@@ -5,13 +5,13 @@ using FloraCSharp.Services;
 using FloraCSharp.Services.ExternalDB;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
 {
     [RequireContext(ContextType.Guild)]
     [Group("InfiniteDie")]
+    [Alias("ID")]
     public class InfiniteDie : ModuleBase
     {
         private FloraDebugLogger _logger;
@@ -24,7 +24,7 @@ namespace FloraCSharp.Modules
             _logger = logger;
             _cooldowns = cooldowns;
 
-            cooldowns.GetOrSetupCommandCooldowns("InfiniteDieCreate");
+            _cooldowns.GetOrSetupCommandCooldowns("InfiniteDieCreate");
         }
 
         [Command]
@@ -79,10 +79,7 @@ namespace FloraCSharp.Modules
             }
 
             if (Content == String.Empty)
-            {
-                await Context.Channel.SendErrorAsync($"Side {side} is broken. @ Nicole immediately.");
-                return;
-            }
+                Content = "-";
 
             //Try to resolve user
             IGuildUser user = await Context.Guild.GetUserAsync(UserID);
@@ -92,7 +89,7 @@ namespace FloraCSharp.Modules
             else
                 username = user.Username;
 
-            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), Content, null, "Dice Owner: " + username);
+            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), Content, null, "Owner: " + username);
         }
 
         [Command("Get"), Summary("Returns a random side")]
@@ -138,6 +135,9 @@ namespace FloraCSharp.Modules
                 _conn.Close();
             }
 
+            if (Content == String.Empty)
+                Content = "-";
+
             //Try to resolve user
             IGuildUser user = await Context.Guild.GetUserAsync(UserID);
             string username = String.Empty;
@@ -146,7 +146,49 @@ namespace FloraCSharp.Modules
             else
                 username = user.Username;
 
-            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + DiceNumber.ToString(), Content, null, "Dice Owner: " + username);
+            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + DiceNumber.ToString(), Content, null, "Owner: " + username);
+        }
+
+        [Command("Claim"), Summary("Claim a side without adding to it")]
+        public async Task Claim(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (DiceID != 0)
+            {
+                await Context.Channel.SendErrorAsync("You cannot claim a side owned by someone.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "INSERT INTO dice(DiceNumber, DiceOwner) VALUES (@did, @dOwner)";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", side);
+                cmd.Parameters.AddWithValue("@dOwner", Context.User.Id);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
         }
 
         [Command("Create"), Summary("Adds a new side to the dice")]
@@ -245,7 +287,343 @@ namespace FloraCSharp.Modules
             }
 
             await Context.Channel.SendSuccessAsync("Side Added!");
-            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), content, null, "Dice Owner: " + Context.User.Username);
+            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), content, null, "Owner: " + Context.User.Username);
+        }
+
+        [Command("Transfer"), Summary("Transfer your dice side to another person.")]
+        public async Task Transfer(ulong side, IGuildUser userToTransfer)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong CurrentOwnerID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceOwner FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    CurrentOwnerID = (ulong)reader.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (CurrentOwnerID != Context.User.Id)
+            {
+                await Context.Channel.SendErrorAsync("You cannot transfer a side you do not own.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "UPDATE dice SET DiceOwner=@newOwner WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                cmd.Parameters.AddWithValue("@newOwner", userToTransfer.Id);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Side {side} was successfully transferred to {userToTransfer.Username} from {Context.User.Username}.");
+        }
+
+        [Command("AdminTransfer"), Summary("Force transfer of the side.")]
+        [OwnerOnly]
+        public async Task AdminTransfer(ulong side, IGuildUser userToTransfer)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            if (_conn.IsConnected())
+            {
+                string query = "UPDATE dice SET DiceOwner=@newOwner WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                cmd.Parameters.AddWithValue("@newOwner", userToTransfer.Id);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Side {side} was forcefully transferred to {userToTransfer.Username}. Ouch.");
+        }
+
+        [Command("Clear"), Summary("Clear a side")]
+        public async Task Clear(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong CurrentOwnerID = 0;
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID,DiceOwner FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                    CurrentOwnerID = (ulong)reader.GetInt64(1);
+                }
+                _conn.Close();
+            }
+
+            if (CurrentOwnerID != Context.User.Id || DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("You cannot clear a side you do not own.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM content WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+        }
+
+        [Command("AdminClear"), Summary("Clear a side")]
+        [OwnerOnly]
+        public async Task AdminClear(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("That side doesn't exist, no need to clear it!");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM content WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+        }
+
+        [Command("Unclaim"), Summary("Unclaim a side")]
+        public async Task Unclaim(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong CurrentOwnerID = 0;
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID,DiceOwner FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                    CurrentOwnerID = (ulong)reader.GetInt64(1);
+                }
+                _conn.Close();
+            }
+
+            if (CurrentOwnerID != Context.User.Id || DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("You cannot unclaim a side you do not own.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM dice WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+        }
+
+        [Command("AdminUnclaim"), Summary("Unclaim a side")]
+        [OwnerOnly]
+        public async Task AdminUnclaim(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("That side is unclaimed, no need to clear it!");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM dice WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+        }
+
+        [Command("Delete"), Summary("Unclaims and clears a side")]
+        public async Task Delete(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong CurrentOwnerID = 0;
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID,DiceOwner FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                    CurrentOwnerID = (ulong)reader.GetInt64(1);
+                }
+                _conn.Close();
+            }
+
+            if (CurrentOwnerID != Context.User.Id || DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("You cannot clear a side you do not own.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM content WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM dice WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+        }
+
+        [Command("AdminDelete"), Summary("Unclaims and clears a side")]
+        public async Task AdminDelete(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            ulong DiceID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string query = "SELECT DiceID FROM dice WHERE DiceNumber=@side";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@side", side);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                    return;
+
+                while (await reader.ReadAsync())
+                {
+                    DiceID = (ulong)reader.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync("This side does not exist, you do not need to delete it!");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM content WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            if (_conn.IsConnected())
+            {
+                string query = "DELETE FROM dice WHERE DiceID=@did";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                await cmd.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
         }
     }
 }
