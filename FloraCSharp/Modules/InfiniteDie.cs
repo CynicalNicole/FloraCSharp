@@ -16,13 +16,15 @@ namespace FloraCSharp.Modules
     {
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
-        private static ConcurrentDictionary<ulong, DateTime> _cooldowns;
+        private readonly Cooldowns _cooldowns;
 
-        public InfiniteDie(FloraRandom random, FloraDebugLogger logger)
+        public InfiniteDie(FloraRandom random, FloraDebugLogger logger, Cooldowns cooldowns)
         {
             _random = random;
             _logger = logger;
-            _cooldowns = new ConcurrentDictionary<ulong, DateTime>();
+            _cooldowns = cooldowns;
+
+            cooldowns.GetOrSetupCommandCooldowns("InfiniteDieCreate");
         }
 
         [Command]
@@ -154,13 +156,15 @@ namespace FloraCSharp.Modules
             DateTime curTime = DateTime.Now;
             DateTime lastMessage;
 
-            if(_cooldowns.TryGetValue(Context.User.Id, out lastMessage) || (lastMessage + new TimeSpan(3,0,0) > curTime))
+            lastMessage = _cooldowns.GetUserCooldownsForCommand("InfiniteDieCreate", Context.User.Id);
+
+            if (lastMessage + new TimeSpan(3,0,0) > curTime)
             {
-                await Context.Channel.SendErrorAsync($"Sorry, you may only add a side every 3 hours.");
+                await Context.Channel.SendSuccessAsync("You may only use this command once every 3 hours!");
                 return;
             }
 
-            _cooldowns.AddOrUpdate(Context.User.Id, curTime, (i, d) => curTime);
+            _cooldowns.AddUserCooldowns("InfiniteDieCreate", Context.User.Id, curTime);
 
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
@@ -180,7 +184,7 @@ namespace FloraCSharp.Modules
                     isAvailable = true;
                 else
                 {
-                    while(await reader.ReadAsync())
+                    while (await reader.ReadAsync())
                     {
                         diceOwnerID = (ulong)reader.GetInt64(2);
                     }
@@ -212,7 +216,7 @@ namespace FloraCSharp.Modules
             long DiceID = 0;
 
             if (_conn.IsConnected())
-            {        
+            {
                 string query = "SELECT DiceID FROM dice WHERE DiceNumber=@side";
                 var cmd = new MySqlCommand(query, _conn.Connection);
                 cmd.Parameters.AddWithValue("@side", side);

@@ -8,6 +8,7 @@ using FloraCSharp.Services;
 using FloraCSharp.Modules;
 using Newtonsoft.Json;
 using System.IO;
+using System.Collections.Concurrent;
 
 namespace FloraCSharp
 {
@@ -90,6 +91,7 @@ namespace FloraCSharp
             _map.AddSingleton(_client);
             _map.AddSingleton(_logger);
             _map.AddSingleton(new FloraRandom());
+            _map.AddSingleton(new Cooldowns());
 
             //For each module do the following
             await _commands.AddModuleAsync<NoLifes>();
