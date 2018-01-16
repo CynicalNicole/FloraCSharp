@@ -54,7 +54,7 @@ namespace FloraCSharp
             var context = new SocketCommandContext(_discord, msg);
 
             int argPos = 0;
-            if (msg.HasStringPrefix(_config.Prefix, ref argPos) || msg.HasMentionPrefix(_discord.CurrentUser, ref argPos))
+            if (msg.HasStringPrefix(_config.Prefix, ref argPos))
             {
                 var result = await _commands.ExecuteAsync(context, argPos, _provider);
 
