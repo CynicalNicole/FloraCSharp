@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FloraCSharp.Extensions;
+using FloraCSharp.Services;
 
 namespace FloraCSharp
 {
@@ -14,17 +15,20 @@ namespace FloraCSharp
         private readonly CommandService _commands;
         private readonly IServiceProvider _provider;
         private readonly Configuration _config;
+        private readonly FloraDebugLogger _logger;
 
         public CommandHandler(
             DiscordSocketClient discord,
             CommandService commands,
             Configuration config,
-            IServiceProvider provider)
+            IServiceProvider provider,
+            FloraDebugLogger logger)
         {
             _discord = discord;
             _commands = commands;
             _provider = provider;
             _config = config;
+            _logger = logger;
 
             _discord.MessageReceived += OnMessageReceivedAsync;
         }
@@ -42,7 +46,7 @@ namespace FloraCSharp
             {
                 var result = await _commands.ExecuteAsync(context, argPos, _provider);
 
-                if (!result.IsSuccess)
+                if (!result.IsSuccess && !(result.Error.ToString() == "UnknownCommand"))
                     await context.Channel.SendErrorAsync(result.ToString());
             }
         }

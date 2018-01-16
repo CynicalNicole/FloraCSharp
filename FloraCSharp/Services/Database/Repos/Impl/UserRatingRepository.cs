@@ -17,14 +17,13 @@ namespace FloraCSharp.Services.Database.Repos.Impl
 
         public UserRating GetUserRating(ulong userID)
         {
-            logger.Log("Internal User Rating Debug", "UserRating");
             try
             {
                 return _set.FirstOrDefault(x => x.UserID == userID);
             }
             catch (Exception ex)
             {
-                logger.Log(ex.ToString(), "UserRating");
+                logger.Log("No User Rating Found", "UserRating");
                 return null;
             }
         }

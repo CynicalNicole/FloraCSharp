@@ -27,7 +27,7 @@ namespace FloraCSharp.Modules
             _conn.DBName = "cynicalp_weebnation";
         }
 
-        [Command("Get"), Summary("Returns a random side (or optionally a given side")]
+        [Command("Get"), Summary("Returns a random side")]
         public async Task Get()
         {
             ulong DiceID = 0;
