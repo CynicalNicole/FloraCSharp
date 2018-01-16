@@ -194,5 +194,41 @@ namespace FloraCSharp.Modules
                 await Context.Channel.SendSuccessAsync("User Rating", $"The rating for {user.Mention} is {finalHalf}/10");
             }
         }
+        
+        [Command("Say"), Summary("Makes the bot say shit")]
+        [OwnerOnly]
+        public async Task Say(string location, [Remainder] string content)
+        {
+            if (location.StartsWith("c") || location.StartsWith("C"))
+            {
+                location = location.Substring(1);
+                ulong channelID;
+                if (!UInt64.TryParse(location, out channelID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to Channel", "Say");
+                IMessageChannel channel = (IMessageChannel)await Context.Client.GetChannelAsync(channelID);
+                await channel.SendMessageAsync(content);
+            }
+
+            if (location.StartsWith("u") || location.StartsWith("U"))
+            {
+                location = location.Substring(1);
+                ulong userID;
+                if (!UInt64.TryParse(location, out userID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to User", "Say");
+                IUser User = await Context.Client.GetUserAsync(userID);
+                IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
+                await iDMChannel.SendMessageAsync(content);
+            }
+        }
     }
 }
