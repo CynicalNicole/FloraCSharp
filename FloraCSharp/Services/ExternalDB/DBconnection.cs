@@ -42,11 +42,13 @@ namespace FloraCSharp.Services.ExternalDB
                     return false;
                 string[] details = File.ReadAllLines("data/extdb.txt");
 
-                MySqlConnectionStringBuilder connstring = new MySqlConnectionStringBuilder();
-                connstring.Server = details[0];
-                connstring.UserID = details[1];
-                connstring.Password = details[2];
-                connstring.Database = dbName;
+                MySqlConnectionStringBuilder connstring = new MySqlConnectionStringBuilder
+                {
+                    Server = details[0],
+                    UserID = details[1],
+                    Password = details[2],
+                    Database = dbName
+                };
 
                 connection = new MySqlConnection(connstring.ToString());
                 connection.Open();
@@ -58,6 +60,7 @@ namespace FloraCSharp.Services.ExternalDB
         public void Close()
         {
             connection.Close();
+            connection = null;
         }
     }
 }

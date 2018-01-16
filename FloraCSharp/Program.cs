@@ -76,7 +76,9 @@ namespace FloraCSharp
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     break;
             }
-            Console.WriteLine($"{DateTime.Now,-19} [{msg.Severity,8}] {msg.Source}: {msg.Message}");
+            
+
+            Console.WriteLine($"{DateTime.Now,-19} [{msg.Severity,8}] {msg.Source}: {msg.Message} {msg.Exception}");
             Console.ForegroundColor = cc;
 
             return Task.CompletedTask;

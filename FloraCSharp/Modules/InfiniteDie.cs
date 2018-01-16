@@ -37,23 +37,33 @@ namespace FloraCSharp.Modules
 
             if (_conn.IsConnected())
             {
+                _logger.Log("DB Connection: " + _conn.IsConnected().ToString(), "InfiniteDie");
                 string query = "SELECT * FROM content ORDER BY RAND() LIMIT 1";
                 var cmd = new MySqlCommand(query, _conn.Connection);
                 var reader = await cmd.ExecuteReaderAsync();
+
+                _logger.Log("First command setup.", "InfiniteDie");
                 while (await reader.ReadAsync())
                 {
                     DiceID = (ulong)reader.GetInt64(1);
                     Content = reader.GetString(2);
                 }
+                _conn.Close();
+            }
 
-                query = "SELECT * FROM dice WHERE DiceID=@did";
-                cmd = new MySqlCommand(query, _conn.Connection);
-                cmd.Parameters.AddWithValue("@did", DiceID);
+            if (_conn.IsConnected())
+            {
+                string q2 = "SELECT * FROM dice WHERE DiceID=@did";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@did", DiceID);
 
-                while (await reader.ReadAsync())
+                var reader2 = await cmd2.ExecuteReaderAsync();
+
+                _logger.Log("Second set up", "InfiniteDie");
+                while (await reader2.ReadAsync())
                 {
-                    UserID = (ulong)reader.GetInt64(3);
-                    DiceNumber = (ulong)reader.GetInt64(2);
+                    UserID = (ulong)reader2.GetInt64(2);
+                    DiceNumber = (ulong)reader2.GetInt64(1);
                 }
                 _conn.Close();
             }
@@ -67,6 +77,9 @@ namespace FloraCSharp.Modules
                 username = user.Username;
 
             await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + DiceNumber.ToString(), Content, null, "Dice Owner: " + username);
+
+            //Will force DB close.
+            _conn.Close();
         }
     }
 }
