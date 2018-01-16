@@ -20,7 +20,7 @@ namespace FloraCSharp
         private readonly IServiceProvider _provider;
         private readonly Configuration _config;
         private readonly FloraDebugLogger _logger;
-        private ImmutableArray<AsyncLazy<IDMChannel>> _ownerChannels;
+        private List<AsyncLazy<IDMChannel>> _ownerChannels;
 
         public CommandHandler(
             DiscordSocketClient discord,
@@ -34,7 +34,7 @@ namespace FloraCSharp
             _provider = provider;
             _config = config;
             _logger = logger;
-            _ownerChannels = new ImmutableArray<AsyncLazy<IDMChannel>>();
+            _ownerChannels = new List<AsyncLazy<IDMChannel>>();
 
             //Set up DM channels for owners
             foreach (ulong ownerID in _config.Owners)
