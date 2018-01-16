@@ -77,9 +77,6 @@ namespace FloraCSharp.Modules
                 username = user.Username;
 
             await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + DiceNumber.ToString(), Content, null, "Dice Owner: " + username);
-
-            //Will force DB close.
-            _conn.Close();
         }
     }
 }
