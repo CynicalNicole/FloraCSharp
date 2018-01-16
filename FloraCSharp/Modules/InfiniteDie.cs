@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace FloraCSharp.Modules
 {
     [RequireContext(ContextType.Guild)]
-    [Group("Infinite-Die")]
+    [Group("InfiniteDie")]
     public class InfiniteDie : ModuleBase
     {
         private FloraDebugLogger _logger;
