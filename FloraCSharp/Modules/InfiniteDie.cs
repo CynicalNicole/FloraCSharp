@@ -22,7 +22,75 @@ namespace FloraCSharp.Modules
         {
             _random = random;
             _logger = logger;
-            
+
+        }
+
+        [Command]
+        public async Task Default(ulong side) => await Get(side);
+
+        [Command("Get")]
+        public async Task Get(ulong side)
+        {
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+            ulong DiceID = 0;
+            string Content = String.Empty;
+            ulong UserID = 0;
+
+            if (_conn.IsConnected())
+            {
+                string q2 = "SELECT * FROM dice WHERE DiceNumber=@dn";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@dn", side);
+
+                var reader2 = await cmd2.ExecuteReaderAsync();
+
+                //_logger.Log("Second set up", "InfiniteDie");
+                while (await reader2.ReadAsync())
+                {
+                    UserID = (ulong)reader2.GetInt64(2);
+                    DiceID = (ulong)reader2.GetInt64(0);
+                }
+                _conn.Close();
+            }
+
+            if (DiceID == 0)
+            {
+                await Context.Channel.SendErrorAsync($"Side {side} is unavailable.");
+                return;
+            }
+
+            if (_conn.IsConnected())
+            {
+                //_logger.Log("DB Connection: " + _conn.IsConnected().ToString(), "InfiniteDie");
+                string query = "SELECT Content FROM content WHERE DiceID=@did ORDER BY RAND() LIMIT 1";
+                var cmd = new MySqlCommand(query, _conn.Connection);
+                cmd.Parameters.AddWithValue("@did", DiceID);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                //_logger.Log("First command setup.", "InfiniteDie");
+                while (await reader.ReadAsync())
+                {
+                    Content = reader.GetString(0);
+                }
+                _conn.Close();
+            }
+
+            if (Content == String.Empty)
+            {
+                await Context.Channel.SendErrorAsync($"Side {side} is broken. @ Nicole immediately.");
+                return;
+            }
+
+            //Try to resolve user
+            IGuildUser user = await Context.Guild.GetUserAsync(UserID);
+            string username = String.Empty;
+            if (user == null)
+                username = UserID.ToString();
+            else
+                username = user.Username;
+
+            await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), Content, null, "Dice Owner: " + username);
         }
 
         [Command("Get"), Summary("Returns a random side")]
@@ -86,6 +154,7 @@ namespace FloraCSharp.Modules
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
             bool isAvailable = false;
+            ulong diceOwnerID = 0;
 
             _logger.Log(side.ToString(), "IDie");
 
@@ -98,25 +167,35 @@ namespace FloraCSharp.Modules
 
                 if (!(reader.HasRows))
                     isAvailable = true;
+                else
+                {
+                    while(await reader.ReadAsync())
+                    {
+                        diceOwnerID = (ulong)reader.GetInt64(2);
+                    }
+                }
                 _conn.Close();
             }
 
-            if (!isAvailable)
+            if (!isAvailable && diceOwnerID != Context.User.Id)
             {
-                await Context.Channel.SendErrorAsync($"Side {side} is unavailable.");
+                await Context.Channel.SendErrorAsync($"Side {side} is taken.");
                 return;
             }
 
             //They can have it, lets do it.
-            if (_conn.IsConnected())
+            if (diceOwnerID == 0)
             {
-                string query = "INSERT INTO dice(DiceNumber, DiceOwner) VALUES (@side, @uid)";
-                var cmd = new MySqlCommand(query, _conn.Connection);
-                cmd.Parameters.AddWithValue("@side", side);
-                cmd.Parameters.AddWithValue("@uid", Context.User.Id);
-                await cmd.ExecuteNonQueryAsync();
+                if (_conn.IsConnected())
+                {
+                    string query = "INSERT INTO dice(DiceNumber, DiceOwner) VALUES (@side, @uid)";
+                    var cmd = new MySqlCommand(query, _conn.Connection);
+                    cmd.Parameters.AddWithValue("@side", side);
+                    cmd.Parameters.AddWithValue("@uid", Context.User.Id);
+                    await cmd.ExecuteNonQueryAsync();
 
-                _conn.Close();
+                    _conn.Close();
+                }
             }
 
             long DiceID = 0;
