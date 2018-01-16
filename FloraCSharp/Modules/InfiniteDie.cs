@@ -81,7 +81,7 @@ namespace FloraCSharp.Modules
 
         [Command("Create"), Summary("Adds a new side to the dice")]
         [Alias("Add")]
-        public async Task Create(ulong side, string content)
+        public async Task Create(ulong side, [Remainder] string content)
         {
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
