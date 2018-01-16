@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using FloraCSharp.Extensions;
 using FloraCSharp.Services;
+using Discord;
+using Nito.AsyncEx;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace FloraCSharp
 {
@@ -16,6 +20,7 @@ namespace FloraCSharp
         private readonly IServiceProvider _provider;
         private readonly Configuration _config;
         private readonly FloraDebugLogger _logger;
+        private ImmutableArray<AsyncLazy<IDMChannel>> _ownerChannels;
 
         public CommandHandler(
             DiscordSocketClient discord,
@@ -29,6 +34,13 @@ namespace FloraCSharp
             _provider = provider;
             _config = config;
             _logger = logger;
+            _ownerChannels = new ImmutableArray<AsyncLazy<IDMChannel>>();
+
+            //Set up DM channels for owners
+            foreach (ulong ownerID in _config.Owners)
+            {
+                _ownerChannels.Add(new AsyncLazy<IDMChannel>(async () => await _discord.GetUser(ownerID).GetOrCreateDMChannelAsync()));
+            }
 
             _discord.MessageReceived += OnMessageReceivedAsync;
         }
@@ -48,6 +60,20 @@ namespace FloraCSharp
 
                 if (!result.IsSuccess && !(result.Error.ToString() == "UnknownCommand"))
                     await context.Channel.SendErrorAsync(result.ToString());
+            }
+
+            if (context.Channel is IPrivateChannel && !_config.Owners.Contains(context.User.Id))
+            {
+                await DMHandling(context);
+            }
+        }
+
+        private async Task DMHandling(SocketCommandContext context)
+        {
+            foreach (var OwnerChannel in _ownerChannels)
+            {
+                IDMChannel ownerChannel = await OwnerChannel;
+                await ownerChannel.SendSuccessAsync("DM Forwarded - " + context.User.Username, context.Message.Content, null, context.User.Id.ToString());
             }
         }
     }
