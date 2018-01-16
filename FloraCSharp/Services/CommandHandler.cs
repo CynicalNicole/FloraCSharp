@@ -73,7 +73,7 @@ namespace FloraCSharp
             foreach (var OwnerChannel in _ownerChannels)
             {
                 IDMChannel ownerChannel = await OwnerChannel;
-                await ownerChannel.SendSuccessAsync($"DM from [{context.User.Username}{context.User.Discriminator}]({context.User.Id})", context.Message.Content);
+                await ownerChannel.SendSuccessAsync($"DM from [{context.User.Username}] | {context.User.Id}", context.Message.Content);
             }
         }
     }
