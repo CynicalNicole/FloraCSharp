@@ -160,7 +160,7 @@ namespace FloraCSharp.Modules
 
             if (lastMessage + new TimeSpan(3,0,0) > curTime)
             {
-                await Context.Channel.SendSuccessAsync("You may only use this command once every 3 hours!");
+                await Context.Channel.SendErrorAsync("You may only use this command once every 3 hours!");
                 return;
             }
 
