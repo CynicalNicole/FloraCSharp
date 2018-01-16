@@ -229,6 +229,22 @@ namespace FloraCSharp.Modules
                 IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
                 await iDMChannel.SendMessageAsync(content);
             }
+
+            if (location.StartsWith("g") || location.StartsWith("G"))
+            {
+                location = location.Substring(1);
+                ulong serverID;
+                if (!UInt64.TryParse(location, out serverID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to User", "Say");
+                IGuild Guild = await Context.Client.GetGuildAsync(serverID);
+                IMessageChannel channel = await Guild.GetDefaultChannelAsync();
+                await channel.SendMessageAsync(content);
+            }
         }
     }
 }
