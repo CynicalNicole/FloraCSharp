@@ -152,6 +152,19 @@ namespace FloraCSharp.Modules
         [Command("Claim"), Summary("Claim a side without adding to it")]
         public async Task Claim(ulong side)
         {
+            DateTime curTime = DateTime.Now;
+            DateTime lastMessage;
+
+            lastMessage = _cooldowns.GetUserCooldownsForCommand("InfiniteDieCreate", Context.User.Id);
+
+            if (lastMessage + new TimeSpan(3, 0, 0) > curTime)
+            {
+                await Context.Channel.SendErrorAsync("You may only use this command once every 3 hours!");
+                return;
+            }
+
+            _cooldowns.AddUserCooldowns("InfiniteDieCreate", Context.User.Id, curTime);
+
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
 
