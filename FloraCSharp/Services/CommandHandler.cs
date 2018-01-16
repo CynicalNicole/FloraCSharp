@@ -76,5 +76,10 @@ namespace FloraCSharp
                 await ownerChannel.SendSuccessAsync($"DM from [{context.User.Username}] | {context.User.Id}", context.Message.Content);
             }
         }
+
+        private async Task ReactionHandling()
+        {
+
+        }
     }
 }
