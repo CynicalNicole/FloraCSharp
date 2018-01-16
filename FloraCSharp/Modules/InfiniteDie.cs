@@ -28,6 +28,9 @@ namespace FloraCSharp.Modules
         }
 
         [Command]
+        public async Task Default() => await Get();
+
+        [Command]
         public async Task Default(ulong side) => await Get(side);
 
         [Command("Get")]
