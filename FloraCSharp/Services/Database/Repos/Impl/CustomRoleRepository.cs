@@ -19,7 +19,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             {
                 return _set.FirstOrDefault(x => x.UserID == id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
