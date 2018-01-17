@@ -3,8 +3,6 @@ using Discord.Commands;
 using FloraCSharp.Extensions;
 using FloraCSharp.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -75,25 +73,22 @@ namespace FloraCSharp.Modules
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task DeleteCustomRole([Remainder] string RoleName)
         {
-            IRole RoleFromName = null;
-            foreach (IRole role in Context.Guild.Roles)
+            IRole role = null;
+            using (var uow = DBHandler.UnitOfWork())
             {
-                if (role.Name.ToLower() == RoleName.ToLower())
+                var CR = uow.CustomRole.GetCustomRole(Context.User.Id);
+                if (CR == null)
                 {
-                    RoleFromName = role;
-                    break;
+                    await Context.Channel.SendErrorAsync("You do not have a custom role.");
+                    return;
                 }
-            }
 
-            if (RoleFromName == null)
-            {
-                await Context.Channel.SendErrorAsync("Role not found.");
-                return;
+                role = Context.Guild.GetRole(CR.RoleID);
             }
 
             using (var uow = DBHandler.UnitOfWork())
-            {
-                uow.CustomRole.DeleteCustomRole(RoleFromName.Id);
+            { 
+                uow.CustomRole.DeleteCustomRole(role.Id);
                 await uow.CompleteAsync();
             }
         }
@@ -105,13 +100,14 @@ namespace FloraCSharp.Modules
             IRole role = null;
             using (var uow = DBHandler.UnitOfWork())
             {
-                role = Context.Guild.GetRole(uow.CustomRole.GetCustomRole(Context.User.Id).RoleID);
-            }
+                var CR = uow.CustomRole.GetCustomRole(Context.User.Id);
+                if (CR == null)
+                {
+                    await Context.Channel.SendErrorAsync("You do not have a custom role.");
+                    return;
+                }
 
-            if (role == null)
-            {
-                await Context.Channel.SendErrorAsync("You do not have a custom role.");
-                return;
+                role = Context.Guild.GetRole(CR.RoleID);
             }
 
             if (roleName.Length > 24)
