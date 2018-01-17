@@ -68,6 +68,8 @@ namespace FloraCSharp.Modules
                 uow.CustomRole.CreateCustomRole(user.Id, RoleFromName.Id);
                 await uow.CompleteAsync();
             }
+
+            await Context.Channel.SendSuccessAsync($"Role {RoleFromName.Name} bound to user {user.Username}.");
         }
 
         [Command("DeleteCustomRole"), Summary("Deletes a custom role for a user")]
@@ -96,6 +98,8 @@ namespace FloraCSharp.Modules
                 uow.CustomRole.DeleteCustomRole(RoleFromName.Id);
                 await uow.CompleteAsync();
             }
+
+            await Context.Channel.SendSuccessAsync($"Role {RoleFromName.Name} unbound from user.");
         }
 
         [Command("RenameRole"), Summary("Renames your custom role")]
@@ -132,7 +136,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("RecolourRole"), Summary("Re-colours your custom role")]
-        [Alias("RCR", "NR", "RecolorRole")]
+        [Alias("RCR", "CR", "RecolorRole")]
         public async Task RecolourRole([Remainder] string roleColour)
         {
             IRole role = null;
