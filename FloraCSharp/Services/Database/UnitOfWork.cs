@@ -16,6 +16,9 @@ namespace FloraCSharp.Services.Database
         private IReactionsRepository _reactions;
         public IReactionsRepository Reactions => _reactions ?? (_reactions = new ReactionsRepository(_context));
 
+        private ICustomRoleRepository _customRole;
+        public ICustomRoleRepository CustomRole => _customRole ?? (_customRole = new CustomRoleRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

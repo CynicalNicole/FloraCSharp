@@ -45,7 +45,16 @@ namespace FloraCSharp.Services.Database
             var reactionsEntity = modelBuilder.Entity<ReactionModel>();
             reactionsEntity.HasIndex(d => d.Prompt);
 
-            #endregion  
+            #endregion
+
+            #region CustomRole
+
+            var customRoleEntity = modelBuilder.Entity<CustomRole>();
+            customRoleEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
+
+            #endregion
         }
     }
 }

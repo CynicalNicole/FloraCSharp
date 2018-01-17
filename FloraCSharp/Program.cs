@@ -106,7 +106,8 @@ namespace FloraCSharp
             await _commands.AddModuleAsync<Administration>();
             await _commands.AddModuleAsync<InfiniteDie>();
             await _commands.AddModuleAsync<CustomReactions>();
-            
+            await _commands.AddModuleAsync<CustomRoles>();
+
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             _map.AddSingleton(_config);

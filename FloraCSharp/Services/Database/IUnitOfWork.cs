@@ -10,6 +10,7 @@ namespace FloraCSharp.Services.Database
 
         IUserRatingRepository UserRatings { get; }
         IReactionsRepository Reactions { get; }
+        ICustomRoleRepository CustomRole { get; }
 
         int Complete();
         Task<int> CompleteAsync();
