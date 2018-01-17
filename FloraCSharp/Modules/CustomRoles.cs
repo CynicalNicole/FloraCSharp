@@ -3,8 +3,6 @@ using Discord.Commands;
 using FloraCSharp.Extensions;
 using FloraCSharp.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 

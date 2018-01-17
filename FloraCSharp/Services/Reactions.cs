@@ -83,7 +83,7 @@ namespace FloraCSharp.Services
             using (var uow = DBHandler.UnitOfWork())
             {
                 var allReactions = await uow.Reactions.LoadReactions();
-                var reactionsToDelete = allReactions.Where(x => x.Prompt.ToLower() == prompt).ToArray();
+                var reactionsToDelete = allReactions.Where(x => x.Prompt.ToLower() == prompt.ToLower()).ToArray();
 
                 uow.Reactions.RemoveRange(reactionsToDelete);
                 await uow.CompleteAsync();

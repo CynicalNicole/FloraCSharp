@@ -19,6 +19,9 @@ namespace FloraCSharp.Services.Database
         private ICustomRoleRepository _customRole;
         public ICustomRoleRepository CustomRole => _customRole ?? (_customRole = new CustomRoleRepository(_context));
 
+        private IBotGamesRepository _botGames;
+        public IBotGamesRepository BotGames => _botGames ?? (_botGames = new BotGamesRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

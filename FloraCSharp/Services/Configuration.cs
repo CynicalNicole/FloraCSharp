@@ -10,5 +10,6 @@ namespace FloraCSharp
         public string Prefix { get; set; }
         public ulong[] Owners { get; set; }
         public string Version { get; set; }
+        public bool RotatingGames { get; set; }
     }
 }

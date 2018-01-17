@@ -55,6 +55,15 @@ namespace FloraCSharp.Services.Database
                 .IsUnique();
 
             #endregion
+
+            #region BotGames
+
+            var botGamesEntity = modelBuilder.Entity<BotGames>();
+            botGamesEntity
+                .HasIndex(d => d.GameName)
+                .IsUnique();
+
+            #endregion
         }
     }
 }

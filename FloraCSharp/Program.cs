@@ -24,6 +24,7 @@ namespace FloraCSharp
         private FloraDebugLogger _logger = new FloraDebugLogger();
         private FloraRandom _random;
         private Reactions _reactions;
+        private BotGameHandler _botGames;
 
         private Program()
         {
@@ -47,6 +48,9 @@ namespace FloraCSharp
             _reactions = new Reactions(_random);
             await _reactions.LoadReactionsFromDatabase();
 
+            _botGames = new BotGameHandler(_random, _client, _logger);
+            await _botGames.LoadBotGamesFromDB();
+
             //Command Setup
             await InitCommands();
 
@@ -58,6 +62,9 @@ namespace FloraCSharp
             await _client.StartAsync();
 
             provider.GetRequiredService<CommandHandler>();
+
+            if (_config.RotatingGames)
+                await _botGames.HandleGameChange();
 
             //Block task until program is closed
             await Task.Delay(-1);
@@ -99,6 +106,7 @@ namespace FloraCSharp
             _map.AddSingleton(_random);
             _map.AddSingleton(new Cooldowns());
             _map.AddSingleton(_reactions);
+            _map.AddSingleton(_botGames);
 
             //For each module do the following
             await _commands.AddModuleAsync<NoLifes>();

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using FloraCSharp.Extensions;
 using Newtonsoft.Json;
+using Discord.WebSocket;
 
 namespace FloraCSharp.Modules
 {
@@ -16,11 +17,15 @@ namespace FloraCSharp.Modules
     {
         private readonly FloraRandom _random;
         private FloraDebugLogger _logger;
+        private readonly DiscordSocketClient _client;
+        private readonly BotGameHandler _botGames;
 
-        public Administration(FloraRandom random, FloraDebugLogger logger)
+        public Administration(FloraRandom random, FloraDebugLogger logger, DiscordSocketClient client, BotGameHandler botGames)
         {
             _random = random;
             _logger = logger;
+            _client = client;
+            _botGames = botGames;
         }
 
         [Command("save"), Summary("Saves a given user's role")]
@@ -173,6 +178,47 @@ namespace FloraCSharp.Modules
                 await Context.Channel.SendSuccessAsync($"RoleID ({RoleFromName.Name})", $"{RoleFromName.Id}");
         }
 
-        
+        [Command("SetGame"), Summary("Sets the game the bot is currently playing")]
+        [Alias("sgm")]
+        [OwnerOnly]
+        public async Task SetGame([Remainder] string gameName)
+        {
+            await _client.SetGameAsync(gameName);
+        }
+
+        [Command("SetStream"), Summary("Sets the stream the bot is currently streaming..?")]
+        [Alias("sst")]
+        [OwnerOnly]
+        public async Task SetStream(string stream, [Remainder] string gameName)
+        {
+            await _client.SetGameAsync(gameName, stream, StreamType.Twitch);
+        }
+
+        [Command("AddRotatingGame"), Summary("Adds a game to the list of the rotating games")]
+        [Alias("argm")]
+        [OwnerOnly]
+        public async Task AddRotatingGame([Remainder] string gameName)
+        {
+            int botGameID = await _botGames.AddGame(gameName);
+            await Context.Channel.SendSuccessAsync($"Added Rotating Game #{botGameID}", gameName);
+        }
+
+        [Command("DeleteRotatingGame"), Summary("Removes a game from the list of the rotating games")]
+        [Alias("drgm")]
+        [OwnerOnly]
+        public async Task DeleteRotatingGame([Remainder] string gameName)
+        {
+            await _botGames.RemoveBotGame(gameName);
+            await Context.Channel.SendSuccessAsync($"Removed {gameName}.");
+        }
+
+        [Command("DeleteRotatingGame"), Summary("Removes a game from the list of the rotating games")]
+        [Alias("drgm")]
+        [OwnerOnly]
+        public async Task DeleteRotatingGame(int id)
+        {
+            await _botGames.RemoveBotGameByID(id);
+            await Context.Channel.SendSuccessAsync($"Removed rotating game #{id}.");
+        }
     }
 }
