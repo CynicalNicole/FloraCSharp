@@ -155,7 +155,7 @@ namespace FloraCSharp.Modules
         [Alias("rlid")]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageRoles)]
-        public async Task RoleID(string RoleName)
+        public async Task RoleID([Remainder] string RoleName)
         {
             IRole RoleFromName = null;
             foreach(IRole role in Context.Guild.Roles)
