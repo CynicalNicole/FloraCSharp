@@ -22,6 +22,8 @@ namespace FloraCSharp
         });
         private Configuration _config;
         private FloraDebugLogger _logger = new FloraDebugLogger();
+        private FloraRandom _random;
+        private Reactions _reactions;
 
         private Program()
         {
@@ -40,6 +42,10 @@ namespace FloraCSharp
         public async Task AsyncMain()
         {
             _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(@"data/config.json"));
+            _random = new FloraRandom();
+
+            _reactions = new Reactions(_random);
+            await _reactions.LoadReactionsFromDatabase();
 
             //Command Setup
             await InitCommands();
@@ -90,15 +96,17 @@ namespace FloraCSharp
             //Repeat for all service classes
             _map.AddSingleton(_client);
             _map.AddSingleton(_logger);
-            _map.AddSingleton(new FloraRandom());
+            _map.AddSingleton(_random);
             _map.AddSingleton(new Cooldowns());
+            _map.AddSingleton(_reactions);
 
             //For each module do the following
             await _commands.AddModuleAsync<NoLifes>();
             await _commands.AddModuleAsync<Misc>();
             await _commands.AddModuleAsync<Administration>();
             await _commands.AddModuleAsync<InfiniteDie>();
-
+            await _commands.AddModuleAsync<CustomReactions>();
+            
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             _map.AddSingleton(_config);

@@ -9,6 +9,7 @@ namespace FloraCSharp.Services.Database
         FloraContext _context { get; }
 
         IUserRatingRepository UserRatings { get; }
+        IReactionsRepository Reactions { get; }
 
         int Complete();
         Task<int> CompleteAsync();

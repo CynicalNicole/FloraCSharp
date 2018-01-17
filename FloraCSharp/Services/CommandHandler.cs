@@ -20,6 +20,7 @@ namespace FloraCSharp
         private readonly IServiceProvider _provider;
         private readonly Configuration _config;
         private readonly FloraDebugLogger _logger;
+        private readonly Reactions _reactions;
         private List<AsyncLazy<IDMChannel>> _ownerChannels;
 
         public CommandHandler(
@@ -27,13 +28,15 @@ namespace FloraCSharp
             CommandService commands,
             Configuration config,
             IServiceProvider provider,
-            FloraDebugLogger logger)
+            FloraDebugLogger logger,
+            Reactions reactions)
         {
             _discord = discord;
             _commands = commands;
             _provider = provider;
             _config = config;
             _logger = logger;
+            _reactions = reactions;
             _ownerChannels = new List<AsyncLazy<IDMChannel>>();
 
             //Set up DM channels for owners
@@ -60,11 +63,21 @@ namespace FloraCSharp
 
                 if (!result.IsSuccess && !(result.Error.ToString() == "UnknownCommand"))
                     await context.Channel.SendErrorAsync(result.ToString());
+
+                return;
             }
 
             if (context.Channel is IPrivateChannel && !_config.Owners.Contains(context.User.Id))
             {
                 await DMHandling(context);
+                return;
+            }
+
+            string reaction = _reactions.GetReactionOrNull(context.Message.Content);
+            if (reaction != null)
+            {
+                await context.Channel.SendMessageAsync(reaction);
+                return;
             }
         }
 
@@ -75,11 +88,6 @@ namespace FloraCSharp
                 IDMChannel ownerChannel = await OwnerChannel;
                 await ownerChannel.SendSuccessAsync($"DM from [{context.User.Username}] | {context.User.Id}", context.Message.Content);
             }
-        }
-
-        private async Task ReactionHandling()
-        {
-
         }
     }
 }

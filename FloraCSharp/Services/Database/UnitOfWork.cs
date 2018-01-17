@@ -13,6 +13,9 @@ namespace FloraCSharp.Services.Database
         private IUserRatingRepository _userRatings;
         public IUserRatingRepository UserRatings => _userRatings ?? (_userRatings = new UserRatingRepository(_context));
 
+        private IReactionsRepository _reactions;
+        public IReactionsRepository Reactions => _reactions ?? (_reactions = new ReactionsRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

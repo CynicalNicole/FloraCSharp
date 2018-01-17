@@ -26,7 +26,7 @@ namespace FloraCSharp.Services.Database
 
         public FloraContext(DbContextOptions options) : base(options)
         {
-            logger.Log("Creating FloraContext with: " + options.Extensions, "FloraContext");
+            //logger.Log("Creating FloraContext with: " + options.Extensions, "FloraContext");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,6 +39,13 @@ namespace FloraCSharp.Services.Database
                 .IsUnique();
 
             #endregion
+
+            #region Reactions
+
+            var reactionsEntity = modelBuilder.Entity<ReactionModel>();
+            reactionsEntity.HasIndex(d => d.Prompt);
+
+            #endregion  
         }
     }
 }
