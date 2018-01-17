@@ -73,7 +73,7 @@ namespace FloraCSharp
                 return;
             }
 
-            string reaction = _reactions.GetReactionOrNull(context.Message.Content);
+            string reaction = _reactions.GetReactionOrNull(context.Message.Content.ToLower());
             if (reaction != null)
             {
                 await context.Channel.SendMessageAsync(reaction);
