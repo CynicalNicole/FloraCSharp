@@ -98,6 +98,8 @@ namespace FloraCSharp.Services
             _logger.Log("Starting game rotation", "RotatingGames");
             while (_client.LoginState == Discord.LoginState.LoggedIn)
             {
+                if (_botGames.Count == 0)
+                    return;
                 _logger.Log("Setting game", "RotatingGames");
                 await _client.SetGameAsync(_botGames[_random.Next(_botGames.Count)]);
                 await Task.Delay(300000);
