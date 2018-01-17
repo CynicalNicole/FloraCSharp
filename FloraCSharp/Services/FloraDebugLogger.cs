@@ -10,7 +10,8 @@ namespace FloraCSharp.Services
         public void Log(string logmessage, string module)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(DateTime.Now + "  [   Debug] " + module + ": " + logmessage);
+            string type = "debug";
+            Console.WriteLine($"{DateTime.Now,-19} [{type,8}] {module}: {logmessage}");
             Console.ForegroundColor = ConsoleColor.White;
         }
     }

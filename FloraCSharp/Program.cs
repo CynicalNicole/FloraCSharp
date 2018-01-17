@@ -63,8 +63,8 @@ namespace FloraCSharp
 
             provider.GetRequiredService<CommandHandler>();
 
-            if (_config.RotatingGames)
-                await _botGames.HandleGameChange();
+            //if (_config.RotatingGames)
+                //await _botGames.HandleGameChange();
 
             //Block task until program is closed
             await Task.Delay(-1);
