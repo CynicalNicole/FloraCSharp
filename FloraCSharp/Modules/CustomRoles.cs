@@ -45,11 +45,27 @@ namespace FloraCSharp.Modules
         [Command("AddCustomRole"), Summary("Adds a custom role for a user")]
         [Alias("ACsR")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
-        public async Task AddCustomRole(IGuildUser user, IRole role)
+        public async Task AddCustomRole(IGuildUser user, [Remainder] string RoleName)
         {
+            IRole RoleFromName = null;
+            foreach (IRole role in Context.Guild.Roles)
+            {
+                if (role.Name.ToLower() == RoleName.ToLower())
+                {
+                    RoleFromName = role;
+                    break;
+                }
+            }
+
+            if (RoleFromName == null)
+            {
+                await Context.Channel.SendErrorAsync("Role not found.");
+                return;
+            }
+
             using (var uow = DBHandler.UnitOfWork())
             {
-                uow.CustomRole.CreateCustomRole(user.Id, role.Id);
+                uow.CustomRole.CreateCustomRole(user.Id, RoleFromName.Id);
                 await uow.CompleteAsync();
             }
         }
@@ -57,11 +73,27 @@ namespace FloraCSharp.Modules
         [Command("DeleteCustomRole"), Summary("Deletes a custom role for a user")]
         [Alias("DCsR")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
-        public async Task DeleteCustomRole(IGuildUser user)
+        public async Task DeleteCustomRole([Remainder] string RoleName)
         {
+            IRole RoleFromName = null;
+            foreach (IRole role in Context.Guild.Roles)
+            {
+                if (role.Name.ToLower() == RoleName.ToLower())
+                {
+                    RoleFromName = role;
+                    break;
+                }
+            }
+
+            if (RoleFromName == null)
+            {
+                await Context.Channel.SendErrorAsync("Role not found.");
+                return;
+            }
+
             using (var uow = DBHandler.UnitOfWork())
             {
-                uow.CustomRole.DeleteCustomRole(user.Id);
+                uow.CustomRole.DeleteCustomRole(RoleFromName.Id);
                 await uow.CompleteAsync();
             }
         }
