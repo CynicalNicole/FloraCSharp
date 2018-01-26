@@ -116,9 +116,7 @@ namespace FloraCSharp
             await _commands.AddModuleAsync<InfiniteDie>();
             await _commands.AddModuleAsync<CustomReactions>();
             await _commands.AddModuleAsync<CustomRoles>();
-#if TESTING
             await _commands.AddModuleAsync<Games>();
-#endif
 
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
