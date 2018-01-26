@@ -7,6 +7,7 @@
     <Copyright>CynicalPopcorn</Copyright>
     <Description>A C# Discord Bot for Weebnation</Description>
     <Version>1.2.1</Version>
+    <Configurations>Debug;Release;Testing</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

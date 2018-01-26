@@ -40,7 +40,7 @@ namespace FloraCSharp.Modules
         [Command("RNG"), Summary("Simple random number command")]
         public async Task RNG([Summary("The maximum, exclusive bound")] int max)
         {
-            await Context.Channel.SendSuccessAsync($"Random Number (Max: {max})", $"{_random.Next(max)}");
+            await Context.Channel.SendSuccessAsync($"Random Number (Max: {max-1})", $"{_random.Next(max)}");
         }
 
         [Command("RNG"), Summary("Simple random number command")]
@@ -69,7 +69,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("PickUser"), Summary("Picks a random user from a role.")]
-        [Alias("pur", "pickrole")]
+        [Alias("pur", "pickrole", "raffle")]
         public async Task PickRole([Summary("The role you want to pick the user from. Defaults to everyone.")] string roleName = null)
         {
             IRole role = null;
@@ -93,7 +93,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("PickUser"), Summary("Picks a random user from a role.")]
-        [Alias("pur", "pickrole")]
+        [Alias("pur", "pickrole", "raffle")]
         public async Task PickRole([Summary("The role you want to pick the user from. Defaults to everyone.")] IRole roleName) => await PickUserFromRole(roleName, Context.Guild, Context.Channel);
 
         private async Task PickUserFromRole(IRole role, IGuild guild, IMessageChannel channel)
@@ -109,13 +109,13 @@ namespace FloraCSharp.Modules
                     (from user in GUsers where user.RoleIds.Contains(role.Id) select user));
 
                 if (PossibleUsers.Count > 1) 
-                    await channel.SendSuccessAsync("Chosen User", PossibleUsers.ElementAt(_random.Next(PossibleUsers.Count)).Mention);
+                    await channel.SendSuccessAsync("Chosen User", PossibleUsers.ElementAt(_random.Next(PossibleUsers.Count)).Username);
                 else
-                    await channel.SendSuccessAsync("Chosen User", PossibleUsers.First().Mention);
+                    await channel.SendSuccessAsync("Chosen User", PossibleUsers.First().Username);
             }
             else
             {
-                await channel.SendSuccessAsync("Chosen User", GUsers.ElementAt(_random.Next(GUsers.Count)).Mention);
+                await channel.SendSuccessAsync("Chosen User", GUsers.ElementAt(_random.Next(GUsers.Count)).Username);
             }
         }
 
