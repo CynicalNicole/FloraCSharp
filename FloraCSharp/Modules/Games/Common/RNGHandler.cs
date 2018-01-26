@@ -51,6 +51,9 @@ namespace FloraCSharp.Modules.Games.Common
                 if (Game.Guesses.Any(x => x.UserID == msg.Author.Id))
                     return false;
 
+                if (Game.Guesses.Any(x => x.GuessIndex == vote))
+                    return false;
+
                 if (!Game.Guesses.Add(G))
                     return false;
 
