@@ -199,6 +199,7 @@ namespace FloraCSharp.Modules
         [OwnerOnly]
         public async Task Say(string location, [Remainder] string content)
         {
+            string loc = String.Empty;
             if (location.StartsWith("c") || location.StartsWith("C"))
             {
                 location = location.Substring(1);
@@ -212,6 +213,8 @@ namespace FloraCSharp.Modules
                 _logger.Log("Sending to Channel", "Say");
                 IMessageChannel channel = (IMessageChannel)await Context.Client.GetChannelAsync(channelID);
                 await channel.SendMessageAsync(content);
+
+                loc = channel.Name;
             }
 
             if (location.StartsWith("u") || location.StartsWith("U"))
@@ -228,6 +231,8 @@ namespace FloraCSharp.Modules
                 IUser User = await Context.Client.GetUserAsync(userID);
                 IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
                 await iDMChannel.SendMessageAsync(content);
+
+                loc = User.Username + User.Discriminator;
             }
 
             if (location.StartsWith("g") || location.StartsWith("G"))
@@ -244,7 +249,11 @@ namespace FloraCSharp.Modules
                 IGuild Guild = await Context.Client.GetGuildAsync(serverID);
                 IMessageChannel channel = await Guild.GetDefaultChannelAsync();
                 await channel.SendMessageAsync(content);
+
+                loc = Guild.Name + "/" + channel.Name;
             }
+
+            await Context.Channel.SendSuccessAsync($"Message sent to {loc}");
         }
     }
 }

@@ -8,8 +8,11 @@ using FloraCSharp.Services;
 using FloraCSharp.Modules;
 using Newtonsoft.Json;
 using System.IO;
-using System.Collections.Concurrent;
+using FloraCSharp.Extensions;
 using FloraCSharp.Modules.Games;
+using System.Linq;
+using Nito.AsyncEx;
+using System.Collections.Generic;
 
 namespace FloraCSharp
 {
@@ -60,12 +63,13 @@ namespace FloraCSharp
             _commands.Log += Log;
 
             await _client.LoginAsync(TokenType.Bot, _config.Token);
-            await _client.StartAsync();
+            await _client.StartAsync(); 
 
             provider.GetRequiredService<CommandHandler>();
+            //provider.GetRequiredService<StartupHandler>();
 
             //if (_config.RotatingGames)
-                //await _botGames.HandleGameChange();
+            //await _botGames.HandleGameChange();
 
             //Block task until program is closed
             await Task.Delay(-1);
@@ -120,6 +124,7 @@ namespace FloraCSharp
 
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
+            //_map.AddSingleton<StartupHandler>();
             _map.AddSingleton(_config);
         }
     }
