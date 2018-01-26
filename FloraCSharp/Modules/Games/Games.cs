@@ -61,10 +61,6 @@ namespace FloraCSharp.Modules.Games
             }
         }
 
-        [Command("RNGGameEnd"), Summary("Ends the RNG Game in this channel.")]
-        [RequireContext(ContextType.Guild)]
-        public async Task RNGGameEnd() => await EndGameInChannel(Context.Guild, Context.Channel);
-
         public async Task EndGameInChannel(IGuild guild, IMessageChannel ChannelID)
         {
             if (!ActiveRNG.ContainsKey(ChannelID.Id))
