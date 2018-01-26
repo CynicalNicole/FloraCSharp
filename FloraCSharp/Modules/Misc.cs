@@ -232,7 +232,7 @@ namespace FloraCSharp.Modules
                 IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
                 await iDMChannel.SendMessageAsync(content);
 
-                loc = User.Username + User.Discriminator;
+                loc = User.Username + "#" + User.Discriminator;
             }
 
             if (location.StartsWith("g") || location.StartsWith("G"))
