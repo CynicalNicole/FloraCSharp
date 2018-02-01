@@ -11,6 +11,7 @@ using FloraCSharp.Extensions;
 using Newtonsoft.Json;
 using Discord.WebSocket;
 using System.Globalization;
+using FloraCSharp.Services.Database.Models;
 
 namespace FloraCSharp.Modules
 {
@@ -246,6 +247,43 @@ namespace FloraCSharp.Modules
             }
 
             await Context.Channel.SendSuccessAsync($"Added Birthday for {user.Username}.");
+        }
+
+        [Command("TestBirthdays"), Summary("Tests the birthdays")]
+        [OwnerOnly]
+        public async Task TestBirthdays()
+        {
+            List<Birthday> todaysBirthdays = GetBirthdays();
+
+            if (todaysBirthdays != null)
+            {
+                foreach (Birthday birthday in todaysBirthdays)
+                {
+                    IUser user = _client.GetUser(birthday.UserID);
+
+                    await Context.Channel.SendSuccessAsync($"Testing Birthdays. {user.Username} is {birthday.Age + 1}.");
+
+                    using (var uow = DBHandler.UnitOfWork())
+                    {
+                        birthday.Age += 1;
+                        uow.Birthdays.Update(birthday);
+                        await uow.CompleteAsync();
+                    }
+                }
+            }
+        }
+
+        private List<Birthday> GetBirthdays()
+        {
+            var curDate = DateTime.Now;
+            List<Birthday> userBirthdays;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                userBirthdays = uow.Birthdays.GetAllBirthdays(curDate);
+            }
+
+            return userBirthdays;
         }
     }
 }
