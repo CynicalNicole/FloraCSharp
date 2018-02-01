@@ -48,5 +48,12 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             });
             _context.SaveChanges();
         }
+
+        public void DeleteUserBirthday(ulong userID)
+        {
+            Birthday CR = _set.FirstOrDefault(x => x.UserID == userID);
+            _set.Remove(CR);
+            _context.SaveChanges();
+        }
     }
 }

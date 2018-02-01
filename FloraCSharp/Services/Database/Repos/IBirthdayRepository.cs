@@ -10,5 +10,6 @@ namespace FloraCSharp.Services.Database.Repos
         Birthday GetBirthday(ulong id);
         List<Birthday> GetAllBirthdays(DateTime date);
         void CreateUserBirthday(ulong id, DateTime date, int age);
+        void DeleteUserBirthday(ulong userID);
     }
 }

@@ -165,7 +165,7 @@ namespace FloraCSharp.Modules
         public async Task RoleID([Remainder] string RoleName)
         {
             IRole RoleFromName = null;
-            foreach(IRole role in Context.Guild.Roles)
+            foreach (IRole role in Context.Guild.Roles)
             {
                 if (role.Name.ToLower() == RoleName.ToLower())
                 {
@@ -237,7 +237,7 @@ namespace FloraCSharp.Modules
 
             using (var uow = DBHandler.UnitOfWork())
             {
-                uow.Birthdays.Add(new Services.Database.Models.Birthday
+                uow.Birthdays.Add(new Birthday
                 {
                     UserID = user.Id,
                     Date = dt,
@@ -247,6 +247,20 @@ namespace FloraCSharp.Modules
             }
 
             await Context.Channel.SendSuccessAsync($"Added Birthday for {user.Username}.");
+        }
+
+        [Command("DeleteUserBirthday"), Summary("Adds a user's birthday.")]
+        [Alias("DeleteBDay", "DeleteDOB")]
+        [OwnerOnly]
+        public async Task DeleteUserBirthday(IGuildUser user)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Birthdays.DeleteUserBirthday(user.Id);
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Deleted Birthday for {user.Username}.");
         }
 
         [Command("TestBirthdays"), Summary("Tests the birthdays")]

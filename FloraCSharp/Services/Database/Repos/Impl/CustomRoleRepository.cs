@@ -37,7 +37,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
 
         public void DeleteCustomRole(ulong userID)
         {
-            CustomRole CR = _set.FirstOrDefault(x => x.UserID == userID);
+            CustomRole CR = _set.FirstOrDefault(x => x.RoleID == userID);
             _set.Remove(CR);
             _context.SaveChanges();
         }
