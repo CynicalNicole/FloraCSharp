@@ -22,6 +22,9 @@ namespace FloraCSharp.Services.Database
         private IBotGamesRepository _botGames;
         public IBotGamesRepository BotGames => _botGames ?? (_botGames = new BotGamesRepository(_context));
 
+        private IBirthdayRepository _birthdays;
+        public IBirthdayRepository Birthdays => _birthdays ?? (_birthdays = new BirthdayRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

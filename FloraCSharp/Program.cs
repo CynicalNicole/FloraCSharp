@@ -13,6 +13,7 @@ using FloraCSharp.Modules.Games;
 using System.Linq;
 using Nito.AsyncEx;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace FloraCSharp
 {
@@ -29,6 +30,8 @@ namespace FloraCSharp
         private FloraRandom _random;
         private Reactions _reactions;
         private BotGameHandler _botGames;
+
+        private BirthdayService birthdayService = new BirthdayService();
 
         private Program()
         {
@@ -70,6 +73,13 @@ namespace FloraCSharp
 
             //if (_config.RotatingGames)
             //await _botGames.HandleGameChange();
+
+            //Start birthdays
+            int hours = 9;
+            var dateNow = DateTime.Now;
+            var date = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, hours, 0, 0);
+
+            birthdayService.StartBirthdays(date, _client, _config, _random);
 
             //Block task until program is closed
             await Task.Delay(-1);

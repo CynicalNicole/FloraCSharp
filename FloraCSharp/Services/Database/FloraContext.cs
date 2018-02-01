@@ -64,6 +64,15 @@ namespace FloraCSharp.Services.Database
                 .IsUnique();
 
             #endregion
+
+            #region Birthdays
+
+            var birthdaysEntity = modelBuilder.Entity<Birthday>();
+            birthdaysEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
+
+            #endregion
         }
     }
 }

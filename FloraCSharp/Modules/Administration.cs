@@ -10,6 +10,7 @@ using System.Linq;
 using FloraCSharp.Extensions;
 using Newtonsoft.Json;
 using Discord.WebSocket;
+using System.Globalization;
 
 namespace FloraCSharp.Modules
 {
@@ -219,6 +220,32 @@ namespace FloraCSharp.Modules
         {
             await _botGames.RemoveBotGameByID(id);
             await Context.Channel.SendSuccessAsync($"Removed rotating game #{id}.");
+        }
+
+        [Command("AddUserBirthday"), Summary("Adds a user's birthday.")]
+        [Alias("AddBday", "Birthday", "AddDOB")]
+        [OwnerOnly]
+        public async Task AddUserBirthday(IGuildUser user, string birthday, int age)
+        {
+            DateTime dt;
+            if (!DateTime.TryParseExact(birthday, "d/M/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+            {
+                await Context.Channel.SendErrorAsync("That is not a valid date.");
+                return;
+            }
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Birthdays.Add(new Services.Database.Models.Birthday
+                {
+                    UserID = user.Id,
+                    Date = dt,
+                    Age = age
+                });
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Added Birthday for {user.Username}.");
         }
     }
 }

@@ -11,5 +11,6 @@ namespace FloraCSharp
         public ulong[] Owners { get; set; }
         public string Version { get; set; }
         public bool RotatingGames { get; set; }
+        public ulong BirthdayChannel { get; set; }
     }
 }
