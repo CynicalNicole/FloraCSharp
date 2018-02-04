@@ -30,6 +30,9 @@ namespace FloraCSharp.Modules.Games
         [RequireContext(ContextType.Guild)]
         public async Task RNGGame([Summary("The minimum, inclusive bound")] int min, [Summary("The maximum, exclusive bound")] int max, int timeout = 30)
         {
+            if (timeout > 300)
+                timeout = 0;
+
             if (timeout > 0)
             {
                 timeout = timeout * 1000;
