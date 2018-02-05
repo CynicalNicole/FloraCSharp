@@ -19,7 +19,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             {
                 return _set.FirstOrDefault(x => x.UserID == id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -32,7 +32,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
                 
                 return _set.Where(x => x.Date.Day == date.Day && x.Date.Month == date.Month).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
