@@ -255,5 +255,39 @@ namespace FloraCSharp.Modules
 
             await Context.Channel.SendSuccessAsync($"Message sent to {loc}");
         }
+
+        [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
+        [RequireContext(ContextType.Guild)]
+        public async Task Quote(ulong quoteID)
+        {
+            var Post = await Context.Channel.GetMessageAsync(quoteID);
+            await QuotePost(Post, Context.Channel);
+        }
+
+        [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
+        [RequireContext(ContextType.Guild)]
+        public async Task Quote(ulong channelID, ulong quoteID)
+        {
+            var Channel = (IMessageChannel) await Context.Guild.GetChannelAsync(channelID);
+            var Post = await Channel.GetMessageAsync(quoteID);
+            await QuotePost(Post, Context.Channel);
+        }
+
+        [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
+        [RequireContext(ContextType.Guild)]
+        public async Task Quote(IGuildUser user)
+        {
+            var PostHistory = Context.Channel.GetMessagesAsync();
+            var MessageList = PostHistory.First().GetAwaiter().GetResult();
+            var Message = MessageList.First(x => x.Author.Id == user.Id);
+
+            await QuotePost(Message, Context.Channel);
+        }
+
+        private async Task QuotePost(IMessage post, IMessageChannel channel)
+        {
+            var embed = new EmbedBuilder().WithQuoteColour().WithAuthor(x => x.WithIconUrl(post.Author.GetAvatarUrl()).WithName(post.Author.Username)).WithDescription(post.Content).WithFooter(x => x.WithText(post.Timestamp.ToString()));
+            await channel.BlankEmbedAsync(embed);
+        }
     }
 }

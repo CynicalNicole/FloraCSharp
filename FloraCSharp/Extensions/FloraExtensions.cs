@@ -60,6 +60,9 @@ namespace FloraCSharp.Extensions
         public static EmbedBuilder WithErrorColour(this EmbedBuilder eb)
             => eb.WithColor(16711731);
 
+        public static EmbedBuilder WithQuoteColour(this EmbedBuilder eb)
+            => eb.WithColor(16758465);
+
         public static IMessage DeleteAfter(this IUserMessage msg, int seconds)
         {
             Task.Run(async () =>
