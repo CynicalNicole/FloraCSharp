@@ -73,6 +73,15 @@ namespace FloraCSharp.Services.Database
                 .IsUnique();
 
             #endregion
+
+            #region Currency
+
+            var currencyEntity = modelBuilder.Entity<Currency>();
+            birthdaysEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
+
+            #endregion
         }
     }
 }

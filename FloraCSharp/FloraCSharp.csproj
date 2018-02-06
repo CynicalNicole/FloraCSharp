@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Compile Remove="Modules\FloraModuleBase.cs" />
-    <Compile Remove="Services\FirstOwner.cs" />
     <Compile Remove="Services\IBotCredentials.cs" />
     <Compile Remove="Services\OwnerDMHandler.cs" />
     <Compile Remove="Services\ReactionHandler.cs" />

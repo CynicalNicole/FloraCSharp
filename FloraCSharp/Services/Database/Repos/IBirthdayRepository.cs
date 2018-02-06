@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FloraCSharp.Services.Database.Repos
 {
-    public interface IBirthdayRepository: IRepository<Birthday>
+    public interface IBirthdayRepository : IRepository<Birthday>
     {
         Birthday GetBirthday(ulong id);
         List<Birthday> GetAllBirthdays(DateTime date);

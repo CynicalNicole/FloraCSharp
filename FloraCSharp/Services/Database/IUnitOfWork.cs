@@ -13,6 +13,7 @@ namespace FloraCSharp.Services.Database
         ICustomRoleRepository CustomRole { get; }
         IBotGamesRepository BotGames { get; }
         IBirthdayRepository Birthdays { get; }
+        ICurrencyRepository Currency { get; }
 
         int Complete();
         Task<int> CompleteAsync();

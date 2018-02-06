@@ -25,6 +25,9 @@ namespace FloraCSharp.Services.Database
         private IBirthdayRepository _birthdays;
         public IBirthdayRepository Birthdays => _birthdays ?? (_birthdays = new BirthdayRepository(_context));
 
+        private ICurrencyRepository _currency;
+        public ICurrencyRepository Currency => _currency ?? (_currency = new CurrencyRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;
