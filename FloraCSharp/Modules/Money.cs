@@ -5,6 +5,7 @@ using FloraCSharp.Services;
 using FloraCSharp.Services.Database.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -89,6 +90,40 @@ namespace FloraCSharp.Modules
             }
 
             await Context.Channel.SendSuccessAsync($"{user.Username} has a balance of {bal}🥕");
+        }
+
+        [Command("Leaderboard"), Summary("Get the top 9 (or later with pagination)")]
+        [Alias("lb")]
+        public async Task Leaderboard(int page = 0)
+        {
+            if (page != 0)
+                page -= 1;
+
+            List<Currency> TopCurrencies;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                TopCurrencies = uow.Currency.GetTop(page);
+            }
+
+            if (!TopCurrencies.Any())
+            {
+                await Context.Channel.SendErrorAsync($"No users found for page {page + 1}");
+                return;
+            }
+
+            EmbedBuilder embed = new EmbedBuilder().WithQuoteColour().WithTitle("🗠 Leaderboard").WithFooter(efb => efb.WithText($"Page: {page + 1}"));
+
+            int count = 1;
+            foreach (Currency c in TopCurrencies)
+            {
+                IGuildUser user = await Context.Guild.GetUserAsync(c.UserID);
+                string userName = user?.Username ?? c.UserID.ToString();
+                EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName(userName).WithValue(c.Coins).WithIsInline(true);
+
+                embed.AddField(efb);
+            }
+
+            await Context.Channel.BlankEmbedAsync(embed);
         }
     }
 }

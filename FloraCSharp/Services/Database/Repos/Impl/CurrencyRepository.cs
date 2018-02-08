@@ -72,5 +72,11 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             TakeCoins(UserID, Amount);
             AwardCoins(TargetUserID, Amount);
         }
+
+        public List<Currency> GetTop(int page = 0)
+        {
+            int offset = page * 9;
+            return _set.OrderByDescending(x => x.Coins).Skip(offset).Take(9).ToList();
+        }
     }
 }

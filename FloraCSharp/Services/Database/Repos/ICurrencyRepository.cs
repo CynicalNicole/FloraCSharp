@@ -12,5 +12,6 @@ namespace FloraCSharp.Services.Database.Repos
         void AwardCoins(ulong UserID, ulong amount);
         void TakeCoins(ulong UserID, ulong amount);
         void TransferCoins(ulong UserID, ulong TargetUserID, ulong amount);
+        List<Currency> GetTop(int page = 0);
     }
 }
