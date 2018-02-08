@@ -111,7 +111,7 @@ namespace FloraCSharp.Modules
                 return;
             }
 
-            EmbedBuilder embed = new EmbedBuilder().WithQuoteColour().WithTitle("🗠 Leaderboard").WithFooter(efb => efb.WithText($"Page: {page + 1}"));
+            EmbedBuilder embed = new EmbedBuilder().WithQuoteColour().WithTitle("🥕 Leaderboard").WithFooter(efb => efb.WithText($"Page: {page + 1}"));
 
             foreach (Currency c in TopCurrencies)
             {
