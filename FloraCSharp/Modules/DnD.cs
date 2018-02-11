@@ -70,7 +70,7 @@ namespace FloraCSharp.Modules
                 rolls.Add(_random.Next(dice) + 1);
             }
 
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling d{dice} x{rolls.Count}");
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice}");
             string desc = "";
 
             foreach(int i in rolls)
