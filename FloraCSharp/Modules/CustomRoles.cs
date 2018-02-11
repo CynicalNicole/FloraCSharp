@@ -152,7 +152,7 @@ namespace FloraCSharp.Modules
 
             if (roleColour.Length > 7 || roleColour.Length < 6)
             {
-                await Context.Channel.SendErrorAsync("That isn't a valid hex code you silly goose!.");
+                await Context.Channel.SendErrorAsync("That isn't a valid hex code you silly goose!");
                 return;
             }
 
@@ -160,9 +160,9 @@ namespace FloraCSharp.Modules
                 roleColour = roleColour.Substring(1);
 
             Regex rgx = new Regex(@"[0-9A-F]{6}$");
-            if (!rgx.IsMatch(roleColour))
+            if (!rgx.IsMatch(roleColour.ToUpper()))
             {
-                await Context.Channel.SendErrorAsync("That isn't a valid hex code you silly goose!.");
+                await Context.Channel.SendErrorAsync("That isn't a valid hex code you silly goose!");
                 return;
             }
 
