@@ -75,7 +75,7 @@ namespace FloraCSharp.Modules
                 finalStats.Add(stat);
             }
             finalStats = finalStats.OrderByDescending(x => x).ToList();
-            EmbedBuilder embed = new EmbedBuilder().WithDnDColour().WithTitle($"Quick Char Sheet Rolls (4d6 {rolltype})").WithDescription(String.Join(", ", finalStats));
+            EmbedBuilder embed = new EmbedBuilder().WithDnDColour().WithTitle($"Quick Char Sheet Rolls (4d6 {rolltype})").WithDescription(String.Join(", ", finalStats)).AddField(efb => efb.WithName("Total").WithValue(finalStats.Sum()));
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
