@@ -61,6 +61,8 @@ namespace FloraCSharp.Modules
             int count = Int32.Parse(sep[0]);
             int dice = Int32.Parse(sep[1]);
 
+            if (count == 0) return;
+
             List<int> rolls = new List<int>();
 
             for (int i = 0; i < count; i++)
