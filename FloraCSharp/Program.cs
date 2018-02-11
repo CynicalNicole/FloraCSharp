@@ -132,6 +132,7 @@ namespace FloraCSharp
             await _commands.AddModuleAsync<CustomRoles>();
             await _commands.AddModuleAsync<Games>();
             await _commands.AddModuleAsync<Money>();
+            await _commands.AddModuleAsync<DnD>();
 
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
