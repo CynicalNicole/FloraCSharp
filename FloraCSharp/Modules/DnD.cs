@@ -51,7 +51,7 @@ namespace FloraCSharp.Modules
         {
             _logger.Log(roll, "DnD");
             roll = roll.Trim();
-            if (!Regex.IsMatch(roll, @"\d*[d]\d*"))
+            if (!Regex.IsMatch(roll, @"\d[d]\d*"))
             {
                 await Context.Channel.SendErrorAsync("Invalid dice string");
                 return;
