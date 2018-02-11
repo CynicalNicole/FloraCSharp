@@ -24,6 +24,61 @@ namespace FloraCSharp.Modules
             _logger = logger;
         }
 
+        [Command("QuickCS"), Summary("Gets all 6 charsheet stats at once. It'll speed it up.")]
+        public async Task QuickCS(string alt = null)
+        {
+            int take = 0;
+            int skip = 0;
+            string rolltype = "";
+
+            switch (alt?.ToLower())
+            {
+                case "3h":
+                    take = 3;
+                    skip = 0;
+                    rolltype = "3h";
+                    break;
+                case "3l":
+                    take = 3;
+                    skip = 1;
+                    rolltype = "3l";
+                    break;
+                case "2l":
+                    take = 2;
+                    skip = 2;
+                    rolltype = "2l";
+                    break;
+                case "2h":
+                    take = 2;
+                    skip = 0;
+                    rolltype = "2h";
+                    break;
+                default:
+                    take = 3;
+                    skip = 0;
+                    rolltype = "3h";
+                    break;
+            }
+
+            List<int> finalStats = new List<int>();
+            for (int i = 0; i < 6; i++)
+            {
+                int[] rolls = new int[4]
+                {
+                    _random.Next(6) + 1,
+                    _random.Next(6) + 1,
+                    _random.Next(6) + 1,
+                    _random.Next(6) + 1
+                };
+
+                int stat = rolls.OrderByDescending(x => x).Skip(skip).Take(take).ToArray().Sum();
+                finalStats.Add(stat);
+            }
+            finalStats = finalStats.OrderByDescending(x => x).ToList();
+            EmbedBuilder embed = new EmbedBuilder().WithDnDColour().WithTitle($"Quick Char Sheet Rolls (4d6 {rolltype})").WithDescription(String.Join(", ", finalStats));
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
         [Command("RollCS"), Summary("Roll for your character sheet. It will take the top 3 of 4d6 rolls.")]
         public async Task RollCS(string alt = null)
         {
