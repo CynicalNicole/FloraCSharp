@@ -25,7 +25,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("RollCS"), Summary("Roll for your character sheet. It will take the top 3 of 4d6 rolls.")]
-        public async Task RollCS()
+        public async Task RollCS(string alt = null)
         {
             int[] rolls = new int[4]
             {
@@ -35,13 +35,56 @@ namespace FloraCSharp.Modules
                 _random.Next(6) + 1
             };
 
-            int[] highestThree = rolls.OrderByDescending(x => x).Take(3).ToArray();
+            int take = 0;
+            int skip = 0;
+            string rolltype = "";
+
+            switch (alt?.ToLower())
+            {
+                case "3h":
+                    take = 3;
+                    skip = 0;
+                    rolltype = "3h";
+                    break;
+                case "3l":
+                    take = 3;
+                    skip = 1;
+                    rolltype = "3l";
+                    break;
+                case "2l":
+                    take = 2;
+                    skip = 2;
+                    rolltype = "2l";
+                    break;
+                case "2h":
+                    take = 2;
+                    skip = 0;
+                    rolltype = "2h";
+                    break;
+                default:
+                    take = 3;
+                    skip = 0;
+                    rolltype = "3h";
+                    break;
+            }
+
+            int[] selected = rolls.OrderByDescending(x => x).Skip(skip).Take(take).ToArray();
 
             var embed = new EmbedBuilder().WithDnDColour()
                 .WithTitle("Char Stat Roll")
-                .AddField(efb => efb.WithName("Rolls").WithValue($"`{rolls[0]}` | `{rolls[1]}` | `{rolls[2]}` | `{rolls[3]}`"))
-                .AddField(efb => efb.WithName("Highest Rolls").WithValue($"`{highestThree[0]}` | `{highestThree[1]}` | `{highestThree[2]}`"))
-                .AddField(efb => efb.WithName("Final Value").WithValue($"{highestThree[0]} + {highestThree[1]} + {highestThree[2]} = {highestThree.Sum()}"));
+                .AddField(efb => efb.WithName($"Rolls").WithValue($"`{rolls[0]}` `{rolls[1]}` `{rolls[2]}` `{rolls[3]}`"));
+
+            string selectField = "";
+
+            foreach (int sel in selected)
+            {
+                selectField += $" `{sel}` ";
+            }
+
+            selectField.Trim();
+
+            embed.AddField(efb => efb.WithName($"Selected Rolls ({rolltype})").WithValue(selectField))
+                .AddField(efb => efb.WithName("Final Value").WithValue($"{selected.Sum()}"));
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
