@@ -294,6 +294,8 @@ namespace FloraCSharp.Modules
         [Alias("Notice")]
         public async Task Attention(IGuildUser user)
         {
+            if (user.Id == Context.User.Id) return;
+
             Attention UserAttention;
             using (var uow = DBHandler.UnitOfWork())
             {
