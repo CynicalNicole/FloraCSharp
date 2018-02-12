@@ -307,7 +307,7 @@ namespace FloraCSharp.Modules
                 if (UserAttention.DailyRemaining <= 0)
                 {
                     TimeSpan ts = (UserAttention.LastUsage + new TimeSpan(24, 0, 0)).Subtract(DateTime.Now);
-                    await Context.Channel.SendErrorAsync($"You must wait {ts.Hours}:{ts.Minutes}:{ts.Seconds} before you can give someone attention.");
+                    await Context.Channel.SendErrorAsync($"You must wait {ts.ToString(@"hh\:mm\:ss")} before you can give someone attention.");
                     return;
                 }
 
