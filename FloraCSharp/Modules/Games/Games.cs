@@ -9,6 +9,7 @@ using FloraCSharp.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
 using Discord.WebSocket;
+using FloraCSharp.Services.Database.Models;
 
 namespace FloraCSharp.Modules.Games
 {

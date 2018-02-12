@@ -289,5 +289,90 @@ namespace FloraCSharp.Modules
             var embed = new EmbedBuilder().WithQuoteColour().WithAuthor(x => x.WithIconUrl(post.Author.GetAvatarUrl()).WithName(post.Author.Username)).WithDescription(post.Content).WithFooter(x => x.WithText(post.Timestamp.ToString()));
             await channel.BlankEmbedAsync(embed);
         }
+
+        [Command("Attention"), Summary("Give attention to a user.")]
+        [Alias("Notice")]
+        public async Task Attention(IGuildUser user)
+        {
+            Attention UserAttention;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                UserAttention = uow.Attention.GetOrCreateAttention(Context.User.Id);
+            }
+
+            if (UserAttention.LastUsage + new TimeSpan(24, 0, 0) > DateTime.Now)
+            {
+                if (UserAttention.DailyRemaining <= 0)
+                {
+                    TimeSpan ts = (UserAttention.LastUsage + new TimeSpan(24, 0, 0)).Subtract(DateTime.Now);
+                    await Context.Channel.SendErrorAsync($"You must wait {ts.Hours}:{ts.Minutes}:{ts.Seconds} before you can give someone attention.");
+                    return;
+                }
+
+                UserAttention.DailyRemaining -= 1;
+            }
+            else
+            {
+                UserAttention.LastUsage = DateTime.Now;
+                UserAttention.DailyRemaining = 2;
+            }
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Attention.Update(UserAttention);
+                uow.Attention.AwardAttention(user.Id, 1);
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"{Context.User.Username} has given {user.Mention} attention!");
+        }
+
+        [Command("AttentionLB"), Summary("Check the attention leaderboard")]
+        [Alias("MostLoved", "ALB", "NoticeLB", "NLB")]
+        public async Task AttentionLB(int page = 0)
+        {
+            if (page != 0)
+                page -= 1;
+
+            List<Attention> TopAttention;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                TopAttention = uow.Attention.GetTop(page);
+            }
+
+            if (!TopAttention.Any())
+            {
+                await Context.Channel.SendErrorAsync($"No users found for page {page + 1}");
+                return;
+            }
+
+            EmbedBuilder embed = new EmbedBuilder().WithQuoteColour().WithTitle("Attention Leaderboard").WithFooter(efb => efb.WithText($"Page: {page + 1}"));
+
+            foreach (Attention c in TopAttention)
+            {
+                IGuildUser user = await Context.Guild.GetUserAsync(c.UserID);
+                string userName = user?.Username ?? c.UserID.ToString();
+                EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName(userName).WithValue(c.AttentionPoints).WithIsInline(true);
+
+                embed.AddField(efb);
+            }
+
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        [Command("Notices"), Summary("Check your attention")]
+        public async Task Notices(IUser user = null)
+        {
+            if (user == null)
+                user = Context.User;
+
+            Attention a;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                a = uow.Attention.GetOrCreateAttention(user.Id);
+            }
+
+            await Context.Channel.SendSuccessAsync($"{user.Username} has been noticed {a.AttentionPoints} times!");
+        }
     }
 }

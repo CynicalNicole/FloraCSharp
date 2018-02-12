@@ -28,6 +28,9 @@ namespace FloraCSharp.Services.Database
         private ICurrencyRepository _currency;
         public ICurrencyRepository Currency => _currency ?? (_currency = new CurrencyRepository(_context));
 
+        private IAttentionRepository _attenion;
+        public IAttentionRepository Attention => _attenion ?? (_attenion = new AttentionRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

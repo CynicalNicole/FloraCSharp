@@ -82,6 +82,15 @@ namespace FloraCSharp.Services.Database
                 .IsUnique();
 
             #endregion
+
+            #region Attention
+
+            var attentionEntity = modelBuilder.Entity<Attention>();
+            birthdaysEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
+
+            #endregion
         }
     }
 }
