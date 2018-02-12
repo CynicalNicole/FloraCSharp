@@ -376,5 +376,33 @@ namespace FloraCSharp.Modules
 
             await Context.Channel.SendSuccessAsync($"{user.Username} has been noticed {a.AttentionPoints} times!");
         }
+
+        [Command("NoticeCD"), Summary("Check your CD")]
+        [Alias("NCD")]
+        public async Task NoticeCD()
+        {
+            Attention a;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                a = uow.Attention.GetOrCreateAttention(Context.User.Id);
+            }
+                  
+            if (a.LastUsage + new TimeSpan(24, 0, 0) > DateTime.Now)
+            {
+                if (a.DailyRemaining > 0)
+                {
+                    await Context.Channel.SendSuccessAsync($"You still have {a.DailyRemaining} notices left today!");
+                }
+                else
+                {
+                    TimeSpan ts = (a.LastUsage + new TimeSpan(24, 0, 0)).Subtract(DateTime.Now);
+                    await Context.Channel.SendErrorAsync($"You still have to wait {ts.ToString(@"hh\:mm\:ss")}!");
+                }               
+            }
+            else 
+            {
+                await Context.Channel.SendSuccessAsync($"Your cooldown has reset! You have all 3 back.");
+            }
+        }
     }
 }
