@@ -396,7 +396,7 @@ namespace FloraCSharp.Modules
                 else
                 {
                     TimeSpan ts = (a.LastUsage + new TimeSpan(24, 0, 0)).Subtract(DateTime.Now);
-                    await Context.Channel.SendErrorAsync($"You still have to wait {ts.ToString(@"hh\:mm\:ss")}!");
+                    await Context.Channel.SendErrorAsync($"You still have to wait {ts.ToString(@"hh\:mm\:ss")} before you can notice someone!");
                 }               
             }
             else 
