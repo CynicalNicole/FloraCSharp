@@ -391,17 +391,17 @@ namespace FloraCSharp.Modules
             {
                 if (a.DailyRemaining > 0)
                 {
-                    await Context.Channel.SendSuccessAsync($"You still have {a.DailyRemaining} notices left today!");
+                    await Context.Channel.SendSuccessAsync($"{Context.User.Username} - You still have {a.DailyRemaining} notices left today!");
                 }
                 else
                 {
                     TimeSpan ts = (a.LastUsage + new TimeSpan(24, 0, 0)).Subtract(DateTime.Now);
-                    await Context.Channel.SendErrorAsync($"You still have to wait {ts.ToString(@"hh\:mm\:ss")} before you can notice someone!");
+                    await Context.Channel.SendErrorAsync($"{Context.User.Username} - You still have to wait {ts.ToString(@"hh\:mm\:ss")} before you can notice someone!");
                 }               
             }
             else 
             {
-                await Context.Channel.SendSuccessAsync($"Your cooldown has reset! You have all 3 back.");
+                await Context.Channel.SendSuccessAsync($"{Context.User.Username} - Your cooldown has reset! You have all 3 of your notices back.");
             }
         }
     }
