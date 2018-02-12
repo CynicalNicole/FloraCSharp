@@ -133,6 +133,7 @@ namespace FloraCSharp
             await _commands.AddModuleAsync<Games>();
             await _commands.AddModuleAsync<Money>();
             await _commands.AddModuleAsync<DnD>();
+            await _commands.AddModuleAsync<Cyphers>();
 
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
