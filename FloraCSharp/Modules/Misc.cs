@@ -292,15 +292,16 @@ namespace FloraCSharp.Modules
 
         [Command("Attention"), Summary("Give attention to a user.")]
         [Alias("Notice")]
-        public async Task Attention(IGuildUser user)
+        public async Task Attention(IGuildUser user, int amount = 1)
         {
             if (user.Id == Context.User.Id) return;
+            if (amount < 1 || amount > 3) return;
 
             Attention UserAttention;
             using (var uow = DBHandler.UnitOfWork())
             {
                 UserAttention = uow.Attention.GetOrCreateAttention(Context.User.Id);
-            }
+            } 
 
             if (UserAttention.LastUsage + new TimeSpan(24, 0, 0) > DateTime.Now)
             {
@@ -311,22 +312,62 @@ namespace FloraCSharp.Modules
                     return;
                 }
 
-                UserAttention.DailyRemaining -= 1;
+                if (UserAttention.DailyRemaining < amount)
+                {
+                    await Context.Channel.SendErrorAsync($"You do not have that much attention left to give today.");
+                    return;
+                }
+
+                UserAttention.DailyRemaining -= amount;
             }
             else
             {
+                UserAttention.DailyRemaining = 3;
+
+                if (UserAttention.DailyRemaining < amount)
+                {
+                    await Context.Channel.SendErrorAsync($"You do not have that much attention left to give today.");
+                    return;
+                }
+
                 UserAttention.LastUsage = DateTime.Now;
-                UserAttention.DailyRemaining = 2;
+                UserAttention.DailyRemaining -= amount;
             }
 
             using (var uow = DBHandler.UnitOfWork())
             {
                 uow.Attention.Update(UserAttention);
-                uow.Attention.AwardAttention(user.Id, 1);
+                uow.Attention.AwardAttention(user.Id, (ulong)amount);
                 await uow.CompleteAsync();
             }
 
-            await Context.Channel.SendSuccessAsync($"{Context.User.Username} has given {user.Mention} attention!");
+            string confirm = $"{Context.User.Username} has given {user.Mention} attention!";
+            if (amount > 1) confirm += $" {amount} times.";
+
+            await Context.Channel.SendSuccessAsync(confirm);
+        }
+
+        [Command("NoticeCooldownReset"), Summary("Reset cooldowns for a person's notices. Debugging tool basically.")]
+        [Alias("NCDReset")]
+        [OwnerOnly]
+        public async Task NoticeCooldownReset(IUser user)
+        {
+            Attention UserAttention;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                UserAttention = uow.Attention.GetOrCreateAttention(user.Id);
+            }
+
+            DateTime timeToResetTo = DateTime.Now - new TimeSpan(24, 1, 0);
+            UserAttention.LastUsage = timeToResetTo;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Attention.Update(UserAttention);
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Reset the cooldown for {user.Username}");
         }
 
         [Command("AttentionLB"), Summary("Check the attention leaderboard")]
