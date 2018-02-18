@@ -341,8 +341,20 @@ namespace FloraCSharp.Modules
                 await uow.CompleteAsync();
             }
 
-            string confirm = $"{Context.User.Username} has given {user.Mention} attention!";
-            if (amount > 1) confirm += $" {amount} times.";
+            string confirm = $"{Context.User.Username} ";
+
+            switch (amount)
+            {
+                case 1:
+                    confirm += $"has noticed {user.Username}.";
+                    break;
+                case 2:
+                    confirm += $"has noticed {user.Username} twice.";
+                    break;
+                case 3:
+                    confirm += $"is stalking {user.Username}. Creep.";
+                    break;
+            }
 
             await Context.Channel.SendSuccessAsync(confirm);
         }
