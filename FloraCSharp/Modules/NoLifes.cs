@@ -19,6 +19,14 @@ namespace FloraCSharp.Modules
             _random = random;
         }
 
+        [Command("none"), Summary("Removes colour.")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUser]
+        public async Task None()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 0);
+        }
+
         [Command("pink"), Summary("Gives a no-life the Pink Role.")]
         [RequireContext(ContextType.Guild)]
         [RequireNoLife]
