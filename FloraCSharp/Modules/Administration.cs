@@ -21,13 +21,15 @@ namespace FloraCSharp.Modules
         private FloraDebugLogger _logger;
         private readonly DiscordSocketClient _client;
         private readonly BotGameHandler _botGames;
+        private readonly Configuration _config;
 
-        public Administration(FloraRandom random, FloraDebugLogger logger, DiscordSocketClient client, BotGameHandler botGames)
+        public Administration(FloraRandom random, FloraDebugLogger logger, DiscordSocketClient client, Configuration config, BotGameHandler botGames)
         {
             _random = random;
             _logger = logger;
             _client = client;
             _botGames = botGames;
+            _config = config;
         }
 
         [Command("save"), Summary("Saves a given user's role")]
@@ -150,6 +152,9 @@ namespace FloraCSharp.Modules
         {
             //Now tell the user we did it! Yay
             await Context.Channel.SendSuccessAsync("Bye-bye!");
+
+            //Set config shutdown to 1
+            _config.Shutdown = true;
 
             //Safely stop the bot
             await Context.Client.StopAsync();

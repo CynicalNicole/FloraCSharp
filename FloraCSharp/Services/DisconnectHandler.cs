@@ -30,6 +30,9 @@ namespace FloraCSharp.Services
 
         private async Task _discord_Disconnected(Exception arg)
         {
+            if (_config.Shutdown)
+                return;
+
             await _discord.StopAsync();
 
             int attempts = 0;

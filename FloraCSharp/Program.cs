@@ -50,6 +50,7 @@ namespace FloraCSharp
         public async Task AsyncMain()
         {
             _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(@"data/config.json"));
+            _config.Shutdown = false;
             _random = new FloraRandom();
 
             _reactions = new Reactions(_random);

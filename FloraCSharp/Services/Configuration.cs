@@ -12,5 +12,6 @@ namespace FloraCSharp
         public string Version { get; set; }
         public bool RotatingGames { get; set; }
         public ulong BirthdayChannel { get; set; }
+        public bool Shutdown { get; set; }
     }
 }
