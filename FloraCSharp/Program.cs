@@ -70,6 +70,7 @@ namespace FloraCSharp
 
             provider.GetRequiredService<CommandHandler>();
             //provider.GetRequiredService<StartupHandler>();
+            provider.GetRequiredService<DisconnectHandler>();
 
             //if (_config.RotatingGames)
             //await _botGames.HandleGameChange();
@@ -138,6 +139,7 @@ namespace FloraCSharp
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             //_map.AddSingleton<StartupHandler>();
+            _map.AddSingleton<DisconnectHandler>();
             _map.AddSingleton(_config);
         }
     }
