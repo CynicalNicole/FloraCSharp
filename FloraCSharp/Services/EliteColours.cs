@@ -12,7 +12,7 @@ namespace FloraCSharp.Services
     {
         List<string> EliteColourRoleNames = new List<string>()
         {
-            "pink-life", "red-life", "blue-life", "orange-life", "purple-life", "yellow-life", "teal-life"
+            "pink", "red", "blue", "orange", "purple", "yellow", "teal"
         };
 
         Dictionary<int, ulong> EliteRoleIds = new Dictionary<int, ulong>()
@@ -28,7 +28,7 @@ namespace FloraCSharp.Services
 
         public async Task GiveEliteColour(IGuildUser Sender, IMessageChannel Channel, int Colour)
         {
-            if (Channel.Id != 285218502212583424) return;
+            if (Channel.Id != 205878045859381257) return;
 
             foreach (ulong RoleID in Sender.RoleIds)
             {

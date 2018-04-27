@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
 {
-    [Group("No-Life")]
-    [RequireNoLife()]
     public class NoLifes : ModuleBase
     {
         private readonly FloraRandom _random;
@@ -21,50 +19,53 @@ namespace FloraCSharp.Modules
             _random = random;
         }
 
-        [Command("pink"), Summary("Gives a no-life the Pink-Life Role.")]
+        [Command("pink"), Summary("Gives a no-life the Pink Role.")]
         [RequireContext(ContextType.Guild)]
+        [RequireNoLife()]
         public async Task Pink()
         {
             await EC.GiveEliteColour((IGuildUser) Context.User, Context.Channel, 1);
         }
 
-        [Command("red"), Summary("Gives a no-life the Red-Life Role.")]
+        [Command("red"), Summary("Gives a user the Red Role.")]
         [RequireContext(ContextType.Guild)]
         public async Task Red()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 2);
         }
 
-        [Command("blue"), Summary("Gives a no-life the Blue-Life Role.")]
+        [Command("blue"), Summary("Gives a user the Blue Role.")]
         [RequireContext(ContextType.Guild)]
         public async Task Blue()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 3);
         }
 
-        [Command("orange"), Summary("Gives a no-life the Orange-Life Role.")]
+        [Command("orange"), Summary("Gives a user the Orange Role.")]
         [RequireContext(ContextType.Guild)]
         public async Task Orange()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 4);
         }
 
-        [Command("purple"), Summary("Gives a no-life the Purple-Life Role.")]
+        [Command("purple"), Summary("Gives a user the Purple Role.")]
         [RequireContext(ContextType.Guild)]
         public async Task Purple()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 5);
         }
 
-        [Command("yellow"), Summary("Gives a no-life the Yellow-Life Role.")]
+        [Command("yellow"), Summary("Gives a no-life the Yellow Role.")]
         [RequireContext(ContextType.Guild)]
+        [RequireNoLife()]
         public async Task Yellow()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 6);
         }
 
-        [Command("teal"), Summary("Gives a no-life the Teal-Life Role.")]
+        [Command("teal"), Summary("Gives a no-life the Teal Role.")]
         [RequireContext(ContextType.Guild)]
+        [RequireNoLife()]
         public async Task Teal()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 7);

@@ -29,7 +29,6 @@ namespace FloraCSharp.Services.Database.Repos.Impl
         {
             try
             {
-                
                 return _set.Where(x => x.Date.Day == date.Day && x.Date.Month == date.Month).ToList();
             }
             catch (Exception)
