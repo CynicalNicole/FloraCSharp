@@ -1,6 +1,7 @@
 ﻿using Discord;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +9,8 @@ namespace FloraCSharp.Extensions
 {
     public static class FloraExtensions
     {
+        private static Random _random = new Random();
+
         public static Task<IUserMessage> SendErrorAsync(this IMessageChannel ch, string title, string text, string url = null, string footer = null)
         {
             var eb = new EmbedBuilder().WithErrorColour().WithDescription(text).WithTitle(title);
