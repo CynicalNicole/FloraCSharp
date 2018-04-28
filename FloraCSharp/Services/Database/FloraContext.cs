@@ -18,6 +18,13 @@ namespace FloraCSharp.Services.Database
     public class FloraContext : DbContext
     {
         public DbSet<UserRating> UserRatings { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<ReactionModel> ReactionModel { get; set; }
+        public DbSet<CustomRole> CustomRole { get; set; }
+        public DbSet<Currency> Currency { get; set; }
+        public DbSet<BotGames> BotGames { get; set; }
+        public DbSet<Birthday> Birthday { get; set; }
+        public DbSet<Attention> Attention { get; set; }
         private readonly FloraDebugLogger logger = new FloraDebugLogger();
 
         public FloraContext() : base()
@@ -90,6 +97,13 @@ namespace FloraCSharp.Services.Database
                 .HasIndex(d => d.UserID)
                 .IsUnique();
 
+            #endregion
+
+            #region User
+            var userEntity = modelBuilder.Entity<User>();
+            userEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
             #endregion
         }
     }
