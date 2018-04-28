@@ -8,6 +8,8 @@ using System.Linq;
 using Discord;
 using System.Net.Http;
 using FloraCSharp.Services.Database.Models;
+using Newtonsoft.Json;
+using FloraCSharp.Services.APIModels;
 
 namespace FloraCSharp.Modules
 {
@@ -17,12 +19,18 @@ namespace FloraCSharp.Modules
         private HttpClient _client;
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
+        private readonly Configuration _config;
 
-        public Misc(FloraRandom random, FloraDebugLogger logger)
+        //Steam API Stuff
+        private readonly string SteamAPIUrl = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={key}&steamid={id}&include_appinfo=1";
+        private readonly string VanityURL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={key}&vanityurl={url}";
+
+        public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config)
         {
             _client = new HttpClient();
             _random = random;
             _logger = logger;
+            _config = config;
         }
 
         [Command("Test"), Summary("Simple test command to see if the bot is running")]
@@ -455,6 +463,121 @@ namespace FloraCSharp.Modules
             else 
             {
                 await Context.Channel.SendSuccessAsync($"{Context.User.Username} - Your cooldown has reset! You have all 3 of your notices back.");
+            }
+        }
+
+        [Command("PickRandomGame"), Summary("Picks a random game from the user's steam library.")]
+        [Alias("SteamRandom")]
+        public async Task PickRandomGame([Remainder] string options = null)
+        {
+            if (_config.SteamAPIKey == "" || _config.SteamAPIKey == null)
+            {
+                await Context.Channel.SendErrorAsync("Please set a valid Steam API Key!");
+                return;
+            }
+
+            var userID = Context.User.Id;
+            ulong SteamID = 0;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                SteamID = uow.User.GetSteamID(userID);
+            }
+
+            if (SteamID == 0)
+            {
+                await Context.Channel.SendErrorAsync("You haven't set your SteamID yet.");
+                return;
+            }
+
+            var completeURL = SteamAPIUrl.Replace("{key}", _config.SteamAPIKey).Replace("{id}", SteamID.ToString());
+
+            var response = await APIResponse(completeURL);
+            var responseArray = JsonConvert.DeserializeObject<OwnedGamesResultContainer>(response);
+
+            var gamesList = responseArray.Result.Games;
+
+            switch (options.ToLower())
+            {
+                default:
+                case null:
+                    break;
+                case "played":
+                case "p":
+                    gamesList = gamesList.Where(x => x.PlaytimeForever > 0).ToList();
+                    break;
+                case "not played":
+                case "np":
+                    gamesList = gamesList.Where(x => x.PlaytimeForever == 0).ToList();
+                    break;
+            }
+
+            var randomGame = gamesList.RandomItem();
+
+            uint playtimeTwoWeeks = randomGame?.Playtime2Weeks ?? 0;
+
+            EmbedBuilder embed = new EmbedBuilder().WithOkColour().WithTitle("Random Game")
+                //.WithUrl($"steam://run/{randomGame.AppID}")
+                .AddField(new EmbedFieldBuilder().WithName("Game Title").WithValue(randomGame.Name))
+                .AddField(new EmbedFieldBuilder().WithName("Total Playtime").WithValue(PlaytimeStringGen(randomGame.PlaytimeForever)).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true));
+
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        private string PlaytimeStringGen(uint playtime)
+        {
+            if (playtime == 0)
+                return "Never Played";
+            else if (playtime < 60)
+                return $"{playtime} minutes";
+            else
+                return $"{Math.Floor((double)playtime / 60)} hours";
+        }
+
+        [Command("LinkSteam"), Summary("Links steam acc")]
+        public async Task LinkSteam(ulong id) => await LinkSteam(Context, id);
+
+        [Command("LinkSteam"), Summary("Links steam acc")]
+        public async Task LinkSteam(string id)
+        {
+            var response = await APIResponse(VanityURL.Replace("{key}", _config.SteamAPIKey).Replace("{url}", id));
+            var responseArray = JsonConvert.DeserializeObject<VanityURLContainer>(response);
+
+            if (responseArray.Result.Success != 1)
+            {
+                await Context.Channel.SendErrorAsync("Invalid steam URL!");
+                return;
+            }
+
+            await LinkSteam(Context, responseArray.Result.SteamID);
+        }
+
+        private async Task LinkSteam(ICommandContext Context, ulong id)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                if (uow.User.GetSteamID(Context.User.Id) == 0)
+                    uow.User.SetSteamID(Context.User.Id, id);
+                else
+                {
+                    await Context.Channel.SendErrorAsync("You have already set your SteamID");
+                    return;
+                }
+            }
+
+            await Context.Channel.SendSuccessAsync($"Set steamd ID for {Context.User.Username} to {id}");
+        }
+
+        private async Task<string> APIResponse(string fullURL)
+        {
+            //delay for 1/2 a second to help with API rate limiting
+            await Task.Delay(500);
+
+            //Make the request
+            using (var httpClient = new HttpClient())
+            {
+                return await httpClient.GetStringAsync(fullURL);
             }
         }
     }

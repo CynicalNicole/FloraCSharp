@@ -31,6 +31,9 @@ namespace FloraCSharp.Services.Database
         private IAttentionRepository _attenion;
         public IAttentionRepository Attention => _attenion ?? (_attenion = new AttentionRepository(_context));
 
+        private IUserRepository _user;
+        public IUserRepository User => _user ?? (_user = new UserRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

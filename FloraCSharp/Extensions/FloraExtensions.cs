@@ -18,6 +18,16 @@ namespace FloraCSharp.Extensions
             return ch.SendMessageAsync("", embed: eb.Build());
         }
 
+        public static T RandomItem<T>(this IEnumerable<T> list)
+        {
+            return list.ElementAt(_random.Next(0, list.Count()));
+        }
+
+        public static string NicknameUsername(this IGuildUser user)
+        {
+            return user?.Nickname ?? user.Username;
+        }
+
         public static Task<IUserMessage> SendErrorAsync(this IMessageChannel ch, string text)
             => ch.SendMessageAsync("", embed: new EmbedBuilder().WithErrorColour().WithDescription(text).Build());
 

@@ -13,5 +13,6 @@ namespace FloraCSharp
         public bool RotatingGames { get; set; }
         public ulong BirthdayChannel { get; set; }
         public bool Shutdown { get; set; }
+        public string SteamAPIKey { get; set; }
     }
 }
