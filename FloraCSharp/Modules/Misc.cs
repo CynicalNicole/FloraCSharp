@@ -476,6 +476,8 @@ namespace FloraCSharp.Modules
                 return;
             }
 
+            if (options == null) options = "";
+
             var userID = Context.User.Id;
             ulong SteamID = 0;
 
