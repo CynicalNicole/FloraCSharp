@@ -118,9 +118,6 @@ namespace FloraCSharp.Modules
                     roles.Add(role);
             }
 
-            //Remove newbies role
-            await user.RemoveRoleAsync(Context.Guild.GetRole(229064523053531137));
-
             //Add the roles they deserve
             await user.AddRolesAsync(roles);
 
