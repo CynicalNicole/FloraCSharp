@@ -33,8 +33,6 @@ namespace FloraCSharp
 
         CancellationTokenSource m_ctSource;
 
-        //private BirthdayService birthdayService = new BirthdayService();
-
         private Program()
         {
             _client = new DiscordSocketClient(new DiscordSocketConfig
@@ -73,20 +71,12 @@ namespace FloraCSharp
 
             provider.GetRequiredService<CommandHandler>();
             //provider.GetRequiredService<StartupHandler>();
-            provider.GetRequiredService<DisconnectHandler>();
 
             if (_config.RotatingGames)
             {
                 _logger.Log("Starting game rotation", "RotatingGames");
                 WorkingTask();
             }
-
-            //Start birthdays
-            //int hours = 9;
-            //var dateNow = DateTime.Now;
-            //var date = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, hours, 0, 0);
-
-            //birthdayService.StartBirthdays(date, _client, _config, _random);
 
             //Block task until program is closed
             await Task.Delay(-1);
@@ -145,7 +135,6 @@ namespace FloraCSharp
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             //_map.AddSingleton<StartupHandler>();
-            _map.AddSingleton<DisconnectHandler>();
             _map.AddSingleton(_config);
         }
 
@@ -156,7 +145,9 @@ namespace FloraCSharp
             Task.Delay(1000).ContinueWith(async (x) =>
             {
                 await _botGames.HandleGameChange(_config.RotationDelay);
-                WorkingTask();
+
+                if (_client.ConnectionState == ConnectionState.Connected)
+                    WorkingTask();
             }, m_ctSource.Token);
         }
     }

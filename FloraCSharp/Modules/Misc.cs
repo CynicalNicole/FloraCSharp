@@ -468,6 +468,25 @@ namespace FloraCSharp.Modules
 
         [Command("PickRandomGame"), Summary("Picks a random game from the user's steam library.")]
         [Alias("SteamRandom")]
+        public async Task SteamProfile(IUser User = null)
+        {
+            if (User == null)
+                User = Context.User;
+
+            ulong SteamID = GetSteamUserID(User.Id);
+
+            if (SteamID == 0)
+            {
+                await Context.Channel.SendErrorAsync($"{User.Username} has not set a SteamID yet.");
+                return;
+            }
+
+            //Need to implement
+            return;
+        }
+
+        [Command("PickRandomGame"), Summary("Picks a random game from the user's steam library.")]
+        [Alias("SteamRandom")]
         public async Task PickRandomGame([Remainder] string options = null)
         {
             if (_config.SteamAPIKey == "" || _config.SteamAPIKey == null)
@@ -479,12 +498,7 @@ namespace FloraCSharp.Modules
             if (options == null) options = "";
 
             var userID = Context.User.Id;
-            ulong SteamID = 0;
-
-            using (var uow = DBHandler.UnitOfWork())
-            {
-                SteamID = uow.User.GetSteamID(userID);
-            }
+            ulong SteamID = GetSteamUserID(userID);
 
             if (SteamID == 0)
             {
@@ -535,6 +549,17 @@ namespace FloraCSharp.Modules
                 return $"{playtime} minutes";
             else
                 return $"{Math.Floor((double)playtime / 60)} hours";
+        }
+
+        private ulong GetSteamUserID(ulong userID)
+        {
+            ulong SteamID = 0;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                SteamID = uow.User.GetSteamID(userID);
+            }
+
+            return SteamID;
         }
 
         [Command("LinkSteam"), Summary("Links steam acc")]
