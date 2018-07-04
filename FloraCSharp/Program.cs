@@ -31,7 +31,7 @@ namespace FloraCSharp
         private Reactions _reactions;
         private BotGameHandler _botGames;
 
-        private BirthdayService birthdayService = new BirthdayService();
+        //private BirthdayService birthdayService = new BirthdayService();
 
         private Program()
         {
@@ -77,11 +77,11 @@ namespace FloraCSharp
             //await _botGames.HandleGameChange();
 
             //Start birthdays
-            int hours = 9;
-            var dateNow = DateTime.Now;
-            var date = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, hours, 0, 0);
+            //int hours = 9;
+            //var dateNow = DateTime.Now;
+            //var date = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, hours, 0, 0);
 
-            birthdayService.StartBirthdays(date, _client, _config, _random);
+            //birthdayService.StartBirthdays(date, _client, _config, _random);
 
             //Block task until program is closed
             await Task.Delay(-1);
