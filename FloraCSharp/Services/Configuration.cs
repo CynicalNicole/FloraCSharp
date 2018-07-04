@@ -14,5 +14,6 @@ namespace FloraCSharp
         public ulong BirthdayChannel { get; set; }
         public bool Shutdown { get; set; }
         public string SteamAPIKey { get; set; }
+        public int RotationDelay { get; set; }
     }
 }

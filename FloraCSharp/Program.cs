@@ -76,7 +76,10 @@ namespace FloraCSharp
             provider.GetRequiredService<DisconnectHandler>();
 
             if (_config.RotatingGames)
-                WorkingTask();  
+            {
+                _logger.Log("Starting game rotation", "RotatingGames");
+                WorkingTask();
+            }
 
             //Start birthdays
             //int hours = 9;
@@ -146,13 +149,13 @@ namespace FloraCSharp
             _map.AddSingleton(_config);
         }
 
-        private void WorkingTask()
+        public void WorkingTask()
         {
             m_ctSource = new CancellationTokenSource();
 
             Task.Delay(1000).ContinueWith(async (x) =>
             {
-                await _botGames.HandleGameChange();
+                await _botGames.HandleGameChange(_config.RotationDelay);
                 WorkingTask();
             }, m_ctSource.Token);
         }
