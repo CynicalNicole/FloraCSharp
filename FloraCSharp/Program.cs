@@ -31,6 +31,8 @@ namespace FloraCSharp
         private Reactions _reactions;
         private BotGameHandler _botGames;
 
+        CancellationTokenSource m_ctSource;
+
         //private BirthdayService birthdayService = new BirthdayService();
 
         private Program()
@@ -73,8 +75,8 @@ namespace FloraCSharp
             //provider.GetRequiredService<StartupHandler>();
             provider.GetRequiredService<DisconnectHandler>();
 
-            //if (_config.RotatingGames)
-            //await _botGames.HandleGameChange();
+            if (_config.RotatingGames)
+                WorkingTask();  
 
             //Start birthdays
             //int hours = 9;
@@ -142,6 +144,17 @@ namespace FloraCSharp
             //_map.AddSingleton<StartupHandler>();
             _map.AddSingleton<DisconnectHandler>();
             _map.AddSingleton(_config);
+        }
+
+        private void WorkingTask()
+        {
+            m_ctSource = new CancellationTokenSource();
+
+            Task.Delay(1000).ContinueWith(async (x) =>
+            {
+                await _botGames.HandleGameChange();
+                WorkingTask();
+            }, m_ctSource.Token);
         }
     }
 }
