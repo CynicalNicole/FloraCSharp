@@ -12,7 +12,7 @@ namespace FloraCSharp.Modules
     [RequireBotPalace]
     [RequireContext(ContextType.Guild)]
     [Group("Colour")]
-    [Alias("CL")]
+    [Alias("CL", "color")]
     public class NoLifes : ModuleBase
     {
         private readonly FloraRandom _random;
@@ -42,14 +42,14 @@ namespace FloraCSharp.Modules
         }
 
         [Command("red"), Summary("Gives a True Weeb the Red Role.")]
-        [RequireNoLife]
+        [RequireUser]
         public async Task Red()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 2);
         }
 
         [Command("blue"), Summary("Gives a True Weeb the Blue Role.")]
-        [RequireNoLife]
+        [RequireUser]
         public async Task Blue()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 3);
@@ -70,7 +70,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("yellow"), Summary("Gives a True Weeb the Yellow Role.")]
-        [RequireNoLife]
+        [RequireUser]
         public async Task Yellow()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 6);
