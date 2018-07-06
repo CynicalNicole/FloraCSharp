@@ -108,14 +108,14 @@ namespace FloraCSharp.Modules
 
         //Colours for Traps
 
-        [Command("white"), Alias("discordlight", "dclight", "light")]
+        [Command("white"), Alias("discordlight", "dclight", "light", "discord light")]
         [RequireSuperSenpai]
         public async Task White()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 11);
         }
 
-        [Command("dark"), Alias("discorddark", "dcdark")]
+        [Command("dark"), Alias("discorddark", "dcdark", "discord dark")]
         [RequireSuperSenpai]
         public async Task Dark()
         {
