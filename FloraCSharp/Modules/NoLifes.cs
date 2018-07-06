@@ -85,21 +85,21 @@ namespace FloraCSharp.Modules
 
         //Colours for Senpais
 
-        [Command("PastelGreen"), Alias("pgreen", "senpaigreen")]
+        [Command("Pastel Green"), Alias("pgreen", "senpaigreen", "pastelgreen")]
         [RequireSenpai]
         public async Task PastelGreen()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 8);
         }
 
-        [Command("PastelPurple"), Alias("ppurple", "senpaipurple")]
+        [Command("Pastel Purple"), Alias("ppurple", "senpaipurple", "pastelpurple")]
         [RequireSenpai]
         public async Task PastelPurple()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 9);
         }
 
-        [Command("PastelBlue"), Alias("pblue", "senpaiblue")]
+        [Command("Pastel Blue"), Alias("pblue", "senpaiblue", "pastelblue")]
         [RequireSenpai]
         public async Task PastelBlue()
         {
@@ -136,7 +136,7 @@ namespace FloraCSharp.Modules
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 14);
         }
 
-        [Command("royalblue"), Alias("rblue")]
+        [Command("royal blue"), Alias("rblue", "royalblue")]
         [RequireSuperSenpai]
         public async Task RoyalBlue()
         {
