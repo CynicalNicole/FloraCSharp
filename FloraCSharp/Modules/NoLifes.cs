@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
 {
+    [RequireBotPalace]
+    [RequireContext(ContextType.Guild)]
+    [Group("Colour")]
+    [Alias("CL")]
     public class NoLifes : ModuleBase
     {
         private readonly FloraRandom _random;
@@ -19,68 +23,124 @@ namespace FloraCSharp.Modules
             _random = random;
         }
 
+        //Removes your colour
+
         [Command("none"), Summary("Removes colour.")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUser]
+        [RequireNoLife]
         public async Task None()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 0);
         }
 
-        [Command("pink"), Summary("Gives a no-life the Pink Role.")]
-        [RequireContext(ContextType.Guild)]
+        //Colours for true weebs
+
+        [Command("pink"), Summary("Gives a True Weeb the Pink Role.")]
         [RequireNoLife]
         public async Task Pink()
         {
             await EC.GiveEliteColour((IGuildUser) Context.User, Context.Channel, 1);
         }
 
-        [Command("red"), Summary("Gives a user the Red Role.")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUser]
+        [Command("red"), Summary("Gives a True Weeb the Red Role.")]
+        [RequireNoLife]
         public async Task Red()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 2);
         }
 
-        [Command("blue"), Summary("Gives a user the Blue Role.")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUser]
+        [Command("blue"), Summary("Gives a True Weeb the Blue Role.")]
+        [RequireNoLife]
         public async Task Blue()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 3);
         }
 
-        [Command("orange"), Summary("Gives a user the Orange Role.")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUser]
+        [Command("orange")]
+        [RequireNoLife]
         public async Task Orange()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 4);
         }
 
-        [Command("purple"), Summary("Gives a user the Purple Role.")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUser]
+        [Command("purple"), Summary("Gives a True Weeb the Purple Role.")]
+        [RequireNoLife]
         public async Task Purple()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 5);
         }
 
-        [Command("yellow"), Summary("Gives a no-life the Yellow Role.")]
-        [RequireContext(ContextType.Guild)]
+        [Command("yellow"), Summary("Gives a True Weeb the Yellow Role.")]
         [RequireNoLife]
         public async Task Yellow()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 6);
         }
 
-        [Command("teal"), Summary("Gives a no-life the Teal Role.")]
-        [RequireContext(ContextType.Guild)]
+        [Command("teal"), Summary("Gives a True Weeb the Teal Role.")]
         [RequireNoLife]
         public async Task Teal()
         {
             await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 7);
+        }
+
+        //Colours for Senpais
+
+        [Command("PastelGreen"), Alias("pgreen", "senpaigreen")]
+        [RequireSenpai]
+        public async Task PastelGreen()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 8);
+        }
+
+        [Command("PastelPurple"), Alias("ppurple", "senpaipurple")]
+        [RequireSenpai]
+        public async Task PastelPurple()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 9);
+        }
+
+        [Command("PastelBlue"), Alias("pblue", "senpaiblue")]
+        [RequireSenpai]
+        public async Task PastelBlue()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 10);
+        }
+
+        //Colours for Traps
+
+        [Command("white"), Alias("discordlight", "dclight", "light")]
+        [RequireSuperSenpai]
+        public async Task White()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 11);
+        }
+
+        [Command("dark"), Alias("discorddark", "dcdark")]
+        [RequireSuperSenpai]
+        public async Task Dark()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 12);
+        }
+
+        [Command("gold"), Alias("minecraft:gold_ingot")]
+        [RequireSuperSenpai]
+        public async Task Gold()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 13);
+        }
+
+        [Command("emerald"), Alias("minecraft:emerald")]
+        [RequireSuperSenpai]
+        public async Task Emerald()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 14);
+        }
+
+        [Command("royalblue"), Alias("rblue")]
+        [RequireSuperSenpai]
+        public async Task RoyalBlue()
+        {
+            await EC.GiveEliteColour((IGuildUser)Context.User, Context.Channel, 15);
         }
     }
 }

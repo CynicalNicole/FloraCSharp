@@ -12,6 +12,7 @@ namespace FloraCSharp.Modules
     [RequireContext(ContextType.Guild)]
     [Group("InfiniteDie")]
     [Alias("ID")]
+    [RequireBotPalace]
     public class InfiniteDie : ModuleBase
     {
         private FloraDebugLogger _logger;
