@@ -10,14 +10,14 @@ namespace FloraCSharp.Services
 {
     public class RequireSenpai : PreconditionAttribute
     {
-        public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             IGuildUser user = (IGuildUser)context.User;
 
             if (user.RoleIds.Contains((ulong)374900017418338304))
-                return PreconditionResult.FromSuccess();
+                return Task.FromResult(PreconditionResult.FromSuccess());
             else
-                return PreconditionResult.FromError("You must be a senpai to run this command.");
+                return Task.FromResult(PreconditionResult.FromError("You must be a senpai to run this command."));
         }
     }
 }

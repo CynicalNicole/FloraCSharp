@@ -10,12 +10,12 @@ namespace FloraCSharp.Services
 {
     class FirstOwner : PreconditionAttribute
     {
-        public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var configuration = (Configuration)services.GetService(typeof(Configuration));
             var firstOwner = configuration.Owners.First();
 
-            return firstOwner == context.User.Id || context.Client.CurrentUser.Id == context.User.Id ? PreconditionResult.FromSuccess() : PreconditionResult.FromError("You must be the first listed bot owner.");
+            return Task.FromResult((firstOwner == context.User.Id || context.Client.CurrentUser.Id == context.User.Id ? PreconditionResult.FromSuccess() : PreconditionResult.FromError("You must be the first listed bot owner.")));
         }
     }
 }

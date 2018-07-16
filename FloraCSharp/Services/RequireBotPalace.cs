@@ -9,16 +9,16 @@ namespace FloraCSharp.Services
 {
     class RequireBotPalace : PreconditionAttribute
     {
-        public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var config = (Configuration)services.GetService(typeof(Configuration));
             
             if (config.Owners.Contains(context.User.Id))
             {
-                return PreconditionResult.FromSuccess();
+                return Task.FromResult(PreconditionResult.FromSuccess());
             }
 
-            return context.Channel.Id == 205878045859381257 ? PreconditionResult.FromSuccess() : PreconditionResult.FromError("This must be ran in #bot-palace.");
+            return Task.FromResult(context.Channel.Id == 205878045859381257 ? PreconditionResult.FromSuccess() : PreconditionResult.FromError("This must be ran in #bot-palace."));
         }
     }
 }
