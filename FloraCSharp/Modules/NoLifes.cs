@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
 {
-    [RequireBotPalace]
-    [RequireContext(ContextType.Guild)]
     [Group("Colour")]
     [Alias("CL", "color")]
+    [RequireBotPalace]
+    [RequireContext(ContextType.Guild)]
     public class NoLifes : ModuleBase
     {
         private readonly FloraRandom _random;

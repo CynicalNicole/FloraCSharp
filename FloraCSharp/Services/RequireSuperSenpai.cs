@@ -10,14 +10,14 @@ namespace FloraCSharp.Services
 {
     public class RequireSuperSenpai : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             IGuildUser user = (IGuildUser)context.User;
 
             if (user.RoleIds.Contains((ulong)392049363440107520))
-                return Task.FromResult(PreconditionResult.FromSuccess());
+                return PreconditionResult.FromSuccess();
             else
-                return Task.FromResult(PreconditionResult.FromError("You must be a trap to run this command."));
+                return PreconditionResult.FromError("You must be a trap to run this command.");
         }
     }
 }
