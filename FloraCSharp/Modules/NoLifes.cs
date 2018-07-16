@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 
 namespace FloraCSharp.Modules
 {
-    [Group("Colour")]
-    [Alias("CL", "color")]
-    [RequireBotPalace]
     [RequireContext(ContextType.Guild)]
     public class NoLifes : ModuleBase
     {
