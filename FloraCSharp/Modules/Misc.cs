@@ -607,5 +607,17 @@ namespace FloraCSharp.Modules
                 return await httpClient.GetStringAsync(fullURL);
             }
         }
+
+        [Command("ReactionRaffle"), Alias("RRaffle", "RaffleR")]
+        public async Task ReactionRaffle(string emote)
+        {
+            var reactions = await Context.Message.GetReactionUsersAsync(emote);
+
+            //Pick one from the reactions
+            var winner = reactions.RandomItem();
+
+            //Say who won
+            await Context.Channel.SendSuccessAsync($"Reaction Raffle | {emote}", $"The winner is {winner.Username}");
+        }
     }
 }
