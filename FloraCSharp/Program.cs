@@ -71,6 +71,7 @@ namespace FloraCSharp
 
             provider.GetRequiredService<CommandHandler>();
             //provider.GetRequiredService<StartupHandler>();
+            provider.GetRequiredService<ReactionHandler>();
 
             if (_config.RotatingGames)
             {
