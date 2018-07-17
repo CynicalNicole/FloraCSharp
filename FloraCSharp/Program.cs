@@ -135,6 +135,7 @@ namespace FloraCSharp
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             //_map.AddSingleton<StartupHandler>();
+            _map.AddSingleton<ReactionHandler>();
             _map.AddSingleton(_config);
         }
 
