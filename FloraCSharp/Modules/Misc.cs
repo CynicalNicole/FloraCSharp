@@ -609,12 +609,17 @@ namespace FloraCSharp.Modules
         }
 
         [Command("ReactionRaffle"), Alias("RRaffle", "RaffleR")]
-        public async Task ReactionRaffle(string emote)
+        public async Task ReactionRaffle(ulong ID, string emote)
         {
-            var reactions = await Context.Message.GetReactionUsersAsync(emote);
+            var message = (IUserMessage)await Context.Channel.GetMessageAsync(ID);
+
+            var reactions = await message.GetReactionUsersAsync(emote);
 
             //Pick one from the reactions
             var winner = reactions.RandomItem();
+
+            //remove message
+            Context.Message.DeleteAfter(2);
 
             //Say who won
             await Context.Channel.SendSuccessAsync($"Reaction Raffle | {emote}", $"The winner is {winner.Username}");
