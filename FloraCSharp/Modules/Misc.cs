@@ -576,7 +576,7 @@ namespace FloraCSharp.Modules
             {
                 res = await api.SearchUrl(url);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await channel.SendErrorAsync("IQDB serarch error'd. Try a different image?");
                 return;
@@ -593,7 +593,7 @@ namespace FloraCSharp.Modules
             EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered best score to worst score.");
             EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("Results");
 
-            List<Match> matches = res.Matches.OrderByDescending(x => x.Score).Take(9).ToList();
+            List<Match> matches = res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).OrderByDescending(x => x.Rating).Take(9).ToList();
 
             string val = "";
 
