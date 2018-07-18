@@ -10,6 +10,8 @@ using System.Net.Http;
 using FloraCSharp.Services.Database.Models;
 using Newtonsoft.Json;
 using FloraCSharp.Services.APIModels;
+using IqdbApi;
+using IqdbApi.Models;
 
 namespace FloraCSharp.Modules
 {
@@ -539,6 +541,73 @@ namespace FloraCSharp.Modules
                 .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true));
 
             await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src")]
+        public async Task SourceImage()
+        {
+            //Check and get first attachment
+            if (Context.Message.Attachments.Count != 1) return;
+
+            //Get url to first attachment
+            var url = Context.Message.Attachments.First().Url;
+
+            //results
+            await HandleResults(url, Context.Channel);
+        }
+
+        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src")]
+        public async Task SourceImage([Remainder] string str)
+        {
+            //Ensure remainder is url
+            if (!Uri.IsWellFormedUriString(str, UriKind.RelativeOrAbsolute)) return;
+
+            //results 
+            await HandleResults(str, Context.Channel);
+        }
+
+        private async Task HandleResults(string url, IMessageChannel channel)
+        {
+            IIqdbClient api = new IqdbClient();
+
+            IqdbApi.Models.SearchResult res;
+            
+            try
+            {
+                res = await api.SearchUrl(url);
+            }
+            catch (Exception ex)
+            {
+                await channel.SendErrorAsync("IQDB serarch error'd. Try a different image?");
+                return;
+            }
+
+            //Lets get the results?
+            if (!res.IsFound)
+            {
+                await channel.SendErrorAsync("No source found for that image, sadly.");
+                return;
+            }
+
+            //SWEET MOTHER OF GOD WE GOT SOMETHING
+            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered best score to worst score.");
+            EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("Results");
+
+            List<Match> matches = res.Matches.OrderByDescending(x => x.Score).Take(9).ToList();
+
+            string val = "";
+
+            foreach(Match m in matches)
+            {
+                val += m.Url;
+                val += "\n";
+            }
+
+            efb.WithValue(val);
+            e.AddField(efb);
+
+            //Finally
+            await channel.BlankEmbedAsync(e);
         }
 
         private string PlaytimeStringGen(uint playtime)
