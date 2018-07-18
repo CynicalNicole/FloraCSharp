@@ -556,7 +556,7 @@ namespace FloraCSharp.Modules
             await HandleResults(url, Context.Channel);
         }
 
-        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src")]
+        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src", "source", "sauce", "heinz", "ketchup", "barbecue", "BBQ", "brown sauce")]
         public async Task SourceImage([Remainder] string str)
         {
             //Ensure remainder is url
