@@ -576,13 +576,14 @@ namespace FloraCSharp.Modules
             {
                 res = await api.SearchUrl(url);
             }
+            //Too lazy to implement separate exceptions this'll do
             catch (Exception)
             {
                 await channel.SendErrorAsync("IQDB serarch error'd. Try a different image?");
                 return;
             }
 
-            //Lets get the results?
+            //Lets get the results maybe?
             if (res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).Count() == 0)
             {
                 await channel.SendErrorAsync("No source found for that image, sadly.");
@@ -593,20 +594,15 @@ namespace FloraCSharp.Modules
             EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered by most potential relevancy.");
             EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("URL(s)");
 
-            List<Match> matches = res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).OrderByDescending(x => x.Rating).Take(9).ToList();
+            //We only need the best
+            Match bestmatch = res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).First();
 
-            string val = "";
+            //There's gotta be a better way to do this but I'm okay with this as is
+            string urlFix = bestmatch.Url;
+            if (!urlFix.StartsWith("http:") && urlFix.StartsWith("//")) urlFix = "http:" + urlFix;
 
-            foreach(Match m in matches)
-            {
-                string urlFix = m.Url;
-                if (!urlFix.StartsWith("http:") && urlFix.StartsWith("//")) urlFix = "http:" + urlFix;
-
-                val += urlFix;
-                val += "\n";
-            }
-
-            efb.WithValue(val);
+            //combine shit
+            efb.WithValue(urlFix);
             e.AddField(efb);
 
             //Finally
