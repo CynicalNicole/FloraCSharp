@@ -543,7 +543,7 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
-        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src")]
+        [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src", "source", "sauce", "heinz", "ketchup", "barbecue", "BBQ", "brown sauce")]
         public async Task SourceImage()
         {
             //Check and get first attachment
