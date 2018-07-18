@@ -591,7 +591,7 @@ namespace FloraCSharp.Modules
             }
 
             //SWEET MOTHER OF GOD WE GOT SOMETHING
-            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Match Found").WithDescription("This is the \"best\" match according to IMDB.");
+            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Match Found").WithDescription("This is the \"best\" match according to IQDB.");
             EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("URL");
 
             //We only need the best
