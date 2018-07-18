@@ -591,8 +591,8 @@ namespace FloraCSharp.Modules
             }
 
             //SWEET MOTHER OF GOD WE GOT SOMETHING
-            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered by most potential relevancy.");
-            EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("URL(s)");
+            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Match Found").WithDescription("This is the \"best\" match according to IMDB.");
+            EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("URL");
 
             //We only need the best
             Match bestmatch = res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).First();
