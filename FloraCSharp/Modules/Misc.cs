@@ -583,7 +583,7 @@ namespace FloraCSharp.Modules
             }
 
             //Lets get the results?
-            if (!res.IsFound)
+            if (res.Matches.Count == 0)
             {
                 await channel.SendErrorAsync("No source found for that image, sadly.");
                 return;
