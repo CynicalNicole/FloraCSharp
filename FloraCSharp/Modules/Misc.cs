@@ -590,8 +590,8 @@ namespace FloraCSharp.Modules
             }
 
             //SWEET MOTHER OF GOD WE GOT SOMETHING
-            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered best score to worst score.");
-            EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("Results");
+            EmbedBuilder e = new EmbedBuilder().WithOkColour().WithTitle("Potential Matches").WithDescription("Ordered by most potential relevancy.");
+            EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName("URL(s)");
 
             List<Match> matches = res.Matches.Where(x => x.MatchType == IqdbApi.Enums.MatchType.Best).OrderByDescending(x => x.Rating).Take(9).ToList();
 
@@ -599,7 +599,10 @@ namespace FloraCSharp.Modules
 
             foreach(Match m in matches)
             {
-                val += m.Url;
+                string urlFix = m.Url;
+                if (!urlFix.StartsWith("http:") && urlFix.StartsWith("//")) urlFix = "http:" + urlFix;
+
+                val += urlFix;
                 val += "\n";
             }
 
