@@ -22,6 +22,7 @@ namespace FloraCSharp
         private readonly FloraDebugLogger _logger;
         private readonly Reactions _reactions;
         private List<AsyncLazy<IDMChannel>> _ownerChannels;
+        private readonly FloraRandom _random;
 
         public CommandHandler(
             DiscordSocketClient discord,
@@ -29,7 +30,8 @@ namespace FloraCSharp
             Configuration config,
             IServiceProvider provider,
             FloraDebugLogger logger,
-            Reactions reactions)
+            Reactions reactions,
+            FloraRandom random)
         {
             _discord = discord;
             _commands = commands;
@@ -37,6 +39,7 @@ namespace FloraCSharp
             _config = config;
             _logger = logger;
             _reactions = reactions;
+            _random = random;
             _ownerChannels = new List<AsyncLazy<IDMChannel>>();
 
             //Set up DM channels for owners
@@ -78,6 +81,15 @@ namespace FloraCSharp
             {
                 await context.Channel.SendMessageAsync(reaction);
                 return;
+            }
+
+            if (context.Guild.Id == 199658366421827584 && context.Channel.Id != 199658366421827584)
+            {
+                int rng = _random.Next(0, 100);
+                if (rng > 90)
+                {
+                    await context.Message.AddReactionAsync(context.Guild.Emotes.RandomItem());
+                }
             }
         }
 

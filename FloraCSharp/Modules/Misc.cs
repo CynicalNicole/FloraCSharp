@@ -554,6 +554,8 @@ namespace FloraCSharp.Modules
 
             //results
             await HandleResults(url, Context.Channel);
+
+            
         }
 
         [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src", "source", "sauce", "heinz", "ketchup", "barbecue", "BBQ", "brown sauce")]
@@ -646,6 +648,8 @@ namespace FloraCSharp.Modules
             }
 
             await LinkSteam(Context, responseArray.Result.SteamID);
+
+            List<string> l = new List<string>();
         }
 
         private async Task LinkSteam(ICommandContext Context, ulong id)
