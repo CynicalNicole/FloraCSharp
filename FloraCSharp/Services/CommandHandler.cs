@@ -86,7 +86,7 @@ namespace FloraCSharp
             if (context.Guild.Id == 199658366421827584 && context.Channel.Id != 199658366421827584)
             {
                 int rng = _random.Next(0, 100);
-                if (rng > 90)
+                if (rng > 95)
                 {
                     await context.Message.AddReactionAsync(context.Guild.Emotes.RandomItem());
                 }
