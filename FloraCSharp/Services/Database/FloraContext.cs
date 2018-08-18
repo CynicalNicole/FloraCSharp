@@ -105,6 +105,12 @@ namespace FloraCSharp.Services.Database
                 .HasIndex(d => d.UserID)
                 .IsUnique();
             #endregion
+
+            #region Woodcutting
+            var woodcuttingEntity = modelBuilder.Entity<Woodcutting>();
+            woodcuttingEntity
+                .HasIndex(d => d.UserID)
+                .IsUnique();
         }
     }
 }

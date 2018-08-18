@@ -34,6 +34,9 @@ namespace FloraCSharp.Services.Database
         private IUserRepository _user;
         public IUserRepository User => _user ?? (_user = new UserRepository(_context));
 
+        private IWoodcuttingRepository _woodcutting;
+        public IWoodcuttingRepository Woodcutting => _woodcutting ?? (_woodcutting = new WoodcuttingRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

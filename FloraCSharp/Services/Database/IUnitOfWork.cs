@@ -16,6 +16,7 @@ namespace FloraCSharp.Services.Database
         ICurrencyRepository Currency { get; }
         IAttentionRepository Attention { get; }
         IUserRepository User { get; }
+        IWoodcuttingRepository Woodcutting { get; }
 
         int Complete();
         Task<int> CompleteAsync();
