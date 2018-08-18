@@ -20,6 +20,8 @@ namespace FloraCSharp.Modules.Games
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
 
+        private List<ulong> OngoingChops = new List<ulong>();
+
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames)
         {
             _random = random;
@@ -93,13 +95,13 @@ namespace FloraCSharp.Modules.Games
 
         private readonly Dictionary<int, double> AxeTiming = new Dictionary<int, double>
         {
-            { 0, 10 },
-            { 1, 8 },
-            { 2, 6 },
-            { 3, 4 },
-            { 4, 2 },
-            { 5, 1 },
-            { 6, 0.5 }
+            { 0, 14 },
+            { 1, 12 },
+            { 2, 10 },
+            { 3, 8 },
+            { 4, 6 },
+            { 5, 4 },
+            { 6, 3 }
         };
 
         [Command("RNGGame"), Summary("Starts an RNG Game between given bounds. Optionally specifying a timeout in seconds")]
@@ -138,6 +140,11 @@ namespace FloraCSharp.Modules.Games
         [RequireContext(ContextType.Guild)]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
+            if (OngoingChops.Contains(Context.User.Id))
+            {
+                await Context.Channel.SendErrorAsync("Woodcutting", $"{Context.User.Username}, you already are chopping trees.");
+            }
+
             if (chopcount < 1) chopcount = 1;
             if (chopcount > 28) chopcount = 28;
 
@@ -223,6 +230,9 @@ namespace FloraCSharp.Modules.Games
             double tWait = AxeTiming[aID] * chopcount;
             _logger.Log("Woodcutting", $"Wait: {tWait}s");
 
+            //Add them to the list
+            OngoingChops.Add(Context.User.Id);
+
             //Okay lets begin
             //First we w a i t
             await Context.Channel.SendSuccessAsync("Woodcutting", $"You swing your {axetype} axe at the {tree} tree, {Context.User.Username}.\n This will take: {tWait} seconds.");
@@ -269,6 +279,7 @@ namespace FloraCSharp.Modules.Games
             }
 
             //F iiiinally
+            OngoingChops.Remove(Context.User.Id);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
             await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
         }
