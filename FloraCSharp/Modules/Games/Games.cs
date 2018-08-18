@@ -20,7 +20,7 @@ namespace FloraCSharp.Modules.Games
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
 
-        private ConcurrentBag<ulong> OngoingChops = new ConcurrentBag<ulong>();
+        private ConcurrentDictionary<ulong, int> OngoingChops = new ConcurrentDictionary<ulong, int>();
 
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames)
         {
@@ -140,7 +140,7 @@ namespace FloraCSharp.Modules.Games
         [RequireContext(ContextType.Guild)]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
-            if (OngoingChops.Contains(Context.User.Id))
+            if (OngoingChops.TryGetValue(Context.User.Id, out int val) && val == 1)
             {
                 await Context.Channel.SendErrorAsync("Woodcutting", $"{Context.User.Username}, you already are chopping trees.");
             }
@@ -231,7 +231,7 @@ namespace FloraCSharp.Modules.Games
             _logger.Log("Woodcutting", $"Wait: {tWait}s");
 
             //Add them to the list
-            OngoingChops.Add(Context.User.Id);
+            OngoingChops.AddOrUpdate(Context.User.Id, 1, (i, d) => 1);
 
             //Okay lets begin
             //First we w a i t
@@ -279,7 +279,7 @@ namespace FloraCSharp.Modules.Games
             }
 
             //F iiiinally
-            OngoingChops.Remove(Context.User.Id);
+            OngoingChops.AddOrUpdate(Context.User.Id, 0, (i, d) => 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
             await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
         }
