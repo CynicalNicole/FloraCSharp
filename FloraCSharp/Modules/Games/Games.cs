@@ -20,7 +20,7 @@ namespace FloraCSharp.Modules.Games
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
 
-        private List<ulong> OngoingChops = new List<ulong>();
+        private ConcurrentBag<ulong> OngoingChops = new ConcurrentBag<ulong>();
 
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames)
         {
