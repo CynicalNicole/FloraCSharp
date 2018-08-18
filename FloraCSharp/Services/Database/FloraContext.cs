@@ -111,6 +111,7 @@ namespace FloraCSharp.Services.Database
             woodcuttingEntity
                 .HasIndex(d => d.UserID)
                 .IsUnique();
+            #endregion
         }
     }
 }
