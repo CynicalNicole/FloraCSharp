@@ -144,13 +144,13 @@ namespace FloraCSharp.Modules.Games
             //Get tree ID
                 string treeString = tree.ToLower().Replace(' ', '_');
             int tID;
-            _logger.Log("Woodcutting", $"Tree ID: {tID}");
-
+            
             if (!TreeID.TryGetValue(treeString, out tID))
             {
                 await Context.Channel.SendErrorAsync("Tree does not exist");
                 return;
             }
+            _logger.Log("Woodcutting", $"Tree ID: {tID}");
 
             //Okay let's get the User
             Woodcutting wc;
