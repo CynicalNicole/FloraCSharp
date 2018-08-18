@@ -147,7 +147,7 @@ namespace FloraCSharp.Modules.Games
             
             if (!TreeID.TryGetValue(treeString, out tID))
             {
-                await Context.Channel.SendErrorAsync("Tree does not exist");
+                await Context.Channel.SendErrorAsync("Woodcutting", "Tree does not exist");
                 return;
             }
             _logger.Log("Woodcutting", $"Tree ID: {tID}");
@@ -165,7 +165,7 @@ namespace FloraCSharp.Modules.Games
 
             if (wc.Level < treeLevel)
             {
-                await Context.Channel.SendErrorAsync($"You need {treeLevel} woodcutting to chop down {tree} trees.");
+                await Context.Channel.SendErrorAsync("Woodcutting", $"You need {treeLevel} woodcutting to chop down {tree} trees.");
                 return;
             }
 
@@ -225,10 +225,10 @@ namespace FloraCSharp.Modules.Games
 
             //Okay lets begin
             //First we w a i t
-            await Context.Channel.SendSuccessAsync($"You swing your {axetype} axe at the {tree} tree, {Context.User.Username}.");
+            await Context.Channel.SendSuccessAsync("Woodcutting", $"You swing your {axetype} axe at the {tree} tree, {Context.User.Username}.\n This will take: {tWait} seconds.");
             await Task.Delay((int) (tWait * 1000));
 
-            bool levelUp = false;
+            bool levelUpFlag = false;
 
             //Add xp, add tree type
             using (var uow = DBHandler.UnitOfWork())
@@ -241,14 +241,26 @@ namespace FloraCSharp.Modules.Games
 
                 double newXP = wc.XP + tXP;
 
-                //Is this a l e v e l u p ? 
-                if (newXP >= nextXP) levelUp = true;
-
                 //Do the mathsy shit
                 uow.Woodcutting.AddXP(wc.UserID, tXP);
 
-                if (levelUp)
-                    uow.Woodcutting.AddLevel(wc.UserID);
+                bool levelUp = true;
+
+                while (levelUp)
+                {
+                    //Is this a l e v e l u p ? 
+                    if (newXP < nextXP) levelUp = false;
+
+                    if (levelUp)
+                    {
+                        levelUpFlag = true;
+                        nextLevel += 1;
+                        nextXP = CalculateNextLevelEXP(nextLevel);
+                        uow.Woodcutting.AddLevel(wc.UserID);
+                    }  
+                }
+
+                _logger.Log("Woodcutting", $"New Level: {nextLevel - 1}");
 
                 //Work 
                 uow.Woodcutting.AddTree(wc.UserID, tID, chopcount);
@@ -257,8 +269,8 @@ namespace FloraCSharp.Modules.Games
             }
 
             //F iiiinally
-            if (levelUp) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            await Context.Channel.SendSuccessAsync($"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
+            if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
+            await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
         }
 
         private static long CalculateNextLevelEXP(int nextLevel)
