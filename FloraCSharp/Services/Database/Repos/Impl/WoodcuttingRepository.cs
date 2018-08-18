@@ -93,7 +93,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
                 _set.Add(toReturn = new Woodcutting()
                 {
                     UserID = id,
-                    Level = 0,
+                    Level = 1,
                     XP = 0,
                     NormalTrees = 0,
                     AcheyTrees = 0,

@@ -144,7 +144,8 @@ namespace FloraCSharp.Modules.Games
             //Get tree ID
                 string treeString = tree.ToLower().Replace(' ', '_');
             int tID;
-            
+            _logger.Log("Woodcutting", $"Tree ID: {tID}");
+
             if (!TreeID.TryGetValue(treeString, out tID))
             {
                 await Context.Channel.SendErrorAsync("Tree does not exist");
@@ -164,7 +165,7 @@ namespace FloraCSharp.Modules.Games
 
             if (wc.Level < treeLevel)
             {
-                await Context.Channel.SendErrorAsync($"You need {treeLevel} woodcutting to chop down {tree}.");
+                await Context.Channel.SendErrorAsync($"You need {treeLevel} woodcutting to chop down {tree} trees.");
                 return;
             }
 
@@ -178,6 +179,8 @@ namespace FloraCSharp.Modules.Games
                 else if (wc.Level >= key)
                     axetype = AxeLevel[key];
             }
+
+            _logger.Log("Woodcutting", $"Axe Type: {axetype}");
 
             //Soemthing gone wrong?
             if (axetype == "")
@@ -216,7 +219,9 @@ namespace FloraCSharp.Modules.Games
             //We have the tree and axeID
             //Now we have to get the needed wait, and tree XP
             double tXP = TreeXP[tID] * chopcount;
+            _logger.Log("Woodcutting", $"XP: {tXP}");
             double tWait = AxeTiming[aID] * chopcount;
+            _logger.Log("Woodcutting", $"Wait: {tWait}s");
 
             //Okay lets begin
             //First we w a i t
