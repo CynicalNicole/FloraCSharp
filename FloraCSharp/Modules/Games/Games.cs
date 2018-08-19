@@ -167,7 +167,7 @@ namespace FloraCSharp.Modules.Games
 
             //List sorted
             List<KeyValuePair<string, int>> logList = CutLogs.ToList();
-            logList = logList.OrderByDescending(x => x.Value);
+            logList = logList.OrderByDescending(x => x.Value).ToList();
 
             //What's their axe level
             string axetype = "";
