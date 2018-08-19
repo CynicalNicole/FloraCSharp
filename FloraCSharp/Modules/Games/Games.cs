@@ -282,6 +282,40 @@ namespace FloraCSharp.Modules.Games
             await Context.Channel.BlankEmbedAsync(embDone);
         }
 
+        [Command("ClaimWC")]
+        [RequireContext(ContextType.Guild)]
+        public async Task ClaimMC()
+        {
+            var user = await Context.Guild.GetUserAsync(Context.User.Id);
+
+            //Okay let's get the User
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            //Lets award deserved shit!
+            if (wc.Level >= 99 && !user.RoleIds.ToList().Contains(480823262260101120))
+            {
+                IRole role = Context.Guild.GetRole(480823262260101120);
+                await user.AddRoleAsync(role);
+            }
+
+            if (wc.Level == 120 && !user.RoleIds.ToList().Contains(480823388730949632))
+            {
+                IRole role = Context.Guild.GetRole(480823388730949632);
+                await user.AddRoleAsync(role);
+            }
+
+            if (wc.XP == 200000000 && !user.RoleIds.ToList().Contains(480823441105223700))
+            {
+                IRole role = Context.Guild.GetRole(480823441105223700);
+                await user.AddRoleAsync(role);
+            }
+        }
+
         [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
@@ -436,27 +470,6 @@ namespace FloraCSharp.Modules.Games
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
             await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP} | Total XP: {wc.XP}");
-
-            var user = await Context.Guild.GetUserAsync(Context.User.Id);
-
-            //Lets award deserved shit!
-            if (wc.Level == 99)
-            {
-                IRole role = Context.Guild.GetRole(480823262260101120);
-                await user.AddRoleAsync(role);
-            }
-
-            if (wc.Level == 120)
-            {
-                IRole role = Context.Guild.GetRole(480823388730949632);
-                await user.AddRoleAsync(role);               
-            }
-
-            if (wc.XP == 200000000)
-            {
-                IRole role = Context.Guild.GetRole(480823441105223700);
-                await user.AddRoleAsync(role);
-            }
         }
 
         private static long CalculateNextLevelEXP(int nextLevel)
