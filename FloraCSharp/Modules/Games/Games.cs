@@ -138,7 +138,6 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("WoodcuttingLevel"), Alias("WCLevel", "WC")]
-        [RequireContext(ContextType.Guild)]
         public async Task WoodcuttingLevel()
         {
             //Okay let's get the User
@@ -202,7 +201,6 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("TreeList")]
-        [RequireContext(ContextType.Guild)]
         public async Task TreeList()
         {
             //List of trees
@@ -285,12 +283,11 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
-        [RequireContext(ContextType.Guild)]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
             if (_woodcuttingLocker.GetOrCreateUserCooldown(Context.User.Id) == 1)
             {
-                await Context.Channel.SendErrorAsync("Woodcutting", $"{Context.User.Username}, you already are chopping trees.");
+                await Context.Channel.SendErrorAsync("Woodcutting", $"{Context.User.Username}, you are already chopping trees cutie, be patient...");
                 return;
             }
 
@@ -384,7 +381,7 @@ namespace FloraCSharp.Modules.Games
 
             //Okay lets begin
             //First we w a i t
-            await Context.Channel.SendSuccessAsync("Woodcutting", $"You swing your {axetype} axe at the {tree} tree, {Context.User.Username}.\n This will take: {tWait} seconds.");
+            await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"You swing your {axetype} axe at the {tree} tree(s), {Context.User.Username}.\n This will take: {tWait} seconds.");
             await Task.Delay((int) (tWait * 1000));
 
             bool levelUpFlag = false;
@@ -438,7 +435,28 @@ namespace FloraCSharp.Modules.Games
             //F iiiinally
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP} | Total XP: {wc.XP}");
+            await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP} | Total XP: {wc.XP}");
+
+            var user = await Context.Guild.GetUserAsync(Context.User.Id);
+
+            //Lets award deserved shit!
+            if (wc.Level == 99)
+            {
+                IRole role = Context.Guild.GetRole(480823262260101120);
+                await user.AddRoleAsync(role);
+            }
+
+            if (wc.Level == 120)
+            {
+                IRole role = Context.Guild.GetRole(480823388730949632);
+                await user.AddRoleAsync(role);               
+            }
+
+            if (wc.XP == 200000000)
+            {
+                IRole role = Context.Guild.GetRole(480823441105223700);
+                await user.AddRoleAsync(role);
+            }
         }
 
         private static long CalculateNextLevelEXP(int nextLevel)
