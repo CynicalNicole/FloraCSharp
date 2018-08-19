@@ -430,7 +430,7 @@ namespace FloraCSharp.Modules.Games
             //F iiiinally
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
+            await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
         }
 
         private static long CalculateNextLevelEXP(int nextLevel)
