@@ -19,14 +19,15 @@ namespace FloraCSharp.Modules.Games
         private FloraDebugLogger _logger;
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
+        private WoodcuttingLocker _woodcuttingLocker;
 
-        private ConcurrentDictionary<ulong, int> OngoingChops = new ConcurrentDictionary<ulong, int>();
-
-        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames)
+        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker)
         {
             _random = random;
             _logger = logger;
             _botGames = botGames;
+
+            _woodcuttingLocker = woodcuttingLocker;
         }
 
         private readonly Dictionary<string, int> TreeID = new Dictionary<string, int>()
@@ -140,9 +141,10 @@ namespace FloraCSharp.Modules.Games
         [RequireContext(ContextType.Guild)]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
-            if (OngoingChops.TryGetValue(Context.User.Id, out int val) && val == 1)
+            if (_woodcuttingLocker.GetOrCreateUserCooldown(Context.User.Id) == 1)
             {
                 await Context.Channel.SendErrorAsync("Woodcutting", $"{Context.User.Username}, you already are chopping trees.");
+                return;
             }
 
             if (chopcount < 1) chopcount = 1;
@@ -231,7 +233,7 @@ namespace FloraCSharp.Modules.Games
             _logger.Log("Woodcutting", $"Wait: {tWait}s");
 
             //Add them to the list
-            OngoingChops.AddOrUpdate(Context.User.Id, 1, (i, d) => 1);
+            _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 1);
 
             //Okay lets begin
             //First we w a i t
@@ -279,7 +281,7 @@ namespace FloraCSharp.Modules.Games
             }
 
             //F iiiinally
-            OngoingChops.AddOrUpdate(Context.User.Id, 0, (i, d) => 0);
+            _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
             await Context.Channel.SendSuccessAsync("Woodcutting", $"After {tWait * chopcount} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP: {wc.XP}");
         }
