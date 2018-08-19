@@ -11,5 +11,6 @@ namespace FloraCSharp.Services.Database.Repos
         void AddLevel(ulong u, int count = 1);
         void AddXP(ulong u, double xp);
         void AddTree(ulong u, int tree, int count = 1);
+        List<Woodcutting> GetTop(int page = 0);
     }
 }

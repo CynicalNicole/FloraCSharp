@@ -472,6 +472,39 @@ namespace FloraCSharp.Modules.Games
             await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP} | Total XP: {wc.XP}");
         }
 
+        [Command("WoodcuttingLeaderboard"), Summary("Get the top 9 (or later with pagination)")]
+        [Alias("wclb")]
+        public async Task WoodcuttingLeaderboard(int page = 0)
+        {
+            if (page != 0)
+                page -= 1;
+
+            List<Woodcutting> TopWC;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                TopWC = uow.Woodcutting.GetTop(page);
+            }
+
+            if (!TopWC.Any())
+            {
+                await Context.Channel.SendErrorAsync($"No users found for page {page + 1}");
+                return;
+            }
+
+            EmbedBuilder embed = new EmbedBuilder().WithQuoteColour().WithTitle("Woodcutting Leaderboard").WithFooter(efb => efb.WithText($"Page: {page + 1}"));
+
+            foreach (Woodcutting c in TopWC)
+            {
+                IGuildUser user = await Context.Guild.GetUserAsync(c.UserID);
+                string userName = user?.Username ?? c.UserID.ToString();
+                EmbedFieldBuilder efb = new EmbedFieldBuilder().WithName(userName).WithValue($"XP: {c.XP} | Level: {c.Level}").WithIsInline(true);
+
+                embed.AddField(efb);
+            }
+
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
         private static long CalculateNextLevelEXP(int nextLevel)
         {
             if (nextLevel == 1) return 0;

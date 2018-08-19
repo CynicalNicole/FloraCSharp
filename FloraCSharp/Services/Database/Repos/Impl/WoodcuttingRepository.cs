@@ -114,5 +114,11 @@ namespace FloraCSharp.Services.Database.Repos.Impl
 
             return toReturn;
         }
+
+        public List<Woodcutting> GetTop(int page = 0)
+        {
+            int offset = page * 9;
+            return _set.OrderByDescending(x => x.XP).Skip(offset).Take(9).ToList();
+        }
     }
 }
