@@ -169,7 +169,18 @@ namespace FloraCSharp.Modules.Games
             List<KeyValuePair<string, int>> logList = CutLogs.ToList();
             logList.OrderByDescending(x => x.Value);
 
-            EmbedBuilder emb = new EmbedBuilder().WithTitle($"Wooductting XP | User: {Context.User.Username}").WithOkColour().WithDescription($"Level: {wc.Level} | Total XP: {wc.XP}");
+            //What's their axe level
+            string axetype = "";
+            foreach (int key in AxeLevel.Keys)
+            {
+                if (axetype != "")
+                    break;
+                else if (wc.Level >= key)
+                    axetype = AxeLevel[key];
+            }
+
+            EmbedBuilder emb = new EmbedBuilder().WithTitle($"Wooductting XP | User: {Context.User.Username}").WithOkColour().WithDescription($"Level: {wc.Level} | Total XP: {wc.XP} | Axe Type: {axetype}");
+
             EmbedFieldBuilder embF = new EmbedFieldBuilder().WithName("Amount of Logs Chopped");
 
             string str = "";
