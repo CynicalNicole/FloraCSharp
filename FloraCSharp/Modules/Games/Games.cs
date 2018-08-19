@@ -167,9 +167,7 @@ namespace FloraCSharp.Modules.Games
 
             //List sorted
             List<KeyValuePair<string, int>> logList = CutLogs.ToList();
-            logList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
-
-
+            logList.OrderByDescending(x => x.Value);
 
             EmbedBuilder emb = new EmbedBuilder().WithTitle($"Wooductting XP | User: {Context.User.Username}").WithOkColour().WithDescription($"Level: {wc.Level} | Total XP: {wc.XP}");
             EmbedFieldBuilder embF = new EmbedFieldBuilder().WithName("Amount of Logs Chopped");
