@@ -85,13 +85,13 @@ namespace FloraCSharp.Modules.Games
 
         private readonly Dictionary<int, string> AxeLevel = new Dictionary<int, string>
         {
-            { 1, "iron" },
-            { 6, "steel" },
-            { 11, "black" },
-            { 21, "mithril" },
-            { 31, "adamant" },
+            { 61, "dragon" },
             { 41, "rune" },
-            { 61, "dragon" }
+            { 31, "adamant" },
+            { 21, "mithril" },
+            { 11, "black" },
+            { 6, "steel" },
+            { 1, "iron" }
         };
 
         private readonly Dictionary<int, double> AxeTiming = new Dictionary<int, double>
@@ -190,7 +190,7 @@ namespace FloraCSharp.Modules.Games
                 str += $"{Tree.Key} trees: {Tree.Value}\n";
             }
 
-            str += $"Total Logs: {CutLogs.Sum(x => x.Value)}";
+            str += $"\nTotal Logs: {CutLogs.Sum(x => x.Value)}";
 
             embF = embF.WithValue(str);
 
