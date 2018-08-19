@@ -317,6 +317,9 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
+        public async Task Chop([Summary("The tree type"), Remainder] string tree) => await Chop(28, tree);
+
+        [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
         public async Task Chop(int chopcount, [Summary("The tree type"), Remainder] string tree)
         {
             if (_woodcuttingLocker.GetOrCreateUserCooldown(Context.User.Id) == 1)
