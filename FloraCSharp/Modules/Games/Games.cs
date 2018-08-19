@@ -96,13 +96,13 @@ namespace FloraCSharp.Modules.Games
 
         private readonly Dictionary<int, double> AxeTiming = new Dictionary<int, double>
         {
-            { 0, 14 },
-            { 1, 12 },
-            { 2, 10 },
-            { 3, 8 },
-            { 4, 6 },
-            { 5, 4 },
-            { 6, 3 }
+            { 0, 16 },
+            { 1, 14 },
+            { 2, 12 },
+            { 3, 10 },
+            { 4, 8 },
+            { 5, 6 },
+            { 6, 4 }
         };
 
         [Command("RNGGame"), Summary("Starts an RNG Game between given bounds. Optionally specifying a timeout in seconds")]
@@ -135,6 +135,144 @@ namespace FloraCSharp.Modules.Games
                 await Task.Delay(timeout);
                 await _rngservice.EndGameInChannel(Context.Guild, Context.Channel, _random);
             }
+        }
+
+        [Command("WoodcuttingLevel"), Alias("WCLevel", "WC")]
+        [RequireContext(ContextType.Guild)]
+        public async Task WoodcuttingLevel()
+        {
+            //Okay let's get the User
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            //New list of stuff
+            Dictionary<string, int> CutLogs = new Dictionary<string, int>()
+            {
+                { "Achey", wc.AcheyTrees },
+                { "Arctic Pine", wc.ArcticTrees },
+                { "Hollow", wc.HollowTrees },
+                { "Magic", wc.MagicTrees },
+                { "Mahogany", wc.MahoganyTrees },
+                { "Maple", wc.MapleTrees },
+                { "Normal", wc.NormalTrees },
+                { "Oak", wc.OakTrees },
+                { "Redwood", wc.RedwoodTrees },
+                { "Sulliuscep", wc.SullTrees },
+                { "Teak", wc.TeakTrees }
+            };
+
+            //List sorted
+            List<KeyValuePair<string, int>> logList = CutLogs.ToList();
+            logList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+
+
+
+            EmbedBuilder emb = new EmbedBuilder().WithTitle($"Wooductting XP | User: {Context.User.Username}").WithOkColour().WithDescription($"Level: {wc.Level} | Total XP: {wc.XP}");
+            EmbedFieldBuilder embF = new EmbedFieldBuilder().WithName("Amount of Logs Chopped");
+
+            string str = "";
+
+            foreach(KeyValuePair<string, int> Tree in logList)
+            {
+                str += $"{Tree.Key} trees: {Tree.Value}\n";
+            }
+
+            str += $"Total Logs: {CutLogs.Sum(x => x.Value)}";
+
+            embF = embF.WithValue(str);
+
+            //Add to emb 
+            Embed embdone = emb.AddField(embF);
+
+            //Send
+            await Context.Channel.BlankEmbedAsync(embdone);
+        }
+
+        [Command("TreeList")]
+        [RequireContext(ContextType.Guild)]
+        public async Task TreeList()
+        {
+            //List of trees
+            Dictionary<string, int> TreeToID = new Dictionary<string, int>()
+            {
+                { "Normal", 1 },
+                { "Achey", 1 },
+                { "Oak", 15 },
+                { "Willow", 30 },
+                { "Teak", 35 },
+                { "Maple", 45 },
+                { "Hollow", 45 },
+                { "Mahogany", 50 },
+                { "Arctic Pine", 54 },
+                { "Yew", 60 },
+                { "Sulliuscep", 65 },
+                { "Magic", 75 },
+                { "Redwood", 90 }
+            };
+
+            //Okay let's get the User
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            //wowoowowwowo
+            EmbedBuilder emb = new EmbedBuilder().WithTitle("Woodcutting | Trees");
+
+            //New field
+            EmbedFieldBuilder embF = new EmbedFieldBuilder().WithName("You can chop these");
+            string str = "";
+
+            //Lets get the ones we CAN cut
+            foreach (KeyValuePair<string, int> Tree in TreeToID)
+            {
+                if (wc.Level >= Tree.Value)
+                {
+                    //Aa?
+                    string logName = Tree.Key.ToLower().Replace(' ', '_');
+                    double XPperLog = TreeXP[TreeID[logName]];
+
+                    //Aaa
+                    str += $"{Tree.Key} | Level: {Tree.Value} | XP Per Log: {XPperLog}\n";
+                } 
+            }
+
+            //Add to field
+            embF = embF.WithValue(str);
+
+            //Neewwww
+            EmbedFieldBuilder embF2 = new EmbedFieldBuilder().WithName("You cannot chop these");
+            string str2 = "";
+
+            //Stuff you can't do
+            //Lets get the ones we CAN cut
+            foreach (KeyValuePair<string, int> Tree in TreeToID)
+            {
+                if (wc.Level < Tree.Value)
+                {
+                    //Aa?
+                    string logName = Tree.Key.ToLower().Replace(' ', '_');
+                    double XPperLog = TreeXP[TreeID[logName]];
+
+                    //Aaa
+                    str2 += $"{Tree.Key} | Level: {Tree.Value} | XP Per Log: {XPperLog}\n";
+                }
+            }
+
+            //Add to field
+            embF2 = embF2.WithValue(str2);
+
+            //Add fields
+            Embed embDone = emb.AddField(embF).AddField(embF2).WithOkColour();
+
+            //Respond
+            await Context.Channel.BlankEmbedAsync(embDone);
         }
 
         [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
