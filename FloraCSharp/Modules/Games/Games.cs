@@ -470,13 +470,13 @@ namespace FloraCSharp.Modules.Games
                 wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
             }
 
-            int nextLevel = wc.Level + 1;
-            long nextXP = CalculateNextLevelEXP(nextLevel);
+            int nLevel = wc.Level + 1;
+            long nXP = CalculateNextLevelEXP(nLevel);
 
             //F iiiinally
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP}\nTotal XP: {wc.XP} | Next Level: {nextXP} | Remaining XP: {nextXP - wc.XP}");
+            await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP}\nTotal XP: {wc.XP} | Next Level: {nXP} | Remaining XP: {nXP - wc.XP}");
         }
 
         [Command("WoodcuttingLeaderboard"), Summary("Get the top 9 (or later with pagination)")]
