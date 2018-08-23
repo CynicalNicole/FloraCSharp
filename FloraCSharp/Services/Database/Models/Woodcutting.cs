@@ -7,6 +7,7 @@ namespace FloraCSharp.Services.Database.Models
     public class Woodcutting : DBEntity
     {
         public ulong UserID { get; set; }
+        public long Gold { get; set; }
         public int Level { get; set; }
         public double XP { get; set; }
         public int NormalTrees { get; set; }

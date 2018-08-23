@@ -13,6 +13,15 @@ namespace FloraCSharp.Services.Database.Repos.Impl
         {
         }
 
+        public void AddGold(ulong u, int count = 0)
+        {
+            Woodcutting w = GetOrCreateWoodcutting(u);
+            w.Gold += count;
+
+            _set.Update(w);
+            _context.SaveChanges();
+        }
+
         public void AddLevel(ulong u, int count = 1)
         {
             Woodcutting w = GetOrCreateWoodcutting(u);

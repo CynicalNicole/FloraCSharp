@@ -105,6 +105,23 @@ namespace FloraCSharp.Modules.Games
             { 6, 4 }
         };
 
+        private readonly Dictionary<int, int> LogValues = new Dictionary<int, int>
+        {
+            { 0, 2 },
+            { 1, 2 },
+            { 2, 5 },
+            { 3, 10 },
+            { 4, 15 },
+            { 5, 25 },
+            { 6, 25 },
+            { 7, 35 },
+            { 8, 40 },
+            { 9, 50 },
+            { 10, 65 },
+            { 11, 75 },
+            { 12, 100 },
+        };
+
         [Command("RNGGame"), Summary("Starts an RNG Game between given bounds. Optionally specifying a timeout in seconds")]
         [RequireContext(ContextType.Guild)]
         public async Task RNGGame([Summary("The minimum, inclusive bound")] int min, [Summary("The maximum, exclusive bound")] int max, int timeout = 30)
@@ -317,6 +334,116 @@ namespace FloraCSharp.Modules.Games
             }
         }
 
+        [Command("SellLog")]
+        public async Task SellLog(int count, [Summary("The tree type"), Remainder] string tree)
+        {
+            //first get their log count
+            //Get tree ID
+            string treeString = tree.ToLower().Replace(' ', '_');
+            int tID;
+
+            if (!TreeID.TryGetValue(treeString, out tID))
+            {
+                await Context.Channel.SendErrorAsync("Woodcutting", "Tree does not exist");
+                return;
+            }
+            _logger.Log("Woodcutting Selling", $"Tree ID: {tID}");
+
+            //From treeID we can get their log count
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            int specificLogCount = 0;
+            switch (tID)
+            {
+                case 0:
+                    specificLogCount = wc.NormalTrees;
+                    break;
+                case 1:
+                    specificLogCount = wc.AcheyTrees;
+                    break;
+                case 2:
+                    specificLogCount = wc.OakTrees;
+                    break;
+                case 3:
+                    specificLogCount = wc.WillowTrees;
+                    break;
+                case 4:
+                    specificLogCount = wc.TeakTrees;
+                    break;
+                case 5:
+                    specificLogCount = wc.MapleTrees;
+                    break;
+                case 6:
+                    specificLogCount = wc.HollowTrees;
+                    break;
+                case 7:
+                    specificLogCount = wc.MahoganyTrees;
+                    break;
+                case 8:
+                    specificLogCount = wc.ArcticTrees;
+                    break;
+                case 9:
+                    specificLogCount = wc.YewTrees;
+                    break;
+                case 10:
+                    specificLogCount = wc.SullTrees;
+                    break;
+                case 11:
+                    specificLogCount = wc.MagicTrees;
+                    break;
+                case 12:
+                    specificLogCount = wc.RedwoodTrees;
+                    break;
+            }
+
+            if (specificLogCount < count)
+            {
+                await Context.Channel.SendErrorAsync("Woodcutting", $"You do not have enough {tree} logs.");
+                return;
+            }
+
+            //We know they have enough. Get value.
+            int logValue = LogValues[tID];
+
+            //How much do we need to give them
+            int totalVal = logValue * count;
+
+            //Okay so a few things we need to do
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                //First we remove their logs
+                uow.Woodcutting.AddTree(Context.User.Id, tID, -count);
+
+                //Then we give them the gold
+                uow.Woodcutting.AddGold(Context.User.Id, totalVal);
+
+                //Then we done
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            //Now we need to tell them we're done
+            await Context.Channel.SendSuccessAsync("Woodcutting", $"{Context.User.Username}, you have just sold {count} {tree} logs for {totalVal} gold ({logValue} per log).\nYou now have a total of {wc.Gold} gold.");
+        }
+
+        [Command("GoldCheck")]
+        public async Task GoldCheck()
+        {
+            //From treeID we can get their log count
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            await Context.Channel.SendSuccessAsync("RPG Thing", $"You have {wc.Gold} gold.");
+        }
+
         [Command("Chop"), Summary("Chops 29 of a specified tree type with your best equipped axe.")]
         public async Task Chop([Summary("The tree type"), Remainder] string tree) => await Chop(28, tree);
 
@@ -333,7 +460,7 @@ namespace FloraCSharp.Modules.Games
             if (chopcount > 28) chopcount = 28;
 
             //Get tree ID
-                string treeString = tree.ToLower().Replace(' ', '_');
+            string treeString = tree.ToLower().Replace(' ', '_');
             int tID;
             
             if (!TreeID.TryGetValue(treeString, out tID))
