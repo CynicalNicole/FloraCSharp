@@ -15,5 +15,6 @@ namespace FloraCSharp
         public bool Shutdown { get; set; }
         public string SteamAPIKey { get; set; }
         public int RotationDelay { get; set; }
+        public string ValDB { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FloraCSharp.Services.ExternalDB;
 
 namespace FloraCSharp.Modules
 {
@@ -15,11 +16,34 @@ namespace FloraCSharp.Modules
     {
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
+        private Configuration _config;
 
-        public Money(FloraRandom random, FloraDebugLogger logger)
+        public Money(FloraRandom random, FloraDebugLogger logger, Configuration config)
         {
             _random = random;
             _logger = logger;
+            _config = config;
+        }
+
+        [Command("ValAward"), Summary("Test Command")]
+        [OwnerOnly]
+        public async Task ValAward(int amount, IUser user)
+        {
+            if (_config.ValDB == "") return;
+
+            //Lets GO NIB
+            var dbConVal = new ValDBConnection(_config.ValDB);
+
+            //Okay
+            var result = await dbConVal.AddCurrencyForUser(user.Id, amount);
+
+            if (!result)
+            {
+                await Context.Channel.SendErrorAsync($"Failed during database edit.");
+                return;
+            }
+
+            await Context.Channel.SendSuccessAsync($"Added {amount} bells to user {user.Username}");
         }
 
         [Command("Award"), Summary("Award a user an amount of coin")]
