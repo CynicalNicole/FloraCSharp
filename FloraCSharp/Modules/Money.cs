@@ -32,7 +32,7 @@ namespace FloraCSharp.Modules
             if (_config.ValDB == "") return;
 
             //Lets GO NIB
-            var dbConVal = new ValDBConnection(_config.ValDB);
+            var dbConVal = new ValDBConnection(_config.ValDB, _logger);
 
             //Okay
             var result = await dbConVal.AddCurrencyForUser(user.Id, amount);
