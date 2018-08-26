@@ -303,7 +303,7 @@ namespace FloraCSharp.Modules.Games
             await Context.Channel.BlankEmbedAsync(embDone);
         }
 
-        [Command("TradeGold"), Alias("GoldToBells")]
+        [Command("TradeGold"), Alias("GoldToBells", "ConvertGold", "ConvGold")]
         [RequireContext(ContextType.Guild)]
         public async Task TradeGold(int amount)
         {
@@ -316,6 +316,20 @@ namespace FloraCSharp.Modules.Games
             {
                 amount = (int) Math.Floor((double)amount / 50000) * 50000;
                 await Context.Channel.SendErrorAsync($"The amount must be divisible by 50,000. Your amount has been rounded down accordingly to {amount}.");
+            }
+
+            //check they have the amount of gold they're claiming
+            Woodcutting wc;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            if (wc.Gold < amount)
+            {
+                await Context.Channel.SendErrorAsync("You do not have enough gold.");
+                return;
             }
 
             //How many bells?
@@ -333,8 +347,6 @@ namespace FloraCSharp.Modules.Games
                 await Context.Channel.SendErrorAsync($"Failed while adding your bells. No gold has been taken, no bells have been added. Try again later.");
                 return;
             }
-
-            Woodcutting wc;
 
             //Now lets remove the golod
             using (var uow = DBHandler.UnitOfWork())
