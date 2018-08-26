@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Discord.WebSocket;
 using FloraCSharp.Services.Database.Models;
+using FloraCSharp.Services.ExternalDB;
 
 namespace FloraCSharp.Modules.Games
 {
@@ -20,12 +21,14 @@ namespace FloraCSharp.Modules.Games
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
         private WoodcuttingLocker _woodcuttingLocker;
+        private Configuration _config;
 
-        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker)
+        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config)
         {
             _random = random;
             _logger = logger;
             _botGames = botGames;
+            _config = config;
 
             _woodcuttingLocker = woodcuttingLocker;
         }
@@ -298,6 +301,53 @@ namespace FloraCSharp.Modules.Games
 
             //Respond
             await Context.Channel.BlankEmbedAsync(embDone);
+        }
+
+        [Command("TradeGold"), Alias("GoldToBells")]
+        [RequireContext(ContextType.Guild)]
+        public async Task TradeGold(int amount)
+        {
+            if (amount < 50000)
+            {
+                await Context.Channel.SendErrorAsync("You must enter a value over 50000.");
+                return;
+            }
+            if (amount % 50000 != 0)
+            {
+                amount = (int) Math.Floor((double)amount / 50000) * 50000;
+                await Context.Channel.SendErrorAsync($"The amount must be divisible by 50,000. Your amount has been rounded down accordingly to {amount}.");
+            }
+
+            //How many bells?
+            var bellMulti = amount / 50000;
+            var bellAmount = bellMulti * 1000;
+
+            //Ok
+            var dbConVal = new ValDBConnection(_config.ValDB, _logger);
+
+            //Okay
+            var result = await dbConVal.AddCurrencyForUser(Context.User.Id, bellAmount);
+
+            if (!result)
+            {
+                await Context.Channel.SendErrorAsync($"Failed while adding your bells. No gold has been taken, no bells have been added. Try again later.");
+                return;
+            }
+
+            Woodcutting wc;
+
+            //Now lets remove the golod
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                //remove it
+                uow.Woodcutting.AddGold(Context.User.Id, -amount);
+
+                //Get wc
+                wc = uow.Woodcutting.GetOrCreateWoodcutting(Context.User.Id);
+            }
+
+            //It's all G U C C I now
+            await Context.Channel.SendSuccessAsync($"Woodcutting", $"You have converted {amount} gold into {bellAmount}🔔.\nYour new gold count is: {wc.Gold}\nPlease use Valeria to check your bell count. If there's an issue, please report it to Nicole (proof required to rectify any issues).", null, "Gamble it all away...");
         }
 
         [Command("ClaimWC")]
