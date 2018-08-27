@@ -157,6 +157,20 @@ namespace FloraCSharp.Modules.Games
             }
         }
 
+        [Command("wccooldownreset"), Alias("WCCR")]
+        [OwnerOnly]
+        public async Task WCCooldownReset(IUser user)
+        {
+            if (_woodcuttingLocker.GetOrCreateUserCooldown(user.Id) != 1)
+            {
+                await Context.Channel.SendErrorAsync($"User {user.Username} is not in a cooldown state.");
+                return;
+            }
+
+            _woodcuttingLocker.SetWoodcuttingCooldowns(user.Id, 0);
+            await Context.Channel.SendSuccessAsync($"User {user.Username}'s cooldown has been reset.");
+        }
+
         [Command("WoodcuttingLevel"), Alias("WCLevel", "WC")]
         public async Task WoodcuttingLevel()
         {
