@@ -267,7 +267,7 @@ namespace FloraCSharp.Modules.Games
                     double XPperLog = TreeXP[TreeID[logName]];
 
                     //Aaa
-                    str += $"{Tree.Key} | Level: {Tree.Value} | XP Per Log: {XPperLog}\n";
+                    str += $"{Tree.Key} | Level: {Tree.Value} | XP Per Log: {XPperLog} | Log Value: {LogValues[TreeID[logName]]}\n";
                 } 
             }
 
@@ -396,7 +396,7 @@ namespace FloraCSharp.Modules.Games
             }
         }
 
-        [Command("SellLog")]
+        [Command("SellLog"), Alias("logsell", "sell", "wcsell")]
         public async Task SellLog(int count, [Summary("The tree type"), Remainder] string tree)
         {
             //first get their log count
