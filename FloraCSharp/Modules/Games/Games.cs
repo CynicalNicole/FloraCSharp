@@ -20,6 +20,7 @@ namespace FloraCSharp.Modules.Games
         private FloraDebugLogger _logger;
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
+        private Services.PushButtonService _pushButtonService = new Services.PushButtonService();
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
 
@@ -727,6 +728,46 @@ namespace FloraCSharp.Modules.Games
             }
 
             return (long)Math.Floor(sum * 0.25);
+        }
+
+        [Command("PushTheButton")]
+        public async Task PushTheButton(string benefit, string consquence, int timeout = 30)
+        {
+            benefit = benefit.FirstCharToLower().Trim();
+            consquence = consquence.FirstCharToLower().Trim();
+
+            PushButtonGame Game = new PushButtonGame
+            {
+                Channel = Context.Channel.Id,
+                Benefit = benefit,
+                Consequence = consquence,
+                Responses = new HashSet<ButtonResponse>()
+            };
+
+            if (timeout > 300)
+                timeout = 0;
+
+            if (timeout > 0)
+            {
+                timeout = timeout * 1000;
+            }
+            else
+            {
+                timeout = 30000;
+            }
+
+            if (_pushButtonService.StartPBG(Game, (DiscordSocketClient)Context.Client))
+            {
+                EmbedBuilder embed = new EmbedBuilder().WithOkColour().WithTitle("Push The Button Game.").WithDescription($"Would you push the button if...")
+                    .AddField(new EmbedFieldBuilder().WithName($"Pro").WithValue($"{benefit}").WithIsInline(true))
+                    .AddField(new EmbedFieldBuilder().WithName("...").WithValue("*but*").WithIsInline(true))
+                    .AddField(new EmbedFieldBuilder().WithName($"Con?").WithValue($"{consquence}?").WithIsInline(true))
+                    .WithFooter(new EmbedFooterBuilder().WithText($"Type yes/no now! You have {timeout / 1000} seconds."));
+
+                await Context.Channel.BlankEmbedAsync(embed);
+                await Task.Delay(timeout);
+                await _pushButtonService.EndGameInChannel(Context.Guild, Context.Channel);
+            }
         }
     }
 }
