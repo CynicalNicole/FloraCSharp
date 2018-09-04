@@ -23,6 +23,7 @@ namespace FloraCSharp.Modules.Games
         private Services.PushButtonService _pushButtonService = new Services.PushButtonService();
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
+        private bool _doubleXP = false;
 
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config)
         {
@@ -614,6 +615,12 @@ namespace FloraCSharp.Modules.Games
             //We have the tree and axeID
             //Now we have to get the needed wait, and tree XP
             double tXP = TreeXP[tID] * chopcount;
+
+            if (_doubleXP)
+            {
+                tXP *= 2; 
+            }
+
             _logger.Log("Woodcutting", $"XP: {tXP}");
             double tWait = AxeTiming[aID] * chopcount;
             _logger.Log("Woodcutting", $"Wait: {tWait}s");
@@ -683,6 +690,21 @@ namespace FloraCSharp.Modules.Games
             await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP}\nTotal XP: {wc.XP} | Next Level: {nXP} | Remaining XP: {nXP - wc.XP}");
         }
 
+        [Command("ToggleDoubleXP"), Alias("TDXP")]
+        [RequireOwner]
+        public async Task ToggleDoubleXP()
+        {
+            _doubleXP = !_doubleXP;
+            if (_doubleXP)
+            {
+                await Context.Channel.SendSuccessAsync("Double XP STARTED for all skills.");
+            }
+            else
+            {
+                await Context.Channel.SendSuccessAsync("Double XP ENDED for all skills.");
+            }
+        }
+
         [Command("WoodcuttingLeaderboard"), Summary("Get the top 9 (or later with pagination)")]
         [Alias("wclb")]
         public async Task WoodcuttingLeaderboard(int page = 0)
@@ -730,7 +752,7 @@ namespace FloraCSharp.Modules.Games
             return (long)Math.Floor(sum * 0.25);
         }
 
-        [Command("PushTheButton")]
+        [Command("PushTheButton"), Alias("PTB")]
         public async Task PushTheButton(string benefit, string consquence, int timeout = 30)
         {
             benefit = benefit.FirstCharToLower().Trim();
