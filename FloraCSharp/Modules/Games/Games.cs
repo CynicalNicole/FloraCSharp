@@ -309,6 +309,8 @@ namespace FloraCSharp.Modules.Games
                 }
             }
 
+            if (str2 == "") str2 = "*You can now chop all trees.*";
+
             //Add to field
             embF2 = embF2.WithValue(str2);
 
