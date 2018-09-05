@@ -8,6 +8,7 @@ namespace FloraCSharp.Services
     public class WoodcuttingLocker
     {
         private ConcurrentDictionary<ulong, int> _woodcuttingCooldowns = new ConcurrentDictionary<ulong, int>();
+        private bool _isDoubleXP = false;
 
         public void SetWoodcuttingCooldowns(ulong UserID, int set)
         {
@@ -28,6 +29,16 @@ namespace FloraCSharp.Services
             }
 
             return returnInt;
+        }
+
+        public bool GetDoubleXP()
+        {
+            return _isDoubleXP;
+        }
+
+        public void SetDoubleXP(bool set)
+        {
+            _isDoubleXP = set;
         }
     }
 }

@@ -23,7 +23,6 @@ namespace FloraCSharp.Modules.Games
         private Services.PushButtonService _pushButtonService = new Services.PushButtonService();
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
-        private bool _doubleXP = false;
 
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config)
         {
@@ -618,7 +617,7 @@ namespace FloraCSharp.Modules.Games
             //Now we have to get the needed wait, and tree XP
             double tXP = TreeXP[tID] * chopcount;
 
-            if (_doubleXP)
+            if (_woodcuttingLocker.GetDoubleXP())
             {
                 tXP *= 2; 
             }
@@ -703,8 +702,8 @@ namespace FloraCSharp.Modules.Games
         [RequireOwner]
         public async Task ToggleDoubleXP()
         {
-            _doubleXP = !_doubleXP;
-            if (_doubleXP)
+            _woodcuttingLocker.SetDoubleXP(!_woodcuttingLocker.GetDoubleXP());
+            if (_woodcuttingLocker.GetDoubleXP())
             {
                 await Context.Channel.SendSuccessAsync("Double XP STARTED for all skills.");
             }

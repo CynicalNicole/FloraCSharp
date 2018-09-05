@@ -10,9 +10,19 @@ namespace FloraCSharp.Services.Database.Repos.Impl
         {
         }
 
+        public int GetDoubleXP()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<BotGames[]> LoadBotGames()
         {
             return await _set.ToArrayAsync();
+        }
+
+        public void SetDoubleXP(int set)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
