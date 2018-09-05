@@ -645,16 +645,23 @@ namespace FloraCSharp.Modules.Games
 
                 bool maxLevel = false;
 
-                if (nextLevel > 200000000)
-                {
-                    maxLevel = true;
-                    nextLevel = 200000000;
-                }
-
                 //Next xp
                 long nextXP = CalculateNextLevelEXP(nextLevel);
 
+                if (nextXP > 200000000)
+                {
+                    maxLevel = true;
+                    nextXP = 200000000;
+                }
+
                 double newXP = wc.XP + tXP;
+
+                if (newXP >= 200000000)
+                {
+                    newXP = 200000000;
+
+                    tXP = newXP - wc.XP;
+                }
 
                 //Do the mathsy shit
                 uow.Woodcutting.AddXP(wc.UserID, tXP);
@@ -664,7 +671,7 @@ namespace FloraCSharp.Modules.Games
                 while (levelUp && !maxLevel)
                 {
                     //Is this a l e v e l u p ? 
-                    if (newXP < nextXP) levelUp = false;
+                    if (newXP < nextXP || maxLevel) levelUp = false;
 
                     if (levelUp)
                     {
