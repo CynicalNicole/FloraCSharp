@@ -83,7 +83,13 @@ namespace FloraCSharp
                 return;
             }
 
-            if (context.Guild.Id == 199658366421827584 && context.Channel.Id != 199658366421827584)
+            if (context.Channel.Id == 199701249673658368 && context.Message.MentionedRoles.Contains(context.Guild.EveryoneRole))
+            {
+                ISocketMessageChannel chn = (ISocketMessageChannel) context.Guild.GetChannel(199658366421827584);
+                await chn.SendMessageAsync(":weebAngry:");
+                await context.Message.AddReactionAsync(context.Guild.Emotes.FirstOrDefault(x => x.Name.ToLower() == "weebangry"));
+            }
+            else if (context.Guild.Id == 199658366421827584 && context.Channel.Id != 199658366421827584)
             {
                 int rng = _random.Next(0, 10001);
                 if (rng > 9985)
