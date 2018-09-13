@@ -104,7 +104,20 @@ namespace FloraCSharp
             foreach (var OwnerChannel in _ownerChannels)
             {
                 IDMChannel ownerChannel = await OwnerChannel;
-                await ownerChannel.SendSuccessAsync($"DM from [{context.User.Username}] | {context.User.Id}", context.Message.Content);
+
+                //Var embed
+                var embed = new EmbedBuilder().WithOkColour().WithTitle($"DM from [{context.User.Username}] | {context.User.Id}").WithDescription(context.Message.Content);
+
+                var msg = await ownerChannel.BlankEmbedAsync(embed);
+
+                //Delay
+                await Task.Delay(500);
+
+                //Msg ID
+                embed = embed.WithFooter($"The ID of this message: {msg.Id}");
+
+                //Sorted
+                await msg.ModifyAsync(x => x.Embed = embed.Build());
             }
         }
     }
