@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <StartupObject>FloraCSharp.Program</StartupObject>
     <Copyright>CynicalPopcorn</Copyright>
     <Description>A C# Discord Bot for Weebnation</Description>
