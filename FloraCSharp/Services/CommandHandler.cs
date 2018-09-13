@@ -114,7 +114,7 @@ namespace FloraCSharp
                 await Task.Delay(500);
 
                 //Msg ID
-                embed = embed.WithFooter($"The ID of this message: {msg.Id}");
+                embed = embed.WithFooter($"To delete this message, run the command: >fdmd {msg.Id}");
 
                 //Sorted
                 await msg.ModifyAsync(x => x.Embed = embed.Build());
