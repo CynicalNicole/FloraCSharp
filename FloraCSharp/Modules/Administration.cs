@@ -333,7 +333,7 @@ namespace FloraCSharp.Modules
             }
         }
 
-        [Command("FloraDMDelete"), Alias("FDMD")]
+        [Command("FloraDMClear"), Alias("FDMC")]
         [RequireContext(ContextType.DM)]
         [OwnerOnly]
         public async Task FloraDMClear(int count = 1)
