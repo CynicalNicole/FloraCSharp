@@ -342,10 +342,10 @@ namespace FloraCSharp.Modules
             var Messages = await Context.Channel.GetMessagesAsync().Flatten();
 
             //Filter to flora only
-            Messages = Messages.Where(x => x.Author.Id == _client.CurrentUser.Id).Take(count);
+            var Filtered = Messages.Where(x => x.Author.Id == _client.CurrentUser.Id).Take(count);
 
             //Now we prune
-            await Context.Channel.DeleteMessagesAsync(Messages);
+            await Context.Channel.DeleteMessagesAsync(Filtered);
         }
     }
 }
