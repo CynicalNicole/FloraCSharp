@@ -317,5 +317,35 @@ namespace FloraCSharp.Modules
 
             await Context.Channel.SendSuccessAsync($"Reset the SteamID for {user.NicknameUsername()}");
         }
+
+        [Command("FloraDMDelete"), Alias("FDMD")]
+        [RequireContext(ContextType.DM)]
+        [OwnerOnly]
+        public async Task FloraDMDelete(ulong messageID)
+        {
+            //Get previous messages
+            var Message = await Context.Channel.GetMessageAsync(messageID);
+
+            //Delete message if the owner is flora
+            if (Message.Author.Id == _client.CurrentUser.Id)
+            {
+                await Message.DeleteAsync();
+            }
+        }
+
+        [Command("FloraDMDelete"), Alias("FDMD")]
+        [RequireContext(ContextType.DM)]
+        [OwnerOnly]
+        public async Task FloraDMClear(int count = 1)
+        {
+            //Get previous messages
+            var Messages = await Context.Channel.GetMessagesAsync().Flatten();
+
+            //Filter to flora only
+            Messages = Messages.Where(x => x.Author.Id == _client.CurrentUser.Id).Take(count);
+
+            //Now we prune
+            await Context.Channel.DeleteMessagesAsync(Messages);
+        }
     }
 }

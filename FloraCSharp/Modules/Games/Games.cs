@@ -398,18 +398,21 @@ namespace FloraCSharp.Modules.Games
             {
                 IRole role = Context.Guild.GetRole(480823262260101120);
                 await user.AddRoleAsync(role);
+                await Context.Channel.SendSuccessAsync("You have claimed the \"Woodcutting Cape\" role (Level 99).");
             }
 
             if (wc.Level == 120 && !user.RoleIds.ToList().Contains(480823388730949632))
             {
                 IRole role = Context.Guild.GetRole(480823388730949632);
                 await user.AddRoleAsync(role);
+                await Context.Channel.SendSuccessAsync("You have claimed the \"Woodcutting 120\" role (Level 120).");
             }
 
             if (wc.XP == 200000000 && !user.RoleIds.ToList().Contains(480823441105223700))
             {
                 IRole role = Context.Guild.GetRole(480823441105223700);
                 await user.AddRoleAsync(role);
+                await Context.Channel.SendSuccessAsync("You have claimed the \"Woodcutting 200mil\" role (200 Million Woodcutting XP).");
             }
         }
 
