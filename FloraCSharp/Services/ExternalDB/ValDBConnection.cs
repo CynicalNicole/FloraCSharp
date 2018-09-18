@@ -72,7 +72,7 @@ namespace FloraCSharp.Services.ExternalDB
 
                     while (results.Read())
                     {
-                        _ret.ID = (int)results["Id"];
+                        _ret.ID = (long)results["Id"];
                         _ret.Quote = (string)results["Text"];
                     }
 
