@@ -80,7 +80,7 @@ namespace FloraCSharp.Services.ExternalDB
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Exception: {ex.Message}", "ValDB");
+                    _logger.Log($"Exception: {ex.Message}\n\n{ex.StackTrace}", "ValDB");
                     return null;
                 }
             }
