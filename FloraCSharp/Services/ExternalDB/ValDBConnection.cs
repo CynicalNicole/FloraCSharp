@@ -59,7 +59,7 @@ namespace FloraCSharp.Services.ExternalDB
                     var command = connection.CreateCommand();
 
                     command.CommandText =
-                        "SELECT ID, Text FROM Quotes WHERE ID = $intID";
+                        "SELECT Id, Text FROM Quotes WHERE ID = $intID";
 
                     command.Parameters.AddWithValue("$intID", ID);
 
@@ -72,7 +72,7 @@ namespace FloraCSharp.Services.ExternalDB
 
                     while (results.Read())
                     {
-                        _ret.ID = (int)results["ID"];
+                        _ret.ID = (int)results["Id"];
                         _ret.Quote = (string)results["Text"];
                     }
 
