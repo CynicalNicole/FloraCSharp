@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using FloraCSharp.Services.APIModels;
 using IqdbApi;
 using IqdbApi.Models;
+using FloraCSharp.Services.ExternalDB;
+using FloraCSharp.Services.ExternalDB.Models;
 
 namespace FloraCSharp.Modules
 {
@@ -678,6 +680,17 @@ namespace FloraCSharp.Modules
             {
                 return await httpClient.GetStringAsync(fullURL);
             }
+        }
+
+        [Command("...")]
+        private async Task Quote(int id)
+        {
+            var dbConVal = new ValDBConnection(_config.ValDB, _logger);
+
+            //Got quote
+            QuoteModel q = await dbConVal.GetQuoteByID(id);
+
+            if (q != null) await Context.Channel.SendMessageAsync($"`{q.ID}` :mega: {q.Quote}");
         }
     }
 }

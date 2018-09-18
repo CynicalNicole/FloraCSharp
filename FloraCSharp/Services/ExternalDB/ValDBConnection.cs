@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using FloraCSharp.Services.ExternalDB.Models;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -45,6 +46,44 @@ namespace FloraCSharp.Services.ExternalDB
             }
 
             return true;
+        }
+
+        public async Task<QuoteModel> GetQuoteByID(int ID)
+        {
+            if (connectionString == "") return null;
+
+            using (var connection = new SqliteConnection($"Data Source={connectionString}"))
+            {
+                try
+                {
+                    var command = connection.CreateCommand();
+
+                    command.CommandText =
+                        "SELECT ID, Text FROM Quotes WHERE ID = $intID";
+
+                    command.Parameters.AddWithValue("$intID", ID);
+
+                    await connection.OpenAsync();
+                    var results = await command.ExecuteReaderAsync();
+
+                    QuoteModel _ret = new QuoteModel();
+
+                    if (!results.HasRows) return null;
+
+                    while (results.Read())
+                    {
+                        _ret.ID = (int)results["ID"];
+                        _ret.Quote = (string)results["Text"];
+                    }
+
+                    return _ret;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Exception: {ex.Message}", "ValDB");
+                    return null;
+                }
+            }
         }
     }
 }
