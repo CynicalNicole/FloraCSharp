@@ -23,8 +23,11 @@ namespace FloraCSharp.Modules.Games
         private Services.PushButtonService _pushButtonService = new Services.PushButtonService();
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
+        private HeartLocker _healthLocker;
+        private string HeartEmote = ":MC_Heart:";
+        private string EmptyEmote = ":Empty_Heart:";
 
-        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config)
+        public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config, HeartLocker heartLocker)
         {
             _random = random;
             _logger = logger;
@@ -32,6 +35,7 @@ namespace FloraCSharp.Modules.Games
             _config = config;
 
             _woodcuttingLocker = woodcuttingLocker;
+            _healthLocker = heartLocker;
         }
 
         private readonly Dictionary<string, int> TreeID = new Dictionary<string, int>()
@@ -801,6 +805,103 @@ namespace FloraCSharp.Modules.Games
                 await Task.Delay(timeout);
                 await _pushButtonService.EndGameInChannel(Context.Guild, Context.Channel);
             }
+        }
+
+        [Command("Attack"), Alias("ATK")]
+        public async Task Attack()
+        {
+            //Get health stuff
+            int health = _healthLocker.getHealth();
+
+            if (health == 0)
+            {
+                health = 9;
+                _healthLocker.setHealth(health);
+            }
+
+            //Who last attacked
+            ulong lastAttacker = _healthLocker.getLastAttack();
+
+            if (lastAttacker == Context.User.Id)
+            {
+                await Context.Channel.SendErrorAsync($"Sorry, {Context.User.Username}, you attacked last.");
+                return;
+            }
+
+            //Check if they hit.
+            int rng = _random.Next(0, 100);
+
+            if (rng >= 95)
+            {
+                health -= 1;
+                _healthLocker.removeHealth();
+
+                await Context.Channel.SendMessageAsync("Your attack hits!");
+            }
+
+            //Add last attack
+            _healthLocker.SetLastAttack(Context.User.Id);
+
+            //Display health
+            //We need 10 full hearts first.
+            int blankCount = 9 - health;
+
+            //Ayy DAB display it
+            string hearts = "";
+
+            for (int i = 0; i <= health; i++)
+            {
+                hearts += HeartEmote;
+                hearts += " ";
+            }
+
+            for (int i = 0; i < blankCount; i++)
+            {
+                hearts += EmptyEmote;
+                hearts += " ";
+            }
+
+            await Context.Channel.SendMessageAsync(hearts);
+
+            //Wowieee
+            if (health == 0)
+            {
+                await Context.Channel.SendSuccessAsync($"{Context.User.Username} has slain the enemy.");
+            }
+        }
+
+        [Command("Health")]
+        public async Task Health()
+        {
+            //Get health stuff
+            int health = _healthLocker.getHealth();
+
+            if (health == 0)
+            {
+                health = 9;
+                _healthLocker.setHealth(health);
+            }
+
+            //Display health
+            //We need 10 full hearts first.
+            int blankCount = 9 - health;
+
+            //Ayy DAB display it
+            string hearts = "";
+
+            for (int i = 0; i <= health; i++)
+            {
+                hearts += HeartEmote;
+                hearts += " ";
+            }
+
+            for (int i = 0; i < blankCount; i++)
+            {
+                hearts += EmptyEmote;
+                hearts += " ";
+            }
+
+            await Context.Channel.SendMessageAsync(hearts);
         }
     }
 }
