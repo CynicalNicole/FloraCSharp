@@ -844,12 +844,12 @@ namespace FloraCSharp.Modules.Games
 
             //Display health
             //We need 10 full hearts first.
-            int blankCount = 9 - health;
+            int blankCount = 10 - health;
 
             //Ayy DAB display it
             string hearts = "";
 
-            for (int i = 0; i <= health; i++)
+            for (int i = 0; i < health; i++)
             {
                 hearts += HeartEmote;
                 hearts += " ";

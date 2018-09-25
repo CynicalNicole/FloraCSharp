@@ -8,7 +8,7 @@ namespace FloraCSharp.Services
     public class HeartLocker
     {
         private ulong _lastAttack = 0;
-        private int _health = 9;
+        private int _health = 10;
 
         public void SetLastAttack(ulong userID)
         {
