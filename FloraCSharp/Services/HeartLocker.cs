@@ -32,7 +32,7 @@ namespace FloraCSharp.Services
 
         public void setHealth(int health)
         {
-            _health -= health;
+            _health = health;
         }
     }
 }

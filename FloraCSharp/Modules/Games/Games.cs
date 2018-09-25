@@ -837,7 +837,7 @@ namespace FloraCSharp.Modules.Games
 
             _logger.Log(rng.ToString(), "Attack!");
 
-            if (rng >= 80)
+            if (rng >= 60)
             {
                 health -= 1;
                 _healthLocker.removeHealth();
@@ -886,18 +886,18 @@ namespace FloraCSharp.Modules.Games
 
             if (health == 0)
             {
-                health = 9;
+                health = 10;
                 _healthLocker.setHealth(health);
             }
 
             //Display health
             //We need 10 full hearts first.
-            int blankCount = 9 - health;
+            int blankCount = 10 - health;
 
             //Ayy DAB display it
             string hearts = "";
 
-            for (int i = 0; i <= health; i++)
+            for (int i = 0; i < health; i++)
             {
                 hearts += HeartEmote;
                 hearts += " ";
