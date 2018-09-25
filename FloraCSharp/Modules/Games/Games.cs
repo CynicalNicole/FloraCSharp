@@ -831,7 +831,7 @@ namespace FloraCSharp.Modules.Games
             //Check if they hit.
             int rng = _random.Next(0, 100);
 
-            if (rng >= 90)
+            if (rng >= 80)
             {
                 health -= 1;
                 _healthLocker.removeHealth();
