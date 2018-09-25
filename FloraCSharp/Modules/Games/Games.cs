@@ -813,14 +813,18 @@ namespace FloraCSharp.Modules.Games
             //Get health stuff
             int health = _healthLocker.getHealth();
 
+            _logger.Log(health.ToString(), "Attack!");
+
             if (health == 0)
             {
-                health = 9;
+                health = 10;
                 _healthLocker.setHealth(health);
             }
 
             //Who last attacked
             ulong lastAttacker = _healthLocker.getLastAttack();
+
+            _logger.Log(lastAttacker.ToString(), "Attack!");
 
             if (lastAttacker == Context.User.Id)
             {
@@ -830,6 +834,8 @@ namespace FloraCSharp.Modules.Games
 
             //Check if they hit.
             int rng = _random.Next(0, 100);
+
+            _logger.Log(rng.ToString(), "Attack!");
 
             if (rng >= 80)
             {
@@ -845,6 +851,8 @@ namespace FloraCSharp.Modules.Games
             //Display health
             //We need 10 full hearts first.
             int blankCount = 10 - health;
+
+            _logger.Log(blankCount.ToString(), "Attack!");
 
             //Ayy DAB display it
             string hearts = "";
