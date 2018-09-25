@@ -24,8 +24,8 @@ namespace FloraCSharp.Modules.Games
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
         private HeartLocker _healthLocker;
-        private string HeartEmote = ":MC_Heart:";
-        private string EmptyEmote = ":Empty_Heart:";
+        private string HeartEmote = "<:MC_Heart:494255314846089258>";
+        private string EmptyEmote = "<:Empty_Heart:494255330104967168>";
 
         public Games(FloraRandom random, FloraDebugLogger logger, BotGameHandler botGames, WoodcuttingLocker woodcuttingLocker, Configuration config, HeartLocker heartLocker)
         {
@@ -902,6 +902,14 @@ namespace FloraCSharp.Modules.Games
             }
 
             await Context.Channel.SendMessageAsync(hearts);
+        }
+
+        [Command("ResetLastAttack")]
+        [OwnerOnly]
+        public async Task ResetLastAttack()
+        {
+            _healthLocker.SetLastAttack(0);
+            await Context.Channel.SendSuccessAsync("Last attack reset.");
         }
     }
 }
