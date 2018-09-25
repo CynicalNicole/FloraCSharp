@@ -810,7 +810,11 @@ namespace FloraCSharp.Modules.Games
         [Command("Attack"), Alias("ATK")]
         public async Task Attack()
         {
-            if (_healthLocker.GetAttackStatus()) return;
+            if (_healthLocker.GetAttackStatus())
+            {
+                await Context.Message.DeleteAsync();
+                return;
+            }
 
             //Get health stuff
             int health = _healthLocker.getHealth();
@@ -846,7 +850,11 @@ namespace FloraCSharp.Modules.Games
                 health -= 1;
                 _healthLocker.removeHealth();
 
-                await Context.Channel.SendMessageAsync("Your attack hits!");
+                await Context.Channel.SendMessageAsync($"{Context.User.Username}, your attack hits!");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync($"{Context.User.Username}, your attack misses!");
             }
 
             //Add last attack
