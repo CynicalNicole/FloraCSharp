@@ -706,6 +706,8 @@ namespace FloraCSharp.Modules
             var users = await Context.Channel.GetUsersAsync().Flatten();
             users = users.Where(x => !x.IsBot);
 
+            _logger.Log(users.ToString(), "DEBUG");
+
             //Here is the pool
             List<Person> people = new List<Person>();
 
@@ -716,6 +718,8 @@ namespace FloraCSharp.Modules
                 people.Add(new Person { User = u });
                 i++;
             }
+
+            _logger.Log(people.ToString(), "DEBUG");
 
             //List of numbers
             List<int> pool = new List<int>();
@@ -736,8 +740,10 @@ namespace FloraCSharp.Modules
                 index = rng;
             }
 
+            _logger.Log(people.ToString(), "DEBUG");
+
             //Send off the DMs
-            foreach(Person p in people)
+            foreach (Person p in people)
             {
                 string name = p.Santa.Username;
                 await p.User.SendMessageAsync($"Your Santa is: {name}");
