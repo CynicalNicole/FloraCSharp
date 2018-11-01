@@ -706,7 +706,12 @@ namespace FloraCSharp.Modules
             var users = await Context.Channel.GetUsersAsync().Flatten();
             users = users.Where(x => !x.IsBot);
 
-            _logger.Log(users.ToString(), "DEBUG");
+            foreach (IUser u in users)
+            {
+                _logger.Log(u.Username, "Debug");
+            }
+
+            _logger.Log("------------------------------", "Debug");
 
             //Here is the pool
             List<Person> people = new List<Person>();
@@ -719,7 +724,12 @@ namespace FloraCSharp.Modules
                 i++;
             }
 
-            _logger.Log(people.ToString(), "DEBUG");
+            people.ForEach(x =>
+            {
+                _logger.Log("User: " + x.User.Username, "DEBUG");
+            });
+
+            _logger.Log("------------------------------", "Debug");
 
             //List of numbers
             List<int> pool = new List<int>();
@@ -740,7 +750,12 @@ namespace FloraCSharp.Modules
                 index = rng;
             }
 
-            _logger.Log(people.ToString(), "DEBUG");
+            people.ForEach(x =>
+            {
+                _logger.Log("User: " + x.User.Username + " | Santa: " + x.Santa.Username, "DEBUG");
+            });
+
+            _logger.Log("------------------------------", "Debug");
 
             //Send off the DMs
             foreach (Person p in people)
