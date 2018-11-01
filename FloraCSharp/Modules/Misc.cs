@@ -692,5 +692,56 @@ namespace FloraCSharp.Modules
 
             if (q != null) await Context.Channel.SendMessageAsync($"`#{q.ID}` :mega: {q.Quote}");
         }
+
+        struct Person
+        {
+            public IUser User;
+            public IUser Santa;
+        }
+
+        [Command("SS")]
+        private async Task SS()
+        {
+            //Get all not bot users
+            var users = await Context.Channel.GetUsersAsync().Flatten();
+            users = users.Where(x => !x.IsBot);
+
+            //Here is the pool
+            List<Person> people = new List<Person>();
+
+            //Create people from users
+            int i = 0;
+            foreach(IUser u in users)
+            {
+                people.Add(new Person { User = u });
+                i++;
+            }
+
+            //List of numbers
+            List<int> pool = new List<int>();
+            for (var c = 0; c < people.Count(); c++)
+            {
+                pool.Add(c);
+            }
+
+            //Here we go
+            int index = 0;
+            while (true)
+            {
+                var person = pool[index];
+                pool.RemoveAt(index);
+                if (pool.Count() == 0) break;
+                var rng = _random.Next(pool.Count());
+                people[person] = new Person { User = people[person].User, Santa = people[pool[rng]].User };
+                index = rng;
+            }
+
+            //Send off the DMs
+            foreach(Person p in people)
+            {
+                string name = p.Santa.Username;
+                await p.User.SendMessageAsync($"Your Santa is: {name}");
+            }
+        }
     }
 }
