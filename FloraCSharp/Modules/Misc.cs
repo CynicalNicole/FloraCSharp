@@ -734,7 +734,7 @@ namespace FloraCSharp.Modules
             foreach (Person p in people)
             {
                 string name = p.Santa.Username;
-                await p.User.SendMessageAsync($"You're buying for: {name}");
+                await p.User.SendMessageAsync($"The real one: {name}");
             }
         }
     }
