@@ -706,48 +706,35 @@ namespace FloraCSharp.Modules
             var users = await Context.Channel.GetUsersAsync().Flatten();
             users = users.Where(x => !x.IsBot);
 
-            foreach (IUser u in users)
+            List<IUser> uL = users.ToList();
+            uL.Shuffle();
+
+            foreach (IUser u in uL)
             {
                 _logger.Log(u.Username, "Debug");
             }
+
+            var usersAlt = users.ToList();
+            usersAlt.Shuffle();
 
             _logger.Log("------------------------------", "Debug");
 
             //Here is the pool
             List<Person> people = new List<Person>();
 
-            //Create people from users
-            int i = 0;
-            foreach(IUser u in users)
+            foreach (IUser u in uL)
             {
-                people.Add(new Person { User = u });
-                i++;
-            }
+                //Remove themself
+                var uTest = usersAlt.Where(x => x != u);
 
-            people.ForEach(x =>
-            {
-                _logger.Log("User: " + x.User.Username, "DEBUG");
-            });
+                //Get user
+                var uPick = uTest.RandomItem();
 
-            _logger.Log("------------------------------", "Debug");
+                //Remove from usersAlt
+                usersAlt.Remove(uPick);
 
-            //List of numbers
-            List<int> pool = new List<int>();
-            for (var c = 0; c < people.Count(); c++)
-            {
-                pool.Add(c);
-            }
-
-            //Here we go
-            int index = 0;
-            while (true)
-            {
-                var person = pool[index];
-                pool.RemoveAt(index);
-                if (pool.Count() == 0) break;
-                var rng = _random.Next(pool.Count());
-                people[person] = new Person { User = people[person].User, Santa = people[pool[rng]].User };
-                index = rng;
+                //Now make the person
+                people.Add(new Person { User = u, Santa = uPick });
             }
 
             people.ForEach(x =>
@@ -761,7 +748,7 @@ namespace FloraCSharp.Modules
             foreach (Person p in people)
             {
                 string name = p.Santa.Username;
-                await p.User.SendMessageAsync($"Your Santa is: {name}");
+                await p.User.SendMessageAsync($"You're buying for: {name}");
             }
         }
     }
