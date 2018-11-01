@@ -709,15 +709,8 @@ namespace FloraCSharp.Modules
             List<IUser> uL = users.ToList();
             uL.Shuffle();
 
-            foreach (IUser u in uL)
-            {
-                _logger.Log(u.Username, "Debug");
-            }
-
             var usersAlt = users.ToList();
             usersAlt.Shuffle();
-
-            _logger.Log("------------------------------", "Debug");
 
             //Here is the pool
             List<Person> people = new List<Person>();
@@ -736,13 +729,6 @@ namespace FloraCSharp.Modules
                 //Now make the person
                 people.Add(new Person { User = u, Santa = uPick });
             }
-
-            people.ForEach(x =>
-            {
-                _logger.Log("User: " + x.User.Username + " | Santa: " + x.Santa.Username, "DEBUG");
-            });
-
-            _logger.Log("------------------------------", "Debug");
 
             //Send off the DMs
             foreach (Person p in people)
