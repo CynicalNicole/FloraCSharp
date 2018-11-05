@@ -737,5 +737,13 @@ namespace FloraCSharp.Modules
                 await p.User.SendMessageAsync($"The real one: {name}");
             }
         }
+
+        [Command("RoleInfo")]
+        public async Task RoleInfo(IRole role)
+        {
+            var embed = new EmbedBuilder().WithTitle("Role Information").AddField(efb => efb.WithName("Role Title").WithValue(role.Name).WithIsInline(true)).AddField(efb => efb.WithName("Role Colour").WithValue(role.Color.ToString()).WithIsInline(true));
+
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
     }
 }
