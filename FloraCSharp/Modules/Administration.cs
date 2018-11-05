@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using Discord.WebSocket;
 using System.Globalization;
 using FloraCSharp.Services.Database.Models;
+using System.Net;
+using FloraCSharp.Services.APIModels;
 
 namespace FloraCSharp.Modules
 {
@@ -346,6 +348,55 @@ namespace FloraCSharp.Modules
 
             //Now we prune
             await Context.Channel.DeleteMessagesAsync(Filtered);
+        }
+
+        [Command("RandomSong"), Alias("RS")]
+        [RequireContext(ContextType.DM)]
+        [OwnerOnly]
+        public async Task RandomSong(string person)
+        {
+            //Trim
+            person = person.Trim();
+
+            //Get json
+            var json = "";
+
+            using (WebClient wc = new WebClient())
+            {
+                json = wc.DownloadString(new Uri("https://cynicalpopcorn.me/" + person + ".json"));
+            }
+
+            if (json == "") return;
+
+            //Use json
+            var responseArray = JsonConvert.DeserializeObject<List<CloneHeroSongListModel>>(json);
+
+            //Got the shit
+            var song = responseArray.RandomItem();
+
+            //Song is selected
+            var embed = new EmbedBuilder().WithQuoteColour();
+
+            //If artist one or other
+            if (song.ArtistName != "")
+            {
+                embed = embed.WithTitle($"{song.ArtistName} - {song.SongName}");
+            }
+            else
+            {
+                embed = embed.WithTitle($"{song.SongName}");
+            }
+
+            //Add fields
+            embed = embed.AddField(efb => efb.WithName("Album").WithValue(song.AlbumName).WithIsInline(true));
+            embed = embed.AddField(efb => efb.WithName("Genre").WithValue(song.GenreName).WithIsInline(true));
+            embed = embed.AddField(efb => efb.WithName("Charter").WithValue(song.CharterName).WithIsInline(true));
+            embed = embed.AddField(efb => efb.WithName("Year").WithValue(song.Year).WithIsInline(true));
+            embed = embed.AddField(efb => efb.WithName("Guitar Difficulty").WithValue(song.GuitarDifficulty).WithIsInline(true));
+            embed = embed.AddField(efb => efb.WithName("Song Length").WithValue(song.SongLength).WithIsInline(true));
+
+            //Output embed
+            await Context.Channel.BlankEmbedAsync(embed);
         }
     }
 }
