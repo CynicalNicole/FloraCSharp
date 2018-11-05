@@ -754,6 +754,7 @@ namespace FloraCSharp.Modules
                 .AddField(efb => efb.WithName("Role Title").WithValue(role.Name).WithIsInline(true))
                 .AddField(efb => efb.WithName("Role Colour").WithValue(role.Color.ToString()).WithIsInline(true))
                 .AddField(efb => efb.WithName("User Count").WithValue(usersInRole).WithIsInline(true))
+                .AddField(efb => efb.WithName("Role Relative Position").WithValue(role.Position).WithIsInline(true))
                 .AddField(efb => efb.WithName("Hoisted?").WithValue(role.IsHoisted ? "✅" : "❌").WithIsInline(true))
                 .AddField(efb => efb.WithName("Mentionable?").WithValue(role.IsMentionable ? "✅" : "❌").WithIsInline(true));
 
