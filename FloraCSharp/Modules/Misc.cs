@@ -741,7 +741,7 @@ namespace FloraCSharp.Modules
         [Command("RoleInfo")]
         public async Task RoleInfo(IRole role)
         {
-            var embed = new EmbedBuilder().WithOkColour().WithTitle("Role Information")
+            var embed = new EmbedBuilder().WithOkColour().WithTitle("📜 Role Information")
                 .AddField(efb => efb.WithName("Role Title").WithValue(role.Name).WithIsInline(true))
                 .AddField(efb => efb.WithName("Role Colour").WithValue(role.Color.ToString()).WithIsInline(true))
                 .AddField(efb => efb.WithName("Hoisted?").WithValue(role.IsHoisted ? "✅" : "❌").WithIsInline(true))
