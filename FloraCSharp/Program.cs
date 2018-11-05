@@ -73,18 +73,18 @@ namespace FloraCSharp
             //provider.GetRequiredService<StartupHandler>();
             provider.GetRequiredService<ReactionHandler>();
 
-            if (_config.RotatingGames)
-            {
-                _logger.Log("Starting game rotation", "RotatingGames");
-                WorkingTask();
-            }
-
             _logger.Log("Updating User List", "Startup");
 
             foreach (SocketGuild guild in _client.Guilds)
             {
                 await guild.DownloadUsersAsync();
             }
+
+            if (_config.RotatingGames)
+            {
+                _logger.Log("Starting game rotation", "RotatingGames");
+                WorkingTask();
+            }    
 
             //Block task until program is closed
             await Task.Delay(-1);
