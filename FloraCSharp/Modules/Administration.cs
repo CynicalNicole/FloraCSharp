@@ -392,7 +392,7 @@ namespace FloraCSharp.Modules
             {
                 //Got the shit
                 song = responseArray.Where(x => x.GuitarDifficulty == difficulty).RandomItem();
-            } catch (ArgumentNullException) { await Context.Channel.SendErrorAsync("No song found."); return; }
+            } catch (Exception) { await Context.Channel.SendErrorAsync("No song found."); return; }
 
             //Get embed from song
             var embed = GenerateSongEmbed(song);
