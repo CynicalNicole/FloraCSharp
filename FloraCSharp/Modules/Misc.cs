@@ -741,9 +741,19 @@ namespace FloraCSharp.Modules
         [Command("RoleInfo")]
         public async Task RoleInfo(IRole role)
         {
+            var users = await Context.Guild.GetUsersAsync();
+
+            int usersInRole = 0;
+
+            users.ToList().ForEach(x =>
+            {
+                if (x.RoleIds.Contains(role.Id)) usersInRole++;
+            });
+
             var embed = new EmbedBuilder().WithOkColour().WithTitle("📜 Role Information")
                 .AddField(efb => efb.WithName("Role Title").WithValue(role.Name).WithIsInline(true))
                 .AddField(efb => efb.WithName("Role Colour").WithValue(role.Color.ToString()).WithIsInline(true))
+                .AddField(efb => efb.WithName("User Count").WithValue(usersInRole).WithIsInline(true))
                 .AddField(efb => efb.WithName("Hoisted?").WithValue(role.IsHoisted ? "✅" : "❌").WithIsInline(true))
                 .AddField(efb => efb.WithName("Mentionable?").WithValue(role.IsMentionable ? "✅" : "❌").WithIsInline(true));
 

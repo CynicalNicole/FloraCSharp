@@ -79,6 +79,12 @@ namespace FloraCSharp
                 WorkingTask();
             }
 
+            foreach (SocketGuild guild in _client.Guilds)
+            {
+                _logger.Log("Updating User List", "Startup");
+                await guild.DownloadUsersAsync();
+            }
+
             //Block task until program is closed
             await Task.Delay(-1);
         }
