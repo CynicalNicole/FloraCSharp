@@ -358,22 +358,51 @@ namespace FloraCSharp.Modules
             //Trim
             person = person.Trim();
 
-            //Get json
-            var json = "";
+            //Get song list
+            var responseArray = getSongList(person);
 
-            using (WebClient wc = new WebClient())
-            {
-                json = wc.DownloadString(new Uri("https://cynicalpopcorn.me/" + person + ".json"));
-            }
-
-            if (json == "") return;
-
-            //Use json
-            var responseArray = JsonConvert.DeserializeObject<List<CloneHeroSongListModel>>(json);
+            if (responseArray == null) return;
 
             //Got the shit
             var song = responseArray.RandomItem();
 
+            //Get embed from song
+            var embed = GenerateSongEmbed(song);
+
+            //Output embed
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        [Command("RandomSong"), Alias("RS")]
+        [RequireContext(ContextType.DM)]
+        [OwnerOnly]
+        public async Task RandomSong(string person, int difficulty)
+        {
+            //Trim
+            person = person.Trim();
+
+            //Get song list
+            var responseArray = getSongList(person);
+
+            if (responseArray == null) return;
+
+            CloneHeroSongListModel song = null;
+
+            try
+            {
+                //Got the shit
+                song = responseArray.Where(x => x.GuitarDifficulty == difficulty).RandomItem();
+            } catch (ArgumentNullException) { await Context.Channel.SendErrorAsync("No song found."); return; }
+
+            //Get embed from song
+            var embed = GenerateSongEmbed(song);
+
+            //Output embed
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        private EmbedBuilder GenerateSongEmbed(CloneHeroSongListModel song)
+        {
             //Song is selected
             var embed = new EmbedBuilder().WithQuoteColour();
 
@@ -395,8 +424,23 @@ namespace FloraCSharp.Modules
             embed = embed.AddField(efb => efb.WithName("Guitar Difficulty").WithValue(song.GuitarDifficulty).WithIsInline(true));
             embed = embed.AddField(efb => efb.WithName("Song Length").WithValue(song.SongLength).WithIsInline(true));
 
-            //Output embed
-            await Context.Channel.BlankEmbedAsync(embed);
+            return embed;
+        }
+
+        private List<CloneHeroSongListModel> getSongList(string person)
+        {
+            //Get json
+            var json = "";
+
+            using (WebClient wc = new WebClient())
+            {
+                json = wc.DownloadString(new Uri("https://cynicalpopcorn.me/" + person + ".json"));
+            }
+
+            if (json == "") return null;
+
+            //Use json
+            return JsonConvert.DeserializeObject<List<CloneHeroSongListModel>>(json);
         }
     }
 }
