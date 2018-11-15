@@ -472,25 +472,6 @@ namespace FloraCSharp.Modules
 
         [Command("PickRandomGame"), Summary("Picks a random game from the user's steam library.")]
         [Alias("SteamRandom")]
-        public async Task SteamProfile(IUser User = null)
-        {
-            if (User == null)
-                User = Context.User;
-
-            ulong SteamID = GetSteamUserID(User.Id);
-
-            if (SteamID == 0)
-            {
-                await Context.Channel.SendErrorAsync($"{User.Username} has not set a SteamID yet.");
-                return;
-            }
-
-            //Need to implement
-            return;
-        }
-
-        [Command("PickRandomGame"), Summary("Picks a random game from the user's steam library.")]
-        [Alias("SteamRandom")]
         public async Task PickRandomGame([Remainder] string options = null)
         {
             if (_config.SteamAPIKey == "" || _config.SteamAPIKey == null)
