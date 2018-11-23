@@ -28,6 +28,7 @@ namespace FloraCSharp.Modules
         //Steam API Stuff
         private readonly string SteamAPIUrl = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={key}&steamid={id}&include_appinfo=1";
         private readonly string VanityURL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={key}&vanityurl={url}";
+        private readonly string VanityGameRun = "steam://run/{id}";
 
         public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config)
         {
@@ -517,11 +518,14 @@ namespace FloraCSharp.Modules
 
             uint playtimeTwoWeeks = randomGame?.Playtime2Weeks ?? 0;
 
+            Uri steamGame = new Uri(VanityGameRun.Replace("{id}", randomGame.AppID.ToString()));
+
             EmbedBuilder embed = new EmbedBuilder().WithOkColour().WithTitle("Random Game")
                 //.WithUrl($"steam://run/{randomGame.AppID}")
                 .AddField(new EmbedFieldBuilder().WithName("Game Title").WithValue(randomGame.Name))
                 .AddField(new EmbedFieldBuilder().WithName("Total Playtime").WithValue(PlaytimeStringGen(randomGame.PlaytimeForever)).WithIsInline(true))
-                .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true));
+                .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true))
+                .AddField(new EmbedFieldBuilder().WithName("Launch URI").WithValue(steamGame).WithIsInline(true));
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
@@ -536,9 +540,7 @@ namespace FloraCSharp.Modules
             var url = Context.Message.Attachments.First().Url;
 
             //results
-            await HandleResults(url, Context.Channel);
-
-            
+            await HandleResults(url, Context.Channel);            
         }
 
         [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src", "source", "sauce", "heinz", "ketchup", "barbecue", "BBQ", "brown sauce")]
