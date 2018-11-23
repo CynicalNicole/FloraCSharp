@@ -522,7 +522,7 @@ namespace FloraCSharp.Modules
 
             EmbedBuilder embed = new EmbedBuilder().WithOkColour().WithTitle("Random Game")
                 //.WithUrl($"steam://run/{randomGame.AppID}")
-                .AddField(new EmbedFieldBuilder().WithName("Game Title").WithValue(randomGame.Name))
+                .AddField(new EmbedFieldBuilder().WithName("Game Title").WithValue(randomGame.Name).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Total Playtime").WithValue(PlaytimeStringGen(randomGame.PlaytimeForever)).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Launch URI").WithValue(steamGame).WithIsInline(true));
