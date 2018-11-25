@@ -673,7 +673,7 @@ namespace FloraCSharp.Modules
             //Got quote
             QuoteModel q = await dbConVal.GetQuoteByID(id);
 
-            if (q != null) await Context.Channel.SendMessageAsync($"`#{q.ID}` :mega: {q.Quote}");
+            if (q != null) await Context.Channel.SendMessageAsync($"\"{q.Keyword}\" `#{q.ID}` :mega: {q.Quote}");
         }
 
         struct Person
