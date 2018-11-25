@@ -8,5 +8,6 @@ namespace FloraCSharp.Services.ExternalDB.Models
     {
         public long ID { get; set; }
         public string Quote { get; set; }
+        public string Keyword { get; set; }
     }
 }
