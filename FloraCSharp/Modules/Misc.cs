@@ -733,7 +733,7 @@ namespace FloraCSharp.Modules
                 if (x.RoleIds.Contains(role.Id)) usersInRole++;
             });
 
-            var embed = new EmbedBuilder().WithOkColour().WithTitle("📜 Role Information")
+            var embed = new EmbedBuilder().WithOkColour().WithTitle("📜 Role Information | " + role.Id)
                 .AddField(efb => efb.WithName("Role Title").WithValue(role.Name).WithIsInline(true))
                 .AddField(efb => efb.WithName("Role Colour").WithValue(role.Color.ToString()).WithIsInline(true))
                 .AddField(efb => efb.WithName("User Count").WithValue(usersInRole).WithIsInline(true))
@@ -742,6 +742,21 @@ namespace FloraCSharp.Modules
                 .AddField(efb => efb.WithName("Mentionable?").WithValue(role.IsMentionable ? "✅" : "❌").WithIsInline(true));
 
             await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        [Command("XmasRoleSolve")]
+        public async Task XmasRoleSolve()
+        {  
+            var users = await Context.Guild.GetUsersAsync();
+            IRole xmas = Context.Guild.GetRole((ulong)516754224026222603); 
+
+            users.ToList().ForEach(async x =>
+            {
+                if (!x.RoleIds.Contains(xmas.Id))
+                {
+                    await x.AddRoleAsync(xmas);
+                }
+            });
         }
     }
 }
