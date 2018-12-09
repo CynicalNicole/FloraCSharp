@@ -14,6 +14,9 @@ using IqdbApi;
 using IqdbApi.Models;
 using FloraCSharp.Services.ExternalDB;
 using FloraCSharp.Services.ExternalDB.Models;
+using MySql.Data.MySqlClient;
+using CryptSharp;
+using System.Text;
 
 namespace FloraCSharp.Modules
 {
@@ -24,6 +27,11 @@ namespace FloraCSharp.Modules
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
         private readonly Configuration _config;
+        private readonly CrypterOptions _cryptopts = new CrypterOptions()
+        {
+            { CrypterOption.Variant, BlowfishCrypterVariant.Corrected },
+            { CrypterOption.Rounds, 10 }
+        };
 
         //Steam API Stuff
         private readonly string SteamAPIUrl = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={key}&steamid={id}&include_appinfo=1";
@@ -757,6 +765,82 @@ namespace FloraCSharp.Modules
                     await x.AddRoleAsync(xmas);
                 }
             });
+        }
+
+        [Command("ResetWeebPass")]
+        public async Task ResetWeebPass()
+        {
+            //Get the user
+            IUser user = Context.User;
+
+            //Open DB
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            //Fetched user
+            string fetchedUserName = null;
+
+            //Check
+            if (_conn.IsConnected())
+            {
+                string q2 = "SELECT * FROM users WHERE DiscordID=@di";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@di", user.Id);
+
+                var reader2 = await cmd2.ExecuteReaderAsync();
+
+                //_logger.Log("Second set up", "InfiniteDie");
+                while (await reader2.ReadAsync())
+                {
+                    fetchedUserName = reader2.GetString(1);
+                }
+                _conn.Close();
+            }
+
+            //No username? DOnezo
+            if (fetchedUserName == null) return;
+
+            //Ok so now we know they exist, we need to do a few things.
+            if (_conn.IsConnected())
+            {
+                //Set new user to 1 so they reset their PW
+                string q2 = "UPDATE users SET NewUser=@nu WHERE DiscordID=@di";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@nu", 1);
+                cmd2.Parameters.AddWithValue("@di", user.Id);
+                await cmd2.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            //Now we can generate them a password
+            string PlainTextPass = CreatePassword(16);
+            string CryptedPass = Crypter.Blowfish.Crypt(PlainTextPass, _cryptopts);
+
+            //Now to update the pass in the DB
+            if (_conn.IsConnected())
+            {
+                //Set new user to 1 so they reset their PW
+                string q2 = "UPDATE users SET Password=@nu WHERE DiscordID=@di";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@nu", CryptedPass);
+                cmd2.Parameters.AddWithValue("@di", user.Id);
+                await cmd2.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            //DM the user
+            await user.SendMessageAsync("Your username: " + fetchedUserName + "\nYour password: " + PlainTextPass + "\nYou'll be asked to change your password on login.");
+        }
+
+        public string CreatePassword(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            while (0 < length--)
+            {
+                res.Append(valid[_random.Next(valid.Length)]);
+            }
+            return res.ToString();
         }
     }
 }
