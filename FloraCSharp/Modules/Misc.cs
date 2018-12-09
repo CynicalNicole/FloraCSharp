@@ -778,27 +778,14 @@ namespace FloraCSharp.Modules
             _conn.DBName = "cynicalp_weebnation";
 
             //Fetched user
-            string fetchedUserName = null;
+            string fetchedUserName = await GetExistingUser(_conn, user);
 
-            //Check
-            if (_conn.IsConnected())
+            //If user exists do nothing
+            if (fetchedUserName == null)
             {
-                string q2 = "SELECT * FROM users WHERE DiscordID=@di";
-                var cmd2 = new MySqlCommand(q2, _conn.Connection);
-                cmd2.Parameters.AddWithValue("@di", user.Id);
-
-                var reader2 = await cmd2.ExecuteReaderAsync();
-
-                //_logger.Log("Second set up", "InfiniteDie");
-                while (await reader2.ReadAsync())
-                {
-                    fetchedUserName = reader2.GetString(1);
-                }
-                _conn.Close();
+                await Context.Channel.SendErrorAsync("There is no account under your Discord ID.");
+                return;
             }
-
-            //No username? DOnezo
-            if (fetchedUserName == null) return;
 
             //Ok so now we know they exist, we need to do a few things.
             if (_conn.IsConnected())
@@ -829,7 +816,74 @@ namespace FloraCSharp.Modules
             }
 
             //DM the user
-            await user.SendMessageAsync("Your username: " + fetchedUserName + "\nYour password: " + PlainTextPass + "\nYou'll be asked to change your password on login.");
+            await user.SendMessageAsync("Your username: " + fetchedUserName + "\nYour password: " + PlainTextPass + "\nYou'll be asked to change your password on login.\nhttps://cynicalpopcorn.me/weebnation/index.php");
+        }
+
+        [Command("Register")]
+        public async Task Register(string username = null)
+        {
+            //Get the user
+            IUser user = Context.User;
+
+            //Open DB
+            DBconnection _conn = DBconnection.Instance();
+            _conn.DBName = "cynicalp_weebnation";
+
+            //If user exists do nothing
+            if (await GetExistingUser(_conn, user) != null)
+            {
+                await Context.Channel.SendErrorAsync("There is already an account under your DiscordID.");
+                return;
+            }
+
+            //If username is null, we'll use their discord name
+            if (username == null) username = user.Username;
+            string fetchedUserName = null;
+
+            //Check if username already exists
+            if (_conn.IsConnected())
+            {
+                string q2 = "SELECT * FROM users WHERE Username=@un";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@un", username);
+
+                var reader2 = await cmd2.ExecuteReaderAsync();
+
+                //_logger.Log("Second set up", "InfiniteDie");
+                while (await reader2.ReadAsync())
+                {
+                    fetchedUserName = reader2.GetString(1);
+                }
+                _conn.Close();
+            }
+
+            if (fetchedUserName.ToLower() == username.ToLower())
+            {
+                await Context.Channel.SendErrorAsync("That username is taken.");
+                return;
+            }
+
+            //Now we can generate them a password
+            string PlainTextPass = CreatePassword(16);
+            string CryptedPass = Crypter.Blowfish.Crypt(PlainTextPass, _cryptopts);
+
+            //Now to update the pass in the DB
+            if (_conn.IsConnected())
+            {
+                //Set new user to 1 so they reset their PW
+                string q2 = "INSERT INTO users(Username, Password, UserType, NewUser, DiscordID) VALUES (@u, @p, @ut, @nu, @di)";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@u", username);
+                cmd2.Parameters.AddWithValue("@p", CryptedPass);
+                cmd2.Parameters.AddWithValue("@ut", 0);
+                cmd2.Parameters.AddWithValue("@nu", 1);
+                cmd2.Parameters.AddWithValue("@di", user.Id);
+                await cmd2.ExecuteNonQueryAsync();
+                _conn.Close();
+            }
+
+            //DM the user
+            await user.SendMessageAsync("Your username: " + username + "\nYour password: " + PlainTextPass + "\nYou'll be asked to change your password on login.\nhttps://cynicalpopcorn.me/weebnation/index.php");
         }
 
         public string CreatePassword(int length)
@@ -841,6 +895,30 @@ namespace FloraCSharp.Modules
                 res.Append(valid[_random.Next(valid.Length)]);
             }
             return res.ToString();
+        }
+
+        private async Task<string> GetExistingUser(DBconnection _conn, IUser user)
+        {
+            string fetchedUserName = null;
+            //Check
+            if (_conn.IsConnected())
+            {
+                string q2 = "SELECT * FROM users WHERE DiscordID=@di";
+                var cmd2 = new MySqlCommand(q2, _conn.Connection);
+                cmd2.Parameters.AddWithValue("@di", user.Id);
+
+                var reader2 = await cmd2.ExecuteReaderAsync();
+
+                //_logger.Log("Second set up", "InfiniteDie");
+                while (await reader2.ReadAsync())
+                {
+                    fetchedUserName = reader2.GetString(1);
+                }
+                _conn.Close();
+            }
+
+            //If user exists do nothing
+            return fetchedUserName;
         }
     }
 }

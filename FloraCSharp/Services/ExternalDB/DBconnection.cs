@@ -42,7 +42,7 @@ namespace FloraCSharp.Services.ExternalDB
                     return false;
                 string[] details = File.ReadAllLines("data/extdb.txt");
 
-                Console.WriteLine($"{details[0]} | {details[1]} | {details[2]}");
+                //Console.WriteLine($"{details[0]} | {details[1]} | {details[2]}");
 
                 MySqlConnectionStringBuilder connstring = new MySqlConnectionStringBuilder
                 {
