@@ -857,7 +857,7 @@ namespace FloraCSharp.Modules
                 _conn.Close();
             }
 
-            if (fetchedUserName.ToLower() == username.ToLower())
+            if (fetchedUserName != null)
             {
                 await Context.Channel.SendErrorAsync("That username is taken.");
                 return;
