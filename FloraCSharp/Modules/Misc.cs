@@ -215,70 +215,8 @@ namespace FloraCSharp.Modules
                 await Context.Channel.SendSuccessAsync("User Rating", $"The rating for {user.Mention} is {finalHalf}/10");
             }
         }
-        
-        [Command("Say"), Summary("Makes the bot say shit")]
-        [OwnerOnly]
-        public async Task Say(string location, [Remainder] string content)
-        {
-            string loc = String.Empty;
-            if (location.StartsWith("c") || location.StartsWith("C"))
-            {
-                location = location.Substring(1);
-                ulong channelID;
-                if (!UInt64.TryParse(location, out channelID))
-                {
-                    await Context.Channel.SendErrorAsync("Invalid channel");
-                    return;
-                }
-
-                _logger.Log("Sending to Channel", "Say");
-                IMessageChannel channel = (IMessageChannel)await Context.Client.GetChannelAsync(channelID);
-                await channel.SendMessageAsync(content);
-
-                loc = channel.Name;
-            }
-
-            if (location.StartsWith("u") || location.StartsWith("U"))
-            {
-                location = location.Substring(1);
-                ulong userID;
-                if (!UInt64.TryParse(location, out userID))
-                {
-                    await Context.Channel.SendErrorAsync("Invalid channel");
-                    return;
-                }
-
-                _logger.Log("Sending to User", "Say");
-                IUser User = await Context.Client.GetUserAsync(userID);
-                IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
-                await iDMChannel.SendMessageAsync(content);
-
-                loc = User.Username + "#" + User.Discriminator;
-            }
-
-            if (location.StartsWith("g") || location.StartsWith("G"))
-            {
-                location = location.Substring(1);
-                ulong serverID;
-                if (!UInt64.TryParse(location, out serverID))
-                {
-                    await Context.Channel.SendErrorAsync("Invalid channel");
-                    return;
-                }
-
-                _logger.Log("Sending to User", "Say");
-                IGuild Guild = await Context.Client.GetGuildAsync(serverID);
-                IMessageChannel channel = await Guild.GetDefaultChannelAsync();
-                await channel.SendMessageAsync(content);
-
-                loc = Guild.Name + "/" + channel.Name;
-            }
-
-            await Context.Channel.SendSuccessAsync($"Message sent to {loc}");
-        }
 
         [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
-        [RequireContext(ContextType.Guild)]
         public async Task Quote(ulong quoteID)
         {
             var Post = await Context.Channel.GetMessageAsync(quoteID);
@@ -286,7 +224,6 @@ namespace FloraCSharp.Modules
         }
 
         [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
-        [RequireContext(ContextType.Guild)]
         public async Task Quote(ulong channelID, ulong quoteID)
         {
             var Channel = (IMessageChannel) await Context.Guild.GetChannelAsync(channelID);
@@ -295,7 +232,6 @@ namespace FloraCSharp.Modules
         }
 
         [Command("Quote"), Summary("Will quote a given post ID or the given user's last post in the current channel.")]
-        [RequireContext(ContextType.Guild)]
         public async Task Quote(IGuildUser user)
         {
             var PostHistory = Context.Channel.GetMessagesAsync();
@@ -378,29 +314,6 @@ namespace FloraCSharp.Modules
             }
 
             await Context.Channel.SendSuccessAsync(confirm);
-        }
-
-        [Command("NoticeCooldownReset"), Summary("Reset cooldowns for a person's notices. Debugging tool basically.")]
-        [Alias("NCDReset")]
-        [OwnerOnly]
-        public async Task NoticeCooldownReset(IUser user)
-        {
-            Attention UserAttention;
-            using (var uow = DBHandler.UnitOfWork())
-            {
-                UserAttention = uow.Attention.GetOrCreateAttention(user.Id);
-            }
-
-            DateTime timeToResetTo = DateTime.Now - new TimeSpan(24, 1, 0);
-            UserAttention.LastUsage = timeToResetTo;
-
-            using (var uow = DBHandler.UnitOfWork())
-            {
-                uow.Attention.Update(UserAttention);
-                await uow.CompleteAsync();
-            }
-
-            await Context.Channel.SendSuccessAsync($"Reset the cooldown for {user.Username}");
         }
 
         [Command("AttentionLB"), Summary("Check the attention leaderboard")]
@@ -684,51 +597,6 @@ namespace FloraCSharp.Modules
             if (q != null) await Context.Channel.SendMessageAsync($"`\"{q.Keyword.ToLower()}\" #{q.ID}` :mega: {q.Quote}");
         }
 
-        struct Person
-        {
-            public IUser User;
-            public IUser Santa;
-        }
-
-        [Command("SS")]
-        private async Task SS()
-        {
-            //Get all not bot users
-            var users = await Context.Channel.GetUsersAsync().Flatten();
-            users = users.Where(x => !x.IsBot);
-
-            List<IUser> uL = users.ToList();
-            uL.Shuffle();
-
-            var usersAlt = users.ToList();
-            usersAlt.Shuffle();
-
-            //Here is the pool
-            List<Person> people = new List<Person>();
-
-            foreach (IUser u in uL)
-            {
-                //Remove themself
-                var uTest = usersAlt.Where(x => x != u);
-
-                //Get user
-                var uPick = uTest.RandomItem();
-
-                //Remove from usersAlt
-                usersAlt.Remove(uPick);
-
-                //Now make the person
-                people.Add(new Person { User = u, Santa = uPick });
-            }
-
-            //Send off the DMs
-            foreach (Person p in people)
-            {
-                string name = p.Santa.Username;
-                await p.User.SendMessageAsync($"The real one: {name}");
-            }
-        }
-
         [Command("RoleInfo")]
         public async Task RoleInfo(IRole role)
         {
@@ -750,21 +618,6 @@ namespace FloraCSharp.Modules
                 .AddField(efb => efb.WithName("Mentionable?").WithValue(role.IsMentionable ? "✅" : "❌").WithIsInline(true));
 
             await Context.Channel.BlankEmbedAsync(embed);
-        }
-
-        [Command("XmasRoleSolve")]
-        public async Task XmasRoleSolve()
-        {  
-            var users = await Context.Guild.GetUsersAsync();
-            IRole xmas = Context.Guild.GetRole((ulong)516754224026222603); 
-
-            users.ToList().ForEach(async x =>
-            {
-                if (!x.RoleIds.Contains(xmas.Id))
-                {
-                    await x.AddRoleAsync(xmas);
-                }
-            });
         }
 
         [Command("ResetWeebPass")]

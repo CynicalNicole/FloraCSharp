@@ -401,6 +401,152 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
+        [Command("NoticeCooldownReset"), Summary("Reset cooldowns for a person's notices. Debugging tool basically.")]
+        [Alias("NCDReset")]
+        [OwnerOnly]
+        public async Task NoticeCooldownReset(IUser user)
+        {
+            Attention UserAttention;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                UserAttention = uow.Attention.GetOrCreateAttention(user.Id);
+            }
+
+            DateTime timeToResetTo = DateTime.Now - new TimeSpan(24, 1, 0);
+            UserAttention.LastUsage = timeToResetTo;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Attention.Update(UserAttention);
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Reset the cooldown for {user.Username}");
+        }
+
+        struct Person
+        {
+            public IUser User;
+            public IUser Santa;
+        }
+
+        [Command("XmasRoleSolve")]
+        [OwnerOnly]
+        public async Task XmasRoleSolve()
+        {
+            var users = await Context.Guild.GetUsersAsync();
+            IRole xmas = Context.Guild.GetRole((ulong)516754224026222603);
+
+            users.ToList().ForEach(async x =>
+            {
+                if (!x.RoleIds.Contains(xmas.Id))
+                {
+                    await x.AddRoleAsync(xmas);
+                }
+            });
+        }
+
+        [Command("SS")]
+        [OwnerOnly]
+        private async Task SS()
+        {
+            //Get all not bot users
+            var users = await Context.Channel.GetUsersAsync().Flatten();
+            users = users.Where(x => !x.IsBot);
+
+            List<IUser> uL = users.ToList();
+            uL.Shuffle();
+
+            var usersAlt = users.ToList();
+            usersAlt.Shuffle();
+
+            //Here is the pool
+            List<Person> people = new List<Person>();
+
+            foreach (IUser u in uL)
+            {
+                //Remove themself
+                var uTest = usersAlt.Where(x => x != u);
+
+                //Get user
+                var uPick = uTest.RandomItem();
+
+                //Remove from usersAlt
+                usersAlt.Remove(uPick);
+
+                //Now make the person
+                people.Add(new Person { User = u, Santa = uPick });
+            }
+
+            //Send off the DMs
+            foreach (Person p in people)
+            {
+                string name = p.Santa.Username;
+                await p.User.SendMessageAsync($"The real one: {name}");
+            }
+        }
+
+        [Command("Say"), Summary("Makes the bot say shit")]
+        [OwnerOnly]
+        public async Task Say(string location, [Remainder] string content)
+        {
+            string loc = String.Empty;
+            if (location.StartsWith("c") || location.StartsWith("C"))
+            {
+                location = location.Substring(1);
+                ulong channelID;
+                if (!UInt64.TryParse(location, out channelID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to Channel", "Say");
+                IMessageChannel channel = (IMessageChannel)await Context.Client.GetChannelAsync(channelID);
+                await channel.SendMessageAsync(content);
+
+                loc = channel.Name;
+            }
+
+            if (location.StartsWith("u") || location.StartsWith("U"))
+            {
+                location = location.Substring(1);
+                ulong userID;
+                if (!UInt64.TryParse(location, out userID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to User", "Say");
+                IUser User = await Context.Client.GetUserAsync(userID);
+                IDMChannel iDMChannel = await User.GetOrCreateDMChannelAsync();
+                await iDMChannel.SendMessageAsync(content);
+
+                loc = User.Username + "#" + User.Discriminator;
+            }
+
+            if (location.StartsWith("g") || location.StartsWith("G"))
+            {
+                location = location.Substring(1);
+                ulong serverID;
+                if (!UInt64.TryParse(location, out serverID))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid channel");
+                    return;
+                }
+
+                _logger.Log("Sending to User", "Say");
+                IGuild Guild = await Context.Client.GetGuildAsync(serverID);
+                IMessageChannel channel = await Guild.GetDefaultChannelAsync();
+                await channel.SendMessageAsync(content);
+
+                loc = Guild.Name + "/" + channel.Name;
+            }
+
+            await Context.Channel.SendSuccessAsync($"Message sent to {loc}");
+        }
+
         private EmbedBuilder GenerateSongEmbed(CloneHeroSongListModel song)
         {
             //Song is selected

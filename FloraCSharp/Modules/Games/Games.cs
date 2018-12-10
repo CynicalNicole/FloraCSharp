@@ -768,6 +768,7 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("PushTheButton"), Alias("PTB")]
+        [RequireContext(ContextType.Guild)]
         public async Task PushTheButton(string benefit, string consquence, int timeout = 30)
         {
             benefit = benefit.FirstCharToLower().Trim();
@@ -808,6 +809,7 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("Attack"), Alias("ATK")]
+        [RequireContext(ContextType.Guild)]
         public async Task Attack()
         {
             if (_healthLocker.GetAttackStatus())
@@ -893,6 +895,7 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("Health")]
+        [RequireContext(ContextType.Guild)]
         public async Task Health()
         {
             //Get health stuff
@@ -927,6 +930,7 @@ namespace FloraCSharp.Modules.Games
         }
 
         [Command("ResetLastAttack")]
+        [RequireContext(ContextType.Guild)]
         [OwnerOnly]
         public async Task ResetLastAttack()
         {

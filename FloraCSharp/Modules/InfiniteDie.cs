@@ -223,8 +223,6 @@ namespace FloraCSharp.Modules
                 return;
             }
 
-            _cooldowns.AddUserCooldowns("InfiniteDieCreate", Context.User.Id, curTime);
-
             DBconnection _conn = DBconnection.Instance();
             _conn.DBName = "cynicalp_weebnation";
             bool isAvailable = false;
@@ -302,6 +300,8 @@ namespace FloraCSharp.Modules
 
                 _conn.Close();
             }
+
+            _cooldowns.AddUserCooldowns("InfiniteDieCreate", Context.User.Id, curTime);
 
             await Context.Channel.SendSuccessAsync("Side Added!");
             await Context.Channel.SendSuccessAsync("Infinite Die | Side: " + side.ToString(), content, null, "Owner: " + Context.User.Username);
