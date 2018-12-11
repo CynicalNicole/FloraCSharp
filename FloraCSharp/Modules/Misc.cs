@@ -600,6 +600,9 @@ namespace FloraCSharp.Modules
         [Command("QuoteGuess"), Alias("QG")]
         private async Task QuoteGuess(int timeout = 15)
         {
+            //Limit
+            if (timeout > 30) timeout = 30;
+
             var dbConVal = new ValDBConnection(_config.ValDB, _logger);
 
             //Got quote
