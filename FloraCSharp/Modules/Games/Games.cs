@@ -187,7 +187,7 @@ namespace FloraCSharp.Modules.Games
             if (_quoteGuessService.StartQG(Game, (DiscordSocketClient)Context.Client))
             {
                 //Start game
-                await Context.Channel.SendSuccessAsync($":mega: {q.Quote}");
+                await Context.Channel.SendSuccessAsync("📣 Quote", $"{q.Quote}");
 
                 //Wait timeout
                 await Task.Delay(timeout * 1000);
