@@ -11,6 +11,7 @@ using System.Linq;
 using Discord.WebSocket;
 using FloraCSharp.Services.Database.Models;
 using FloraCSharp.Services.ExternalDB;
+using FloraCSharp.Services.ExternalDB.Models;
 
 namespace FloraCSharp.Modules.Games
 {
@@ -21,6 +22,7 @@ namespace FloraCSharp.Modules.Games
         private readonly BotGameHandler _botGames;
         private Services.RNGService _rngservice = new Services.RNGService();
         private Services.PushButtonService _pushButtonService = new Services.PushButtonService();
+        private Services.QuoteGuessService _quoteGuessService = new Services.QuoteGuessService();
         private WoodcuttingLocker _woodcuttingLocker;
         private Configuration _config;
         private HeartLocker _healthLocker;
@@ -159,6 +161,39 @@ namespace FloraCSharp.Modules.Games
                 await Context.Channel.SendSuccessAsync($"RNG Game (Min: {min}, Max: {max})", $"Game started! Type your guesses now! You have {timeout/1000} seconds.");
                 await Task.Delay(timeout);
                 await _rngservice.EndGameInChannel(Context.Guild, Context.Channel, _random);
+            }
+        }
+
+        [Command("QuoteGuess"), Alias("QG")]
+        private async Task QuoteGuess(int timeout = 15)
+        {
+            //Limit
+            if (timeout > 30) timeout = 30;
+
+            var dbConVal = new ValDBConnection(_config.ValDB, _logger);
+
+            //Got quote
+            QuoteModel q = await dbConVal.GetRandomQuote();
+
+            if (q == null) return;
+
+            QuoteGame Game = new QuoteGame
+            {
+                Channel = Context.Channel.Id,
+                Answer = q.Keyword,
+                Guesses = new HashSet<QGuess>()
+            };
+
+            if (_quoteGuessService.StartQG(Game, (DiscordSocketClient)Context.Client))
+            {
+                //Start game
+                await Context.Channel.SendSuccessAsync($":mega: {q.Quote}");
+
+                //Wait timeout
+                await Task.Delay(timeout * 1000);
+
+                //End
+                await _quoteGuessService.EndGameInChannel(Context.Guild, Context.Channel);
             }
         }
 

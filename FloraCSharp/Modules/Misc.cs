@@ -597,28 +597,6 @@ namespace FloraCSharp.Modules
             if (q != null) await Context.Channel.SendMessageAsync($"`\"{q.Keyword.ToLower()}\" #{q.ID}` :mega: {q.Quote}");
         }
 
-        [Command("QuoteGuess"), Alias("QG")]
-        private async Task QuoteGuess(int timeout = 15)
-        {
-            //Limit
-            if (timeout > 30) timeout = 30;
-
-            var dbConVal = new ValDBConnection(_config.ValDB, _logger);
-
-            //Got quote
-            QuoteModel q = await dbConVal.GetRandomQuote();
-
-            if (q == null) return;
-
-            await Context.Channel.SendMessageAsync($"`#{q.ID}` :mega: {q.Quote}");
-
-            //Wait timeout
-            await Task.Delay(timeout * 1000);
-
-            //Tell the answer
-            await Context.Channel.SendMessageAsync($"The correct answer to quote #{q.ID} was: {q.Keyword}");
-        }
-
         [Command("RoleInfo")]
         public async Task RoleInfo(IRole role)
         {
