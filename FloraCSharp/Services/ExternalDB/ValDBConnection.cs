@@ -86,5 +86,42 @@ namespace FloraCSharp.Services.ExternalDB
                 }
             }
         }
+
+        public async Task<QuoteModel> GetRandomQuote()
+        {
+            if (connectionString == "") return null;
+
+            using (var connection = new SqliteConnection($"Data Source={connectionString}"))
+            {
+                try
+                {
+                    var command = connection.CreateCommand();
+
+                    command.CommandText =
+                        "SELECT Id, Text, Keyword FROM Quotes ORDER BY RAND() LIMIT 1";
+
+                    await connection.OpenAsync();
+                    var results = await command.ExecuteReaderAsync();
+
+                    QuoteModel _ret = new QuoteModel();
+
+                    if (!results.HasRows) return null;
+
+                    while (results.Read())
+                    {
+                        _ret.ID = (long)results["Id"];
+                        _ret.Quote = (string)results["Text"];
+                        _ret.Keyword = (string)results["Keyword"];
+                    }
+
+                    return _ret;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Exception: {ex.Message}\n\n{ex.StackTrace}", "ValDB");
+                    return null;
+                }
+            }
+        }
     }
 }
