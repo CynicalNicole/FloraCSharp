@@ -98,7 +98,7 @@ namespace FloraCSharp.Services.ExternalDB
                     var command = connection.CreateCommand();
 
                     command.CommandText =
-                        "SELECT Id, Text, Keyword FROM Quotes ORDER BY RAND() LIMIT 1";
+                        "SELECT Id, Text, Keyword FROM Quotes ORDER BY RANDOM() LIMIT 1";
 
                     await connection.OpenAsync();
                     var results = await command.ExecuteReaderAsync();
