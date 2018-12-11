@@ -722,6 +722,7 @@ namespace FloraCSharp.Modules.Games
 
         [Command("WoodcuttingLeaderboard"), Summary("Get the top 9 (or later with pagination)")]
         [Alias("wclb")]
+        [RequireContext(ContextType.Guild)]
         public async Task WoodcuttingLeaderboard(int page = 0)
         {
             if (page != 0)
