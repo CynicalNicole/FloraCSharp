@@ -28,13 +28,13 @@ namespace FloraCSharp.Modules.Games.Services
                     IGuildUser user = await guild.GetUserAsync(winnerID.UserID);
 
                     await ChannelID.BlankEmbedAsync(new EmbedBuilder().WithOkColour()
-                        .AddField(new EmbedFieldBuilder().WithName("📣 Answer").WithValue(game.Answer))
+                        .AddField(new EmbedFieldBuilder().WithName("📣 Keyword").WithValue(game.Answer))
                         .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue(user.Username)));
                 }
                 else
                 {
                     await ChannelID.BlankEmbedAsync(new EmbedBuilder().WithErrorColour()
-                        .AddField(new EmbedFieldBuilder().WithName("📣 Roll").WithValue(game.Answer))
+                        .AddField(new EmbedFieldBuilder().WithName("📣 Keyword").WithValue(game.Answer))
                         .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue("Nobody. That's sad.")));
                 }
             }
