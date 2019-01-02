@@ -10,6 +10,7 @@ using Discord;
 using Nito.AsyncEx;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FloraCSharp
 {
@@ -70,6 +71,14 @@ namespace FloraCSharp
                 return;
             }
 
+            //Code for table game
+            Regex regex = new Regex(@"(?i)t\s*a\s*b\s*l\s*e");
+
+            if (context.Guild.Id == 199658366421827584 && regex.IsMatch(context.Message.Content))
+            {
+                await WarnNicole(context);
+            }
+
             if (context.Channel is IPrivateChannel && !_config.Owners.Contains(context.User.Id))
             {
                 await DMHandling(context);
@@ -118,6 +127,21 @@ namespace FloraCSharp
 
                 //Sorted
                 await msg.ModifyAsync(x => x.Embed = embed.Build());
+            }
+        }
+
+        private async Task WarnNicole(SocketCommandContext context)
+        {
+            foreach (var OwnerChannel in _ownerChannels)
+            {
+                IDMChannel ownerChannel = await OwnerChannel;
+
+                if (ownerChannel.Recipient.Id != 191196558153220096) return;
+
+                //Var embed
+                var embed = new EmbedBuilder().WithOkColour().WithTitle($"Potential Table Loss from [{context.User.Username}] | {context.User.Id}").WithDescription(context.Message.Content);
+
+                var msg = await ownerChannel.BlankEmbedAsync(embed);
             }
         }
     }
