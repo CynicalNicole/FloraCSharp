@@ -390,7 +390,7 @@ namespace FloraCSharp.Modules.Games
 
             //How many bells?
             var bellMulti = amount / 50000;
-            var bellAmount = bellMulti * 1000;
+            var bellAmount = bellMulti * 500;
 
             //Ok
             var dbConVal = new ValDBConnection(_config.ValDB, _logger);
