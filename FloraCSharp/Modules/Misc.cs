@@ -62,6 +62,9 @@ namespace FloraCSharp.Modules
             //Get a name
             string FetchedName = NameCaching();
 
+            //Caching debug
+            _logger.Log("Fetched name: " + FetchedName, "debug");
+
             //Check name isn't null
             if (String.IsNullOrEmpty(FetchedName)) return;
 
@@ -76,6 +79,9 @@ namespace FloraCSharp.Modules
             //If the current time is larger than the cache, lets get new names
             if (DateTime.Now > lastCacheTime.Add(timeToCache))
             {
+                //Caching debug
+                _logger.Log("Caching names...", "debug");
+
                 //Update cache
                 //First get api sting
                 using (WebClient wc = new WebClient())
@@ -100,6 +106,9 @@ namespace FloraCSharp.Modules
                     //Add the time cached
                     lastCacheTime = DateTime.Now;
                 }
+
+                //Caching debug
+                _logger.Log("Caching complete!", "debug");
             }
 
             //Now use the cache to get a name
