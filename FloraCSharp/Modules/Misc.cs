@@ -17,6 +17,7 @@ using FloraCSharp.Services.ExternalDB.Models;
 using MySql.Data.MySqlClient;
 using CryptSharp;
 using System.Text;
+using System.Net;
 
 namespace FloraCSharp.Modules
 {
@@ -38,12 +39,71 @@ namespace FloraCSharp.Modules
         private readonly string VanityURL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={key}&vanityurl={url}";
         private readonly string VanityGameRun = "steam://run/{id}";
 
+        //Name caching
+        private DateTime lastCacheTime = DateTime.MinValue;
+        private List<string> nameCache = new List<string>();
+        private readonly TimeSpan timeToCache = new TimeSpan(6, 0, 0);
+
+        //Name API
+        private readonly string ApiURL = "https://uinames.com/api/?gender=male&amount=100";
+
         public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config)
         {
             _client = new HttpClient();
             _random = random;
             _logger = logger;
             _config = config;
+        }
+
+        //Matt name command
+        [Command("Matt"), Summary("Get a name")]
+        public async Task Matt()
+        {
+            //Get a name
+            string FetchedName = NameCaching();
+
+            //Check name isn't null
+            if (String.IsNullOrEmpty(FetchedName)) return;
+
+            //Now we do
+            await Context.Channel.SendMessageAsync(FetchedName);
+        }
+
+        //Return a name and update cache if needed
+        private string NameCaching()
+        {
+            //First check if we need to cache
+            //If the current time is larger than the cache, lets get new names
+            if (DateTime.Now > lastCacheTime.Add(timeToCache))
+            {
+                //Update cache
+                //First get api sting
+                using (WebClient wc = new WebClient())
+                {
+                    //Get string
+                    string jsonString = wc.DownloadString(ApiURL);
+                    //Error if null
+                    if (String.IsNullOrEmpty(jsonString)) return null;
+
+                    //String to json
+                    List<RandomNameModel> namesJson = JsonConvert.DeserializeObject<List<RandomNameModel>>(jsonString);
+
+                    //Clear namecache
+                    if (nameCache.Count > 0) nameCache.Clear();
+
+                    //Loop through all strings and cache first name
+                    namesJson.ForEach(x =>
+                    {
+                        nameCache.Add(x.Name);
+                    });
+
+                    //Add the time cached
+                    lastCacheTime = DateTime.Now;
+                }
+            }
+
+            //Now use the cache to get a name
+            return nameCache.RandomItem();
         }
 
         [Command("Test"), Summary("Simple test command to see if the bot is running")]
