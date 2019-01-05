@@ -42,7 +42,7 @@ namespace FloraCSharp.Modules
 
         //Name API
         private readonly TimeSpan timeToCache = new TimeSpan(6, 0, 0);
-        private readonly string ApiURL = "https://uinames.com/api/?gender=male&amount=100";
+        private readonly string ApiURL = "https://uinames.com/api/?gender=male&amount=100&region=england";
 
         public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config, NameLocker nameLocker)
         {
