@@ -28,6 +28,7 @@ namespace FloraCSharp.Modules
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
         private readonly Configuration _config;
+        private readonly NameLocker _nameLocker;
         private readonly CrypterOptions _cryptopts = new CrypterOptions()
         {
             { CrypterOption.Variant, BlowfishCrypterVariant.Corrected },
@@ -39,20 +40,18 @@ namespace FloraCSharp.Modules
         private readonly string VanityURL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={key}&vanityurl={url}";
         private readonly string VanityGameRun = "steam://run/{id}";
 
-        //Name caching
-        private DateTime lastCacheTime = DateTime.MinValue;
-        private List<string> nameCache = new List<string>();
-        private readonly TimeSpan timeToCache = new TimeSpan(6, 0, 0);
-
         //Name API
+        private readonly TimeSpan timeToCache = new TimeSpan(6, 0, 0);
         private readonly string ApiURL = "https://uinames.com/api/?gender=male&amount=100";
 
-        public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config)
+        public Misc(FloraRandom random, FloraDebugLogger logger, Configuration config, NameLocker nameLocker)
         {
             _client = new HttpClient();
             _random = random;
             _logger = logger;
             _config = config;
+
+            _nameLocker = nameLocker;
         }
 
         //Matt name command
@@ -77,7 +76,7 @@ namespace FloraCSharp.Modules
         {
             //First check if we need to cache
             //If the current time is larger than the cache, lets get new names
-            if (DateTime.Now > lastCacheTime.Add(timeToCache))
+            if (DateTime.Now > _nameLocker.GetLastCacheTime().Add(timeToCache))
             {
                 //Caching debug
                 _logger.Log("Caching names...", "debug");
@@ -94,17 +93,20 @@ namespace FloraCSharp.Modules
                     //String to json
                     List<RandomNameModel> namesJson = JsonConvert.DeserializeObject<List<RandomNameModel>>(jsonString);
 
-                    //Clear namecache
-                    if (nameCache.Count > 0) nameCache.Clear();
+                    //Temp name list
+                    List<string> nameList = new List<string>();
 
                     //Loop through all strings and cache first name
                     namesJson.ForEach(x =>
                     {
-                        nameCache.Add(x.Name);
+                        nameList.Add(x.Name);
                     });
 
+                    //Cache namelist
+                    _nameLocker.SetCachedNames(nameList);
+
                     //Add the time cached
-                    lastCacheTime = DateTime.Now;
+                    _nameLocker.SetLastCacheTime(DateTime.Now);
                 }
 
                 //Caching debug
@@ -112,7 +114,7 @@ namespace FloraCSharp.Modules
             }
 
             //Now use the cache to get a name
-            return nameCache.RandomItem();
+            return _nameLocker.GetCachedName();
         }
 
         [Command("Test"), Summary("Simple test command to see if the bot is running")]

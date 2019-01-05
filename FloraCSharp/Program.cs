@@ -127,6 +127,7 @@ namespace FloraCSharp
             _map.AddSingleton(new Cooldowns());
             _map.AddSingleton(new WoodcuttingLocker());
             _map.AddSingleton(new HeartLocker());
+            _map.AddSingleton(new NameLocker());
             _map.AddSingleton(_reactions);
             _map.AddSingleton(_botGames);
 
