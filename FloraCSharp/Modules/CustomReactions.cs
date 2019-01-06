@@ -44,5 +44,19 @@ namespace FloraCSharp.Modules
             await _reactions.RemoveReactionByID(id);
             await Context.Channel.SendSuccessAsync($"Custom Reactions #{id} removed.");
         }
+
+        [Command("ReactionTriggerMethod"), Summary("Change if the trigger works mid-message or not.")]
+        [Alias("RTM")]
+        [OwnerOnly]
+        public async Task ReactionTriggerMethod(int id, bool method)
+        {
+            bool result = await _reactions.SetReactionActivationMethod(id, method);
+            if (!result)
+            {
+                await Context.Channel.SendErrorAsync($"Reaction #{id} does not exist.");
+                return;
+            }
+            await Context.Channel.SendSuccessAsync($"Set reaction #{id}'s 'Anywhere' trigger method to {method}");
+        }
     }
 }
