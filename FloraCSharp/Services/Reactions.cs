@@ -9,28 +9,42 @@ namespace FloraCSharp.Services
 {
     public class Reactions
     {
-        private List<KeyValuePair<KeyValuePair<string, string>, bool>> _reactions = new List<KeyValuePair<KeyValuePair<string, string>, bool>>();
+        struct Reaction
+        {
+            public string Prompt;
+            public string React;
+            public bool Anywhere;
+
+            public Reaction(string p, string r, bool a)
+            {
+                Prompt = p;
+                React = r;
+                Anywhere = a;
+            }
+        }
+
+        private List<Reaction> _reactions = new List<Reaction>();
         private readonly FloraRandom _random;
 
         public Reactions(FloraRandom random)
         {
             _random = random;
-        }
+        }     
 
         public string GetReactionOrNull(string prompt)
         {
-            var possibleReacts = _reactions.Where(x => x.Key.Key.ToLower() == prompt);
+            var possibleReacts = _reactions.Where(x => x.Prompt.ToLower() == prompt);
 
             //If there's no direct react we can check if it contains & AnywhereInSentence is true
             if (possibleReacts.Count() == 0)
             {
-                possibleReacts = _reactions.Where(x => prompt.Contains(x.Key.Key.ToLower()) && x.Value);
+                possibleReacts = _reactions.Where(x => prompt.Contains(x.Prompt.ToLower()) && x.Anywhere);
             }
 
             //If there's still noting return null
             if (possibleReacts.Count() == 0) return null;
 
-            var returnString = possibleReacts.ElementAt(_random.Next(possibleReacts.Count())).Key.Value;
+            var returnString = possibleReacts.ElementAt(_random.Next(possibleReacts.Count())).React;
             return returnString;
         }
 
@@ -41,7 +55,7 @@ namespace FloraCSharp.Services
                 var reactionList = await uow.Reactions.LoadReactions();
                 foreach (var reactionVar in reactionList)
                 {
-                    KeyValuePair<KeyValuePair<string, string>,bool> reaction = new KeyValuePair<KeyValuePair<string, string>, bool>(new KeyValuePair<string, string>(reactionVar.Prompt, reactionVar.Reaction), reactionVar.AnywhereInSentence);
+                    Reaction reaction = new Reaction(reactionVar.Prompt, reactionVar.Reaction, reactionVar.AnywhereInSentence);
                     _reactions.Add(reaction);
                 }
             }
@@ -52,14 +66,14 @@ namespace FloraCSharp.Services
             using (var uow = DBHandler.UnitOfWork())
             {
                 var reactionList = await uow.Reactions.LoadReactions();
-                List<KeyValuePair<KeyValuePair<string, string>, bool>> temp = new List<KeyValuePair<KeyValuePair<string, string>, bool>>();
+                List<Reaction> temp = new List<Reaction>();
                 foreach (var reactionVar in reactionList)
                 {
-                    KeyValuePair<KeyValuePair<string, string>, bool> reaction = new KeyValuePair<KeyValuePair<string, string>, bool>(new KeyValuePair<string, string>(reactionVar.Prompt, reactionVar.Reaction), reactionVar.AnywhereInSentence);
+                    Reaction reaction = new Reaction(reactionVar.Prompt, reactionVar.Reaction, reactionVar.AnywhereInSentence);
                     temp.Add(reaction);
                 }
 
-                _reactions = new List<KeyValuePair<KeyValuePair<string, string>, bool>>(temp);
+                _reactions = new List<Reaction>(temp);
             }
         }
 
@@ -80,7 +94,7 @@ namespace FloraCSharp.Services
                 reactID = ReactionMod.ID;
             }
 
-            KeyValuePair<KeyValuePair<string, string>, bool> react = new KeyValuePair<KeyValuePair<string, string>, bool>(new KeyValuePair<string, string>(prompt, reaction), false);
+            Reaction react = new Reaction(prompt, reaction, false);
             _reactions.Add(react);
 
             return reactID;
