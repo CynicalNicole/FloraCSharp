@@ -124,9 +124,10 @@ namespace FloraCSharp.Services
                 reactionToEdit.AnywhereInSentence = anywhere;
                 uow.Reactions.Update(reactionToEdit);
                 await uow.CompleteAsync();
-
-                return true;
             }
+
+            await HardReload();
+            return true;
         }
     }
 }
