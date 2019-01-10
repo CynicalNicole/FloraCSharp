@@ -506,6 +506,9 @@ namespace FloraCSharp.Modules
                     break;
             }
 
+            //Path 6
+            //s L R Z y b
+
             var randomGame = gamesList.RandomItem();
 
             uint playtimeTwoWeeks = randomGame?.Playtime2Weeks ?? 0;
