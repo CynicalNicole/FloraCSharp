@@ -224,6 +224,9 @@ namespace FloraCSharp.Modules
         [Alias("GDQD")]
         public async Task GDQDonation()
         {
+            //Start flora typing
+            var typing = Context.Channel.EnterTypingState();
+
             string url = "http://taskinoz.com/gdq/api/";
             _client.BaseAddress = new Uri(url);
 
@@ -234,6 +237,8 @@ namespace FloraCSharp.Modules
             {
                 //Parse
                 var ResponseText = await resp.Content.ReadAsStringAsync();
+
+                typing.Dispose();
 
                 await Context.Channel.SendSuccessAsync(ResponseText);
             }
