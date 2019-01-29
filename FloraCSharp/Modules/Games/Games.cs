@@ -677,6 +677,7 @@ namespace FloraCSharp.Modules.Games
             await Task.Delay((int) (tWait * 1000));
 
             bool levelUpFlag = false;
+            bool maxLevel = false;
 
             //Add xp, add tree type
             using (var uow = DBHandler.UnitOfWork())
@@ -684,14 +685,11 @@ namespace FloraCSharp.Modules.Games
                 //So lets check the next level.
                 int nextLevel = wc.Level + 1;
 
-                bool maxLevel = false;
-
                 //Next xp
                 long nextXP = CalculateNextLevelEXP(nextLevel);
 
                 if (nextXP > 200000000)
-                {
-                    maxLevel = true;
+                {                    
                     nextXP = 200000000;
                 }
 
@@ -699,8 +697,9 @@ namespace FloraCSharp.Modules.Games
 
                 if (newXP >= 200000000)
                 {
+                    if (wc.XP != 200000000) maxLevel = true;
+                    else maxLevel = false;
                     newXP = 200000000;
-
                     tXP = newXP - wc.XP;
                 }
 
@@ -734,10 +733,16 @@ namespace FloraCSharp.Modules.Games
             int nLevel = wc.Level + 1;
             long nXP = CalculateNextLevelEXP(nLevel);
 
+            if (nXP > 200000000)
+            {
+                nXP = 200000000;
+            }
+
             //F iiiinally
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
-            if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP}\nTotal XP: {wc.XP} | Next Level: {nXP} | Remaining XP: {nXP - wc.XP}");
+            if (maxLevel) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has hit 200,000,000 XP! How incredibly wasteful of their time.");
+            else if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
+            else await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP}\nTotal XP: {wc.XP} | Next Level: {nXP} | Remaining XP: {nXP - wc.XP}");
         }
 
         [Command("ToggleDoubleXP"), Alias("TDXP")]
