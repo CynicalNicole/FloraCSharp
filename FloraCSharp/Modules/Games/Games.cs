@@ -743,7 +743,7 @@ namespace FloraCSharp.Modules.Games
             _woodcuttingLocker.SetWoodcuttingCooldowns(Context.User.Id, 0);
             if (maxLevel) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has hit 200,000,000 XP! How incredibly wasteful of their time.");
             else if (levelUpFlag) await Context.Channel.SendMessageAsync($"{Context.User.Mention} has levelled up to {wc.Level} woodcutting!");
-            else await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP.ToString("N", CultureInfo.CreateSpecificCulture("en-GB"))}\nTotal XP: {wc.XP.ToString("N", CultureInfo.CreateSpecificCulture("en-GB"))} | Next Level: {nXP.ToString("N", CultureInfo.CreateSpecificCulture("en-GB"))} | Remaining XP: {(nXP - wc.XP).ToString("N", CultureInfo.CreateSpecificCulture("en-GB"))}");
+            else await Context.Channel.SendSuccessAsync($"Woodcutting | Log Count: {chopcount}", $"After {tWait} seconds you chop down {chopcount} {tree} tree(s), {Context.User.Username}.\n Level: {wc.Level} | XP Gained: {tXP.ToString("N0", CultureInfo.CreateSpecificCulture("en-GB"))}\nTotal XP: {wc.XP.ToString("N0", CultureInfo.CreateSpecificCulture("en-GB"))} | Next Level: {nXP.ToString("N0", CultureInfo.CreateSpecificCulture("en-GB"))} | Remaining XP: {(nXP - wc.XP).ToString("N0", CultureInfo.CreateSpecificCulture("en-GB"))}");
         }
 
         [Command("ToggleDoubleXP"), Alias("TDXP")]
