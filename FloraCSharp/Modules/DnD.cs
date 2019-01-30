@@ -145,7 +145,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("Roll"), Summary("Rolls xdy")]
-        public async Task Roll(string roll)
+        public async Task Roll(string roll, int modifier = 0)
         {
             _logger.Log(roll, "DnD");
             roll = roll.Trim();
@@ -169,7 +169,7 @@ namespace FloraCSharp.Modules
                 rolls.Add(_random.Next(dice) + 1);
             }
 
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice}");
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")}");
             string desc = "";
 
             foreach(int i in rolls)
@@ -178,7 +178,7 @@ namespace FloraCSharp.Modules
             }
 
             desc.TrimEnd();
-            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc)).AddField(efb => efb.WithName("Sum").WithValue(rolls.Sum()));
+            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc)).AddField(efb => efb.WithName("Sum").WithValue(rolls.Sum() + modifier));
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
