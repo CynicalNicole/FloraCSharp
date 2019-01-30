@@ -178,7 +178,7 @@ namespace FloraCSharp.Modules
             }
 
             desc.TrimEnd();
-            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum()));
+            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
