@@ -187,6 +187,10 @@ namespace FloraCSharp.Modules
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
+        public async Task PrivateRoll(string username, string roll, [Remainder] string reason = "") => await PrivateRoll(username, roll, reason: reason);
+
+        [RequireContext(ContextType.DM)]
+        [Command("PrivateRoll"), Alias("PR")]
         public async Task PrivateRoll(string username, string roll, int modifier = 0, [Remainder] string reason = "")
         {
             //Is username a username
