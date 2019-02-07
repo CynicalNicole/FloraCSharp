@@ -8,20 +8,22 @@ using System.Linq;
 using Discord;
 using FloraCSharp.Extensions;
 using System.Text.RegularExpressions;
+using Discord.WebSocket;
 
 namespace FloraCSharp.Modules
 {
-    [RequireContext(ContextType.Guild)]
     [Group("DnD")]
     class DnD : ModuleBase
     {
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
+        private readonly DiscordSocketClient _client;
 
-        public DnD(FloraRandom random, FloraDebugLogger logger)
+        public DnD(FloraRandom random, FloraDebugLogger logger, DiscordSocketClient client)
         {
             _random = random;
             _logger = logger;
+            _client = client;
         }
 
         [Command("QuickCS"), Summary("Gets all 6 charsheet stats at once. It'll speed it up.")]
@@ -180,6 +182,54 @@ namespace FloraCSharp.Modules
             desc.TrimEnd();
             embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
 
+            await Context.Channel.BlankEmbedAsync(embed);
+        }
+
+        [RequireContext(ContextType.DM)]
+        [Command("PrivateRoll"), Alias("PR")]
+        public async Task PrivateRoll(IUser DM, string roll, int modifier = 0, [Remainder] string reason = "")
+        {
+            _logger.Log(roll, "DnD");
+            roll = roll.Trim();
+            if (!Regex.IsMatch(roll, @"\d[d]\d*"))
+            {
+                await Context.Channel.SendErrorAsync("Invalid dice string");
+                return;
+            }
+
+            string[] sep = roll.Split('d');
+            int count = Int32.Parse(sep[0]);
+            int dice = Int32.Parse(sep[1]);
+
+            if (count == 0) return;
+            if (count > 50) return;
+
+            List<int> rolls = new List<int>();
+
+            for (int i = 0; i < count; i++)
+            {
+                rolls.Add(_random.Next(dice) + 1);
+            }
+
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")}");
+            string desc = "";
+
+            foreach (int i in rolls)
+            {
+                desc += $"`{i}` ";
+            }
+
+            desc.TrimEnd();
+            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
+
+            if (reason != "")
+            {
+                embed.AddField(efb => efb.WithName("Reason").WithValue(reason));
+            }
+
+            //Get DM
+            IDMChannel dmchannel = await _client.GetUser(DM.Id).GetOrCreateDMChannelAsync();
+            await dmchannel.BlankEmbedAsync(embed);
             await Context.Channel.BlankEmbedAsync(embed);
         }
     }
