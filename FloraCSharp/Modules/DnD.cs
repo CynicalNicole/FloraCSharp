@@ -187,8 +187,27 @@ namespace FloraCSharp.Modules
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(IUser DM, string roll, int modifier = 0, [Remainder] string reason = "")
+        public async Task PrivateRoll(string username, string roll, int modifier = 0, [Remainder] string reason = "")
         {
+            //Is username a username
+            username = username.Trim();
+
+            if (username.StartsWith('@')) username = username.Substring(1);
+
+            if (!Regex.IsMatch(username, @".*#\d{4}$"))
+            {
+                await Context.Channel.SendErrorAsync("Invalid target user.");
+                return;
+            }
+
+            int index = username.LastIndexOf('#');
+
+            string un = username.Substring(0, index);
+            string disc = username.Substring(index + 1);
+
+            //Get DM
+            IDMChannel dmchannel = await _client.GetUser(un, disc).GetOrCreateDMChannelAsync();
+
             _logger.Log(roll, "DnD");
             roll = roll.Trim();
             if (!Regex.IsMatch(roll, @"\d[d]\d*"))
@@ -226,9 +245,7 @@ namespace FloraCSharp.Modules
             {
                 embed.AddField(efb => efb.WithName("Reason").WithValue(reason));
             }
-
-            //Get DM
-            IDMChannel dmchannel = await _client.GetUser(DM.Id).GetOrCreateDMChannelAsync();
+            
             await dmchannel.BlankEmbedAsync(embed);
             await Context.Channel.BlankEmbedAsync(embed);
         }
