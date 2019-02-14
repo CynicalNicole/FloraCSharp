@@ -210,7 +210,8 @@ namespace FloraCSharp.Modules
             string disc = username.Substring(index + 1);
 
             //Get DM
-            IDMChannel dmchannel = await _client.GetUser(un, disc).GetOrCreateDMChannelAsync();
+            IUser targetUser = _client.GetUser(un, disc);
+            IDMChannel dmchannel = await targetUser.GetOrCreateDMChannelAsync();
 
             _logger.Log(roll, "DnD");
             roll = roll.Trim();
@@ -234,7 +235,7 @@ namespace FloraCSharp.Modules
                 rolls.Add(_random.Next(dice) + 1);
             }
 
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")}");
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")} | Rolled by: {Context.User.Username} / Sent to: {targetUser.Username}");
             string desc = "";
 
             foreach (int i in rolls)
