@@ -185,6 +185,12 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
+        [Command("StatRoll"), Summary("Roll a stat for a character")]
+        public async Task StatRoll(string CharName, string StatName)
+        {
+
+        }
+
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
         public async Task PrivateRoll(string username, string roll, [Remainder] string reason = "") => await PrivateRoll(username, roll, 0, reason);
