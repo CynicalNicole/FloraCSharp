@@ -328,12 +328,10 @@ namespace FloraCSharp.Modules
             int finalMeme = roll + modifier;
 
             //GET IT OUT
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name} | Modifier: {modifier}").WithDescription(finalMeme.ToString());
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name}").AddField(efb => efb.WithName("Roll").WithValue(roll).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(finalMeme));
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
-
-        
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
