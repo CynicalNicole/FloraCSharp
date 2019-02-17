@@ -325,7 +325,7 @@ namespace FloraCSharp.Modules
             int finalMeme = roll + modifier;
 
             //GET IT OUT
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name}").WithDescription(finalMeme.ToString());
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name} | Modifier: {modifier}").WithDescription(finalMeme.ToString());
 
             await Context.Channel.BlankEmbedAsync(embed);
         }
