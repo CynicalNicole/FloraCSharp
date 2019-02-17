@@ -283,9 +283,11 @@ namespace FloraCSharp.Modules
 
             string statHereWeGo = SkillToStat[StatName.ToLower()];
             bool profQM = false;
+            bool doubleProfQM = false;
 
             //Do they have proficiency ? ? ?  ?? 
-            if (sheet.ProficientSkills.Contains(StatName.ToLower().Replace(" ", string.Empty))) profQM = true;
+            if (sheet.DoubleProficiencies.Contains(StatName.ToLower().Replace(" ", string.Empty))) doubleProfQM = true;
+            else if (sheet.DoubleProficiencies.Contains(StatName.ToLower().Replace(" ", string.Empty))) profQM = true;
 
             //Go?
             int modifier = 0;
@@ -319,7 +321,8 @@ namespace FloraCSharp.Modules
             modifier = ((int)Math.Floor((double)modifier / 2)) - 5;
 
             // O K
-            if (profQM) modifier += sheet.ProficiencyBonus;
+            if (doubleProfQM) modifier += (2 * sheet.ProficiencyBonus);
+            else if (profQM) modifier += sheet.ProficiencyBonus;
 
             //O  K K K K 
             int roll = _random.Next(20) + 1;

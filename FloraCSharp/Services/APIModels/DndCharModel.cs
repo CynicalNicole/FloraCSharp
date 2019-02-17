@@ -45,5 +45,8 @@ namespace FloraCSharp.Services.APIModels
 
         [JsonProperty("proficiencies")]
         public List<string> ProficientSkills { get; set; }
+
+        [JsonProperty("doubleProficiencies")]
+        public List<string> DoubleProficiencies { get; set; }
     }
 }
