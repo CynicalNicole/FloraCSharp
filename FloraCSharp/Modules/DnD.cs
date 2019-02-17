@@ -287,7 +287,7 @@ namespace FloraCSharp.Modules
 
             //Do they have proficiency ? ? ?  ?? 
             if (sheet.DoubleProficiencies.Contains(StatName.ToLower().Replace(" ", string.Empty))) doubleProfQM = true;
-            else if (sheet.DoubleProficiencies.Contains(StatName.ToLower().Replace(" ", string.Empty))) profQM = true;
+            else if (sheet.ProficientSkills.Contains(StatName.ToLower().Replace(" ", string.Empty))) profQM = true;
 
             //Go?
             int modifier = 0;
