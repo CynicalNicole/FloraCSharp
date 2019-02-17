@@ -7,9 +7,10 @@ namespace FloraCSharp.Services.Database.Repos
 {
     public interface IUserRepository : IRepository<User>
     {
-        User GetOrCreateUser(ulong UserID);
+        User GetOrCreateUser(ulong UserID, bool Expemption = false);
         int GetBotUserID(ulong UserDiscordID);
         ulong GetSteamID(ulong UserDiscordID);
         void SetSteamID(ulong UserDiscordID, ulong SteamID);
+        void SetExemption(ulong UserDiscordID, bool Exemption);
     }
 }

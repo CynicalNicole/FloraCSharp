@@ -19,6 +19,7 @@ namespace FloraCSharp.Modules
 {
     public class Administration : ModuleBase
     {
+        private readonly TimeSpan defaultNull = TimeSpan.FromSeconds(1);
         private readonly FloraRandom _random;
         private FloraDebugLogger _logger;
         private readonly DiscordSocketClient _client;
@@ -484,6 +485,88 @@ namespace FloraCSharp.Modules
                 string name = p.Santa.Username;
                 await p.User.SendMessageAsync($"The real one: {name}");
             }
+        }
+
+        [Command("SetImageChannel"), Summary("Set an image channel up.")]
+        [Alias("SIC")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task SetImageChannel(IGuildChannel channel, int CooldownMinutes, int MaxPosts)
+        {
+            TimeSpan ts = TimeSpan.FromMinutes(CooldownMinutes);
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                if (uow.Channels.DoesChannelExist(channel.Id))
+                {
+                    //Get and update it cause it does
+                    Channels C = uow.Channels.GetOrCreateChannel(channel.Id, ts);
+                    C.CooldownTime = ts;
+                    C.MaxPosts = MaxPosts;
+                    C.State = true;
+
+                    uow.Channels.Update(C);
+                }
+                else
+                {
+                    //Add it cause it doesn't
+                    uow.Channels.GetOrCreateChannel(channel.Id, ts, MaxPosts, true);
+                }
+
+                //Save it all
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Enabled image post rate limiting in {channel.Name}. Cooldown: {CooldownMinutes}m | Max Posts: {MaxPosts}");
+        }
+
+        [Command("RemoveImageChannel"), Summary("Remove an image channel.")]
+        [Alias("RIC")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task RemoveImageChannel(IGuildChannel channel)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                if (uow.Channels.DoesChannelExist(channel.Id))
+                {
+                    //Get and update it cause it does
+                    Channels C = uow.Channels.GetOrCreateChannel(channel.Id, defaultNull);
+                    C.State = false;
+
+                    uow.Channels.Update(C);
+                }
+                else
+                {
+                    //Add it cause it doesn't
+                    uow.Channels.GetOrCreateChannel(channel.Id, defaultNull);
+                }
+
+                //Save it all
+                await uow.CompleteAsync();
+            }
+
+            await Context.Channel.SendSuccessAsync($"Disabled image post rate limiting in {channel.Name}.");
+        }
+
+        [Command("SetUserExemption"), Summary("Remove an image channel.")]
+        [Alias("SUE")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task SetUserExemption(IGuildUser user, bool exemption)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.User.SetExemption(user.Id, exemption);
+
+                //Save it all
+                await uow.CompleteAsync();
+            }
+
+            string ex = "";
+            if (exemption)
+                ex = "above the law";
+            else
+                ex = "bound by limitations";
+
+            await Context.Channel.SendSuccessAsync($"Set {user.Username} to be {ex}.");
         }
 
         [Command("Say"), Summary("Makes the bot say shit")]

@@ -19,7 +19,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             return u.ID;
         }
 
-        public User GetOrCreateUser(ulong UserID)
+        public User GetOrCreateUser(ulong UserID, bool Exemption = false)
         {
             User toReturn;
             toReturn = _set.FirstOrDefault(x => x.UserID == UserID);
@@ -29,7 +29,8 @@ namespace FloraCSharp.Services.Database.Repos.Impl
                 _set.Add(toReturn = new User()
                 {
                     UserID = UserID,
-                    SteamID = 0
+                    SteamID = 0,
+                    IsExempt = Exemption
                 });
                 _context.SaveChanges();
             }
@@ -47,6 +48,15 @@ namespace FloraCSharp.Services.Database.Repos.Impl
         {
             User u = GetOrCreateUser(UserDiscordID);
             u.SteamID = SteamID;
+
+            _set.Update(u);
+            _context.SaveChanges();
+        }
+
+        public void SetExemption(ulong UserDiscordID, bool Exemption)
+        {
+            User u = GetOrCreateUser(UserDiscordID);
+            u.IsExempt = Exemption;
 
             _set.Update(u);
             _context.SaveChanges();
