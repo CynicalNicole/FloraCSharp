@@ -19,6 +19,8 @@ namespace FloraCSharp.Services.Database
     {
         public DbSet<UserRating> UserRatings { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<Channels> Channels { get; set; }
+        public DbSet<UserRate> UserRate { get; set; }
         public DbSet<ReactionModel> ReactionModel { get; set; }
         public DbSet<CustomRole> CustomRole { get; set; }
         public DbSet<Currency> Currency { get; set; }
@@ -45,6 +47,20 @@ namespace FloraCSharp.Services.Database
                 .HasIndex(d => d.UserID)
                 .IsUnique();
 
+            #endregion
+
+            #region Channels
+            var channelsEntity = modelBuilder.Entity<Channels>();
+            channelsEntity
+                .HasIndex(d => d.ChannelID)
+                .IsUnique();
+            #endregion
+
+            #region UserRate
+            var userRateEntity = modelBuilder.Entity<UserRate>();
+            userRateEntity
+                .HasIndex(d => d.ID)
+                .IsUnique();
             #endregion
 
             #region Reactions
