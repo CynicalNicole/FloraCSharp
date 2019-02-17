@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using FloraCSharp.Extensions;
 using FloraCSharp.Services.Database.Models;
 using System;
 using System.Collections.Generic;

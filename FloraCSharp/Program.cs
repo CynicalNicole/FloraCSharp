@@ -71,6 +71,7 @@ namespace FloraCSharp
 
             provider.GetRequiredService<CommandHandler>();
             //provider.GetRequiredService<StartupHandler>();
+            provider.GetRequiredService<ImageRateLimitHandler>();
             provider.GetRequiredService<ReactionHandler>();
 
             _logger.Log("Updating User List", "Startup");
@@ -146,6 +147,7 @@ namespace FloraCSharp
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             //_map.AddSingleton<StartupHandler>();
+            _map.AddSingleton<ImageRateLimitHandler>();
             _map.AddSingleton<ReactionHandler>();
             _map.AddSingleton(_config);
         }

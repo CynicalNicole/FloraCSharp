@@ -1,4 +1,6 @@
 ﻿using Discord;
+using Discord.Rest;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
