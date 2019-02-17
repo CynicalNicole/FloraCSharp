@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Linq;
 using Discord;
 using FloraCSharp.Extensions;
 using System.Text.RegularExpressions;
 using Discord.WebSocket;
+using System.IO;
+using FloraCSharp.Services.APIModels;
 
 namespace FloraCSharp.Modules
 {
@@ -18,6 +21,68 @@ namespace FloraCSharp.Modules
         private FloraDebugLogger _logger;
         private readonly FloraRandom _random;
         private readonly DiscordSocketClient _client;
+
+        private readonly Dictionary<string, string> SkillToStat = new Dictionary<string, string>()
+        {
+            { "strength", "strength" },
+            { "athletics", "strength" },
+            { "strengthsave", "strength" },
+            { "strength save", "strength" },
+            { "strength saving throw", "strength" },
+            { "dexterity", "dexterity" },
+            { "dexterity saving throw", "dexterity" },
+            { "dex", "dexterity" },
+            { "dexsave", "dexterity" },
+            { "dexteritysave", "dexterity" },
+            { "dexterity save", "dexterity" },
+            { "acrobatics", "dexterity" },
+            { "sleight of hand", "dexterity" },
+            { "sleight", "dexterity" },
+            { "soh", "dexterity" },
+            { "stealth", "dexterity" },
+            { "constitution", "constitution" },
+            { "constitution saving throw", "constitution" },
+            { "const", "constitution" },
+            { "constsave", "constitution" },
+            { "const save", "constitution" },
+            { "constitution save", "constitution" },
+            { "constitutionsave", "constitution" },
+            { "intelligence", "intelligence" },
+            { "intelligence saving throw", "intelligence" },
+            { "intelligencesave", "intelligence" },
+            { "int", "intelligence" },
+            { "intsave", "intelligence" },
+            { "int save", "intelligence" },
+            { "intelligence save", "intelligence" },
+            { "arcana", "intelligence" },
+            { "history", "intelligence" },
+            { "investigation", "intelligence" },
+            { "nature", "intelligence" },
+            { "religion", "intelligence" },
+            { "wisdom", "wisdom" },
+            { "wisdomsave", "wisdom" },
+            { "wisdom save", "wisdom" },
+            { "wisdom saving throw", "wisdom" },
+            { "wis", "wisdom" },
+            { "wis save", "wisdom" },
+            { "wissave", "wisdom" },
+            { "animal handling", "wisdom" },
+            { "animalhandling", "wisdom" },
+            { "insight", "wisdom" },
+            { "medicine", "wisdom" },
+            { "perception", "wisdom" },
+            { "survival", "wisdom" },
+            { "charisma", "charisma" },
+            { "charismasave", "charisma" },
+            { "charisma save", "charisma" },
+            { "charisma saving throw", "charisma" },
+            { "charsave", "charisma" },
+            { "char save", "charisma" },
+            { "deception", "charisma" },
+            { "intimidation", "charisma" },
+            { "performance", "charisma" },
+            { "persuasion", "charisma" }
+        };
 
         public DnD(FloraRandom random, FloraDebugLogger logger, DiscordSocketClient client)
         {
@@ -186,10 +251,86 @@ namespace FloraCSharp.Modules
         }
 
         [Command("StatRoll"), Summary("Roll a stat for a character")]
-        public async Task StatRoll(string CharName, string StatName)
+        public async Task StatRoll(string CharName, [Remainder] string StatName)
         {
+            //Check if file exists
+            CharName = CharName.ToLower();
 
+            //Server directory path
+            string directory = @"data/dnd";
+
+            //Path to storage
+            string filePath = directory + @"/" + CharName + ".json";
+
+            //Woah hold up there, they've not had roles saved
+            if (!File.Exists(filePath))
+            {
+                await Context.Channel.SendErrorAsync("Character does not exist.");
+                return;
+            }
+
+            string rawJson = File.ReadAllText(filePath);
+
+            //Neat shit. Go
+            DndCharModel sheet = JsonConvert.DeserializeObject<DndCharModel>(rawJson);
+
+            //Okay now convert their statname into a base name
+            if (!SkillToStat.ContainsKey(StatName.ToLower()))
+            {
+                await Context.Channel.SendErrorAsync("Skill does not exist.");
+                return;
+            }
+
+            string statHereWeGo = SkillToStat[StatName.ToLower()];
+            bool profQM = false;
+
+            //Do they have proficiency ? ? ?  ?? 
+            if (sheet.ProficientSkills.Contains(StatName.ToLower().Replace(" ", string.Empty))) profQM = true;
+
+            //Go?
+            int modifier = 0;
+
+            switch (statHereWeGo)
+            {
+                case "strength":
+                    modifier = sheet.Strength;
+                    break;
+                case "dexterity":
+                    modifier = sheet.Dexterity;
+                    break;
+                case "constitution":
+                    modifier = sheet.Constitution;
+                    break;
+                case "intelligence":
+                    modifier = sheet.Intelligence;
+                    break;
+                case "wisdom":
+                    modifier = sheet.Wisdom;
+                    break;
+                case "charisma":
+                    modifier = sheet.Charisma;
+                    break;
+                default:
+                    await Context.Channel.SendErrorAsync("Panic. Please.");
+                    return;
+            };
+
+            // O K
+            if (profQM) modifier += sheet.ProficiencyBonus;
+
+            //O  K K K K 
+            int roll = _random.Next(20) + 1;
+
+            //O  K K K K K KK K K 
+            int finalMeme = roll + modifier;
+
+            //GET IT OUT
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name}").WithDescription(finalMeme.ToString());
+
+            await Context.Channel.BlankEmbedAsync(embed);
         }
+
+        
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
