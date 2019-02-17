@@ -315,6 +315,9 @@ namespace FloraCSharp.Modules
                     return;
             };
 
+            //haha
+            modifier = ((int)Math.Floor((double)modifier / 2)) - 5;
+
             // O K
             if (profQM) modifier += sheet.ProficiencyBonus;
 
