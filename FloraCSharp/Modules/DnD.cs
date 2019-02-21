@@ -351,6 +351,8 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
+                _logger.Log(m.Value, "[DND ConvGold] ETH ");
+
                 if (!Int32.TryParse(m.Value, out ethCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid eth.");
@@ -362,6 +364,8 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
+                _logger.Log(m.Value, "[DND ConvGold] PP ");
+
                 if (!Int32.TryParse(m.Value, out ppCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid pp.");
@@ -373,6 +377,8 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
+                _logger.Log(m.Value, "[DND ConvGold] GP ");
+
                 if (!Int32.TryParse(m.Value, out gpCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid gp.");
@@ -384,6 +390,8 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
+                _logger.Log(m.Value, "[DND ConvGold] SP ");
+
                 if (!Int32.TryParse(m.Value, out spCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid sp.");
@@ -395,6 +403,8 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
+                _logger.Log(m.Value, "[DND ConvGold] CP ");
+
                 if (!Int32.TryParse(m.Value, out cpCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid cp.");
