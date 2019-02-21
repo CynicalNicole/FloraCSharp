@@ -250,7 +250,7 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
-        [Command("StatRoll"), Summary("Roll a stat for a character")]
+        /*[Command("StatRoll"), Summary("Roll a stat for a character")]
         public async Task StatRoll(string CharName, [Remainder] string StatName)
         {
             //Check if file exists
@@ -334,7 +334,7 @@ namespace FloraCSharp.Modules
             var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {StatName} for {sheet.Name}").AddField(efb => efb.WithName("Roll").WithValue(roll).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(finalMeme));
 
             await Context.Channel.BlankEmbedAsync(embed);
-        }
+        }*/
 
         [Command("ConvertToGold"), Alias("ConvGold")]
         public async Task ConvertToGold([Remainder] string GoldString)
