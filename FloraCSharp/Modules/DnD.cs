@@ -351,7 +351,7 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value, "[DND ConvGold] ETH ");
+                _logger.Log(m.Value.Substring(0, m.Value.Length - 3), "[DND ConvGold] ETH ");
 
                 if (!Int32.TryParse(m.Value, out ethCount))
                 {
@@ -366,7 +366,7 @@ namespace FloraCSharp.Modules
             {
                 _logger.Log(m.Value, "[DND ConvGold] PP ");
 
-                if (!Int32.TryParse(m.Value, out ppCount))
+                if (!Int32.TryParse(m.Value.Substring(0, m.Value.Length - 2), out ppCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid pp.");
                     return;
@@ -377,7 +377,7 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value, "[DND ConvGold] GP ");
+                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] GP ");
 
                 if (!Int32.TryParse(m.Value, out gpCount))
                 {
@@ -390,7 +390,7 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value, "[DND ConvGold] SP ");
+                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] SP ");
 
                 if (!Int32.TryParse(m.Value, out spCount))
                 {
@@ -403,7 +403,7 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value, "[DND ConvGold] CP ");
+                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] CP ");
 
                 if (!Int32.TryParse(m.Value, out cpCount))
                 {
