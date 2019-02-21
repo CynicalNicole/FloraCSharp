@@ -337,7 +337,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("ConvertToGold"), Alias("ConvGold")]
-        public async Task ConvertToGold(string GoldString)
+        public async Task ConvertToGold([Remainder] string GoldString)
         {
             //Counts
             int ethCount = 0;
