@@ -413,7 +413,7 @@ namespace FloraCSharp.Modules
             }
 
             //Multiply/Divide values
-            float finalGoldTotal = (ethCount * 500) + (ppCount * 10) + gpCount + (spCount / 10) + (cpCount / 100);
+            float finalGoldTotal = ((float) ethCount * 500) + ((float) ppCount * 10) + (float) gpCount + ((float) spCount / 10) + ((float) cpCount / 100);
 
             await Context.Channel.SendSuccessAsync("Gold Value", finalGoldTotal.ToString());
         }
