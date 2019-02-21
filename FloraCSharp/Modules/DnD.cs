@@ -336,6 +336,78 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed);
         }
 
+        [Command("ConvertToGold"), Alias("ConvGold")]
+        public async Task ConvertToGold(string GoldString)
+        {
+            //Counts
+            int ethCount = 0;
+            int ppCount = 0;
+            int gpCount = 0;
+            int spCount = 0;
+            int cpCount = 0;
+
+            //Get count from string
+            Match m = new Regex(@"\d*eth", RegexOptions.IgnoreCase).Match(GoldString);
+
+            if (m.Success)
+            {
+                if (!Int32.TryParse(m.Value, out ethCount))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid eth.");
+                    return;
+                }
+            }
+
+            m = new Regex(@"\d*pp", RegexOptions.IgnoreCase).Match(GoldString);
+
+            if (m.Success)
+            {
+                if (!Int32.TryParse(m.Value, out ppCount))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid pp.");
+                    return;
+                }
+            }
+
+            m = new Regex(@"\d*gp", RegexOptions.IgnoreCase).Match(GoldString);
+
+            if (m.Success)
+            {
+                if (!Int32.TryParse(m.Value, out gpCount))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid gp.");
+                    return;
+                }
+            }
+
+            m = new Regex(@"\d*sp", RegexOptions.IgnoreCase).Match(GoldString);
+
+            if (m.Success)
+            {
+                if (!Int32.TryParse(m.Value, out spCount))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid sp.");
+                    return;
+                }
+            }
+
+            m = new Regex(@"\d*cp", RegexOptions.IgnoreCase).Match(GoldString);
+
+            if (m.Success)
+            {
+                if (!Int32.TryParse(m.Value, out cpCount))
+                {
+                    await Context.Channel.SendErrorAsync("Invalid cp.");
+                    return;
+                }
+            }
+
+            //Multiply/Divide values
+            int finalGoldTotal = (ethCount * 500) + (ppCount * 10) + gpCount + (spCount / 10) + (cpCount / 100);
+
+            await Context.Channel.SendSuccessAsync("Gold Value", finalGoldTotal.ToString());
+        }
+
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
         public async Task PrivateRoll(string username, string roll, [Remainder] string reason = "") => await PrivateRoll(username, roll, 0, reason);
