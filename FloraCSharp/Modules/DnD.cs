@@ -351,9 +351,9 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value.Substring(0, m.Value.Length - 3), "[DND ConvGold] ETH ");
+                _logger.Log(m.Value, "[DND ConvGold] ETH ");
 
-                if (!Int32.TryParse(m.Value, out ethCount))
+                if (!Int32.TryParse(m.Value.Substring(0, m.Value.Length - 3), out ethCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid eth.");
                     return;
@@ -377,9 +377,9 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] GP ");
+                _logger.Log(m.Value, "[DND ConvGold] GP ");
 
-                if (!Int32.TryParse(m.Value, out gpCount))
+                if (!Int32.TryParse(m.Value.Substring(0, m.Value.Length - 2), out gpCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid gp.");
                     return;
@@ -390,9 +390,9 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] SP ");
+                _logger.Log(m.Value, "[DND ConvGold] SP ");
 
-                if (!Int32.TryParse(m.Value, out spCount))
+                if (!Int32.TryParse(m.Value.Substring(0, m.Value.Length - 2), out spCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid sp.");
                     return;
@@ -403,9 +403,9 @@ namespace FloraCSharp.Modules
 
             if (m.Success)
             {
-                _logger.Log(m.Value.Substring(0, m.Value.Length - 2), "[DND ConvGold] CP ");
+                _logger.Log(m.Value, "[DND ConvGold] CP ");
 
-                if (!Int32.TryParse(m.Value, out cpCount))
+                if (!Int32.TryParse(m.Value.Substring(0, m.Value.Length - 2), out cpCount))
                 {
                     await Context.Channel.SendErrorAsync("Invalid cp.");
                     return;
