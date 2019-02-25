@@ -25,6 +25,8 @@ namespace FloraCSharp
         private List<AsyncLazy<IDMChannel>> _ownerChannels;
         private readonly FloraRandom _random;
 
+        private bool watchYourWord = false;
+
         public CommandHandler(
             DiscordSocketClient discord,
             CommandService commands,
@@ -74,7 +76,7 @@ namespace FloraCSharp
             //Code for table game
             Regex regex = new Regex(@"(?i)t\s*a\s*b\s*l\s*e");
 
-            if (context.Guild.Id == 199658366421827584 && regex.IsMatch(context.Message.Content))
+            if (context.Guild.Id == 199658366421827584 && regex.IsMatch(context.Message.Content) && watchYourWord)
             {
                 await WarnNicole(context);
             }
