@@ -3,17 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace FloraCSharp.Services
 {
     public class ReactionHandler
     {
         private readonly DiscordSocketClient _discord;
+        private readonly Configuration _config;
 
         public ReactionHandler(
-            DiscordSocketClient discord)
+            DiscordSocketClient discord,
+            Configuration config)
         {
             _discord = discord;
+            _config = config;
 
             _discord.ReactionAdded += _discord_ReactionAdded;
         }
@@ -22,11 +26,19 @@ namespace FloraCSharp.Services
         {
             var msg = await arg1.GetOrDownloadAsync();
 
-            if (!msg.Channel.IsNsfw) return;
-
             if (msg.Reactions[arg3.Emote].IsMe) return;
 
-            await msg.AddReactionAsync(arg3.Emote);
+            if (!msg.Channel.IsNsfw)
+            {
+                await msg.AddReactionAsync(arg3.Emote);
+                return;
+            }
+            
+            if (_config.Owners.Contains(msg.Author.Id))
+            {
+                await msg.AddReactionAsync(arg3.Emote);
+                return;
+            }
         }
     }
 }
