@@ -43,6 +43,12 @@ namespace FloraCSharp.Services.Database
         private IChannelsRepository _channels;
         public IChannelsRepository Channels => _channels ?? (_channels = new ChannelsRepository(_context));
 
+        private IGuildRepository _guild;
+        public IGuildRepository Guild => _guild ?? (_guild = new GuildRepository(_context));
+
+        private IBlockedLogsRepository _blockedLogs;
+        public IBlockedLogsRepository BlockedLogs => _blockedLogs ?? (_blockedLogs = new BlockedLogsRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

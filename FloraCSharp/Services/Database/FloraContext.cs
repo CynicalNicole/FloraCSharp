@@ -27,6 +27,8 @@ namespace FloraCSharp.Services.Database
         public DbSet<BotGames> BotGames { get; set; }
         public DbSet<Birthday> Birthday { get; set; }
         public DbSet<Attention> Attention { get; set; }
+        public DbSet<BlockedLogs> BlockedLogs { get; set; }
+        public DbSet<Guild> Guild { get; set; }
         private readonly FloraDebugLogger logger = new FloraDebugLogger();
 
         public FloraContext() : base()
@@ -126,6 +128,20 @@ namespace FloraCSharp.Services.Database
             var woodcuttingEntity = modelBuilder.Entity<Woodcutting>();
             woodcuttingEntity
                 .HasIndex(d => d.UserID)
+                .IsUnique();
+            #endregion
+
+            #region Guild
+            var guildEntity = modelBuilder.Entity<Guild>();
+            guildEntity
+                .HasIndex(d => d.GuildID)
+                .IsUnique();
+            #endregion
+
+            #region BlockedLogs
+            var blockedLogsEntity = modelBuilder.Entity<BlockedLogs>();
+            blockedLogsEntity
+                .HasIndex(d => d.ServerID)
                 .IsUnique();
             #endregion
         }

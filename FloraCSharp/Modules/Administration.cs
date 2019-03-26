@@ -86,6 +86,96 @@ namespace FloraCSharp.Modules
                 await Context.Channel.SendSuccessAsync("Saved roles for " + user.Mention);
         }
 
+        [Command("SetDeletedLogChannel")]
+        [Alias("SDLC")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task SetDeletedLogChannel(IGuildChannel channel)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Guild.SetGuildDelChannel(Context.Guild.Id, channel.Id);
+            }
+
+            await Context.Channel.SendSuccessAsync($"Set guild's delete log channel to: {channel.Name}");
+        }
+
+        [Command("SetDeleteLog")]
+        [Alias("SDL")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task SetDeleteLog(bool t)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.Guild.SetGuildDelLogEnabled(Context.Guild.Id, t);
+            }
+
+            string ret = "";
+            if (t)
+                ret = "Turned on deletion logging for this server.";
+            else
+                ret = "Turned off deletion logging for this server.";
+
+            await Context.Channel.SendSuccessAsync(ret);
+        }
+
+        [Command("IsDeleteLoggingEnabled")]
+        [Alias("IDLE")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task IsDeleteLoggingEnabled()
+        {
+            Guild G = null;
+            string Status = "Disabled.";
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                G = uow.Guild.GetOrCreateGuild(Context.Guild.Id);
+            }
+
+            if (G.DeleteLogEnabled)
+                Status = "Eanbled.";
+
+            await Context.Channel.SendSuccessAsync("Logging", $"State: {Status} | ChannelID: {G.DeleteLogChannel}");
+        }
+
+        [Command("AddBL")]
+        [Alias("ABL")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task AddBL([Remainder] string s)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.BlockedLogs.AddBlockedLog(Context.Guild.Id, s);
+            }
+
+            await Context.Channel.SendSuccessAsync("Added blocked log filter!");
+        }
+
+        [Command("DeleteBL")]
+        [Alias("DBL")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task DeleteBL([Remainder] string message)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.BlockedLogs.DeleteBlockedLog(Context.Guild.Id, message);
+            }
+
+            await Context.Channel.SendSuccessAsync("Deleted blocked log filter!");
+        }
+
+        [Command("DeleteBL")]
+        [Alias("DBL")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task DeleteBL(int ID)
+        {
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.BlockedLogs.DeleteBlockedLog(ID);
+            }
+
+            await Context.Channel.SendSuccessAsync("Deleted blocked log filter!");
+        }
+
         [Command("Restore"), Summary("Restores a user's roles")]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
