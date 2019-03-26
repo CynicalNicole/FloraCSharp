@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Discord;
 using FloraCSharp.Extensions;
+using FloraCSharp.Services.Database.Models;
 
 namespace FloraCSharp.Services
 {
