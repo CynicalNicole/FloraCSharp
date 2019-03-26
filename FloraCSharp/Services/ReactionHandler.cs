@@ -90,11 +90,9 @@ namespace FloraCSharp.Services
 
             await ChannelToSend.BlankEmbedAsync(embed.WithFooter(footer));
 
-            if (CachedMessage.Attachments.Count == 0) return;
-
-            foreach (var attatchment in CachedMessage.Attachments)
+            if (CachedMessage.Attachments.Count < 0)
             {
-                await ChannelToSend.SendMessageAsync($"Message ID: {CachedMessage.Id} has attachment: {attatchment.Url}");
+                await ChannelToSend.SendMessageAsync(string.Format("Message ID: {0} contained {1} attachment{2}.", CachedMessage.Id, CachedMessage.Attachments.Count, CachedMessage.Attachments.Count > 1 || CachedMessage.Attachments.Count == 0 ? "s" : string.Empty));
             }
         }
     }
