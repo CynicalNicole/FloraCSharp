@@ -150,6 +150,21 @@ namespace FloraCSharp.Modules
             await Context.Channel.SendSuccessAsync("Added blocked log filter!");
         }
 
+        [Command("ArchiveChannel"), Alias("ArchiveCH", "Archive")]
+        [RequireUserPermission(GuildPermission.ManageChannels)]
+        [RequireContext(ContextType.Guild)]
+        public async Task ArchiveChannel([Remainder] IGuildChannel channel)
+        {
+            //First we need to move channel 
+            var cat = await Context.Guild.GetCategoriesAsync();
+            ICategoryChannel category = cat.Where(x => x.Id == 548238743476240405).FirstOrDefault();
+
+            if (category == null) return;
+
+            //Move it now
+            await channel.ModifyAsync(x => x.CategoryId = category.Id);
+        }
+
         [Command("DeleteBL")]
         [Alias("DBL")]
         [RequireUserPermission(GuildPermission.Administrator)]
@@ -288,7 +303,7 @@ namespace FloraCSharp.Modules
         [OwnerOnly]
         public async Task SetStream(string stream, [Remainder] string gameName)
         {
-            await _client.SetGameAsync(gameName, stream, StreamType.Twitch);
+            await _client.SetGameAsync(gameName, stream, ActivityType.Streaming);
         }
 
         [Command("AddRotatingGame"), Summary("Adds a game to the list of the rotating games")]
@@ -426,20 +441,23 @@ namespace FloraCSharp.Modules
             }
         }
 
-        [Command("FloraDMClear"), Alias("FDMC")]
+        /*[Command("FloraDMClear"), Alias("FDMC")]
         [RequireContext(ContextType.DM)]
         [OwnerOnly]
         public async Task FloraDMClear(int count = 1)
         {
             //Get previous messages
-            var Messages = await Context.Channel.GetMessagesAsync().Flatten();
+            var Messages = Context.Channel.GetMessagesAsync().Flatten();
 
             //Filter to flora only
             var Filtered = Messages.Where(x => x.Author.Id == _client.CurrentUser.Id).Take(count);
 
             //Now we prune
-            await Context.Channel.DeleteMessagesAsync(Filtered);
-        }
+            foreach (IMessage msg in Filtered.)
+            {
+
+            }
+        }*/
 
         [Command("RandomSong"), Alias("RS")]
         [RequireContext(ContextType.DM)]
@@ -461,7 +479,7 @@ namespace FloraCSharp.Modules
             var embed = GenerateSongEmbed(song);
 
             //Output embed
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("RandomSong"), Alias("RS")]
@@ -489,7 +507,7 @@ namespace FloraCSharp.Modules
             var embed = GenerateSongEmbed(song);
 
             //Output embed
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("NoticeCooldownReset"), Summary("Reset cooldowns for a person's notices. Debugging tool basically.")]
@@ -537,7 +555,7 @@ namespace FloraCSharp.Modules
             });
         }
 
-        [Command("SS")]
+        /*[Command("SS")]
         [OwnerOnly]
         private async Task SS()
         {
@@ -575,7 +593,7 @@ namespace FloraCSharp.Modules
                 string name = p.Santa.Username;
                 await p.User.SendMessageAsync($"The real one: {name}");
             }
-        }
+        }*/
 
         [Command("SetImageChannel"), Summary("Set an image channel up.")]
         [Alias("SIC")]

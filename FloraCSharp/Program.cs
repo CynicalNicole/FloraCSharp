@@ -59,10 +59,13 @@ namespace FloraCSharp
             _botGames = new BotGameHandler(_random, _client, _logger);
             await _botGames.LoadBotGamesFromDB();
 
-            //Command Setup
-            await InitCommands();
+            //Services
+            await InitServices();
 
             var provider = _map.BuildServiceProvider();
+
+            //Command Setup
+            await InitCommands(provider);            
 
             _commands.Log += Log;
 
@@ -120,7 +123,7 @@ namespace FloraCSharp
             return Task.CompletedTask;
         }
 
-        private async Task InitCommands()
+        private async Task InitServices()
         {
             //Repeat for all service classes
             _map.AddSingleton(_client);
@@ -133,18 +136,6 @@ namespace FloraCSharp
             _map.AddSingleton(_reactions);
             _map.AddSingleton(_botGames);
 
-            //For each module do the following
-            await _commands.AddModuleAsync<NoLifes>();
-            await _commands.AddModuleAsync<Misc>();
-            await _commands.AddModuleAsync<Administration>();
-            await _commands.AddModuleAsync<InfiniteDie>();
-            await _commands.AddModuleAsync<CustomReactions>();
-            await _commands.AddModuleAsync<CustomRoles>();
-            await _commands.AddModuleAsync<Games>();
-            await _commands.AddModuleAsync<Money>();
-            await _commands.AddModuleAsync<DnD>();
-            await _commands.AddModuleAsync<Cyphers>();
-
             _map.AddSingleton(_commands);
             _map.AddSingleton<CommandHandler>();
             //_map.AddSingleton<StartupHandler>();
@@ -152,6 +143,21 @@ namespace FloraCSharp
             _map.AddSingleton<ImageRateLimitHandler>();
             _map.AddSingleton<ReactionHandler>();
             _map.AddSingleton(_config);
+        }
+
+        private async Task InitCommands(IServiceProvider prov)
+        {
+            //For each module do the following
+            await _commands.AddModuleAsync<NoLifes>(prov);
+            await _commands.AddModuleAsync<Misc>(prov);
+            await _commands.AddModuleAsync<Administration>(prov);
+            await _commands.AddModuleAsync<InfiniteDie>(prov);
+            await _commands.AddModuleAsync<CustomReactions>(prov);
+            await _commands.AddModuleAsync<CustomRoles>(prov);
+            await _commands.AddModuleAsync<Games>(prov);
+            await _commands.AddModuleAsync<Money>(prov);
+            await _commands.AddModuleAsync<DnD>(prov);
+            await _commands.AddModuleAsync<Cyphers>(prov);
         }
 
         public void WorkingTask()

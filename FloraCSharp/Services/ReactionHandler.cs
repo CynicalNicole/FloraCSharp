@@ -31,12 +31,6 @@ namespace FloraCSharp.Services
             var msg = await arg1.GetOrDownloadAsync();
 
             if (msg.Reactions[arg3.Emote].IsMe) return;
-
-            if (!msg.Channel.IsNsfw)
-            {
-                await msg.AddReactionAsync(arg3.Emote);
-                return;
-            }
             
             if (_config.Owners.Contains(msg.Author.Id))
             {
@@ -88,7 +82,7 @@ namespace FloraCSharp.Services
 
             EmbedFooterBuilder footer = new EmbedFooterBuilder().WithText(footerText);
 
-            await ChannelToSend.BlankEmbedAsync(embed.WithFooter(footer));
+            await ChannelToSend.BlankEmbedAsync(embed.WithFooter(footer).Build());
 
             if (CachedMessage.Attachments.Count > 0)
             {

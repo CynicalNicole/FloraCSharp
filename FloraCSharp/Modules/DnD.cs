@@ -143,7 +143,7 @@ namespace FloraCSharp.Modules
             }
             finalStats = finalStats.OrderByDescending(x => x).ToList();
             EmbedBuilder embed = new EmbedBuilder().WithDnDColour().WithTitle($"Quick Char Sheet Rolls (4d6 {rolltype})").WithDescription(String.Join(", ", finalStats)).AddField(efb => efb.WithName("Total").WithValue(finalStats.Sum()));
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("RollCS"), Summary("Roll for your character sheet. It will take the top 3 of 4d6 rolls.")]
@@ -208,7 +208,7 @@ namespace FloraCSharp.Modules
             embed.AddField(efb => efb.WithName($"Selected Rolls ({rolltype})").WithValue(selectField))
                 .AddField(efb => efb.WithName("Final Value").WithValue($"{selected.Sum()}"));
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("Roll"), Summary("Rolls xdy")]
@@ -247,7 +247,7 @@ namespace FloraCSharp.Modules
             desc.TrimEnd();
             embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         /*[Command("StatRoll"), Summary("Roll a stat for a character")]
@@ -484,8 +484,8 @@ namespace FloraCSharp.Modules
                 embed.AddField(efb => efb.WithName("Reason").WithValue(reason));
             }
             
-            await dmchannel.BlankEmbedAsync(embed);
-            await Context.Channel.BlankEmbedAsync(embed);
+            await dmchannel.BlankEmbedAsync(embed.Build());
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
     }
 }

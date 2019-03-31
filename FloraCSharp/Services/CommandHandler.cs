@@ -119,7 +119,7 @@ namespace FloraCSharp
                 //Var embed
                 var embed = new EmbedBuilder().WithOkColour().WithTitle($"DM from [{context.User.Username}] | {context.User.Id}").WithDescription(context.Message.Content);
 
-                var msg = await ownerChannel.BlankEmbedAsync(embed);
+                var msg = await ownerChannel.BlankEmbedAsync(embed.Build());
 
                 //Delay
                 await Task.Delay(500);
@@ -143,7 +143,7 @@ namespace FloraCSharp
                 //Var embed
                 var embed = new EmbedBuilder().WithOkColour().WithTitle($"Potential Table Loss from [{context.User.Username}] | {context.User.Id}").WithDescription(context.Message.Content);
 
-                var msg = await ownerChannel.BlankEmbedAsync(embed);
+                var msg = await ownerChannel.BlankEmbedAsync(embed.Build());
             }
         }
     }
