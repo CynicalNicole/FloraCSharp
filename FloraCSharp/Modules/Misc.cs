@@ -320,7 +320,7 @@ namespace FloraCSharp.Modules
         private async Task QuotePost(IMessage post, IMessageChannel channel)
         {
             var embed = new EmbedBuilder().WithQuoteColour().WithAuthor(x => x.WithIconUrl(post.Author.GetAvatarUrl()).WithName(post.Author.Username)).WithDescription(post.Content).WithFooter(x => x.WithText(post.Timestamp.ToString()));
-            await channel.BlankEmbedAsync(embed);
+            await channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("Attention"), Summary("Give attention to a user.")]
@@ -422,7 +422,7 @@ namespace FloraCSharp.Modules
                 embed.AddField(efb);
             }
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("Notices"), Summary("Check your attention")]
@@ -527,7 +527,7 @@ namespace FloraCSharp.Modules
                 .AddField(new EmbedFieldBuilder().WithName("Playtime - Last 2 Weeks").WithValue(PlaytimeStringGen(playtimeTwoWeeks)).WithIsInline(true))
                 .AddField(new EmbedFieldBuilder().WithName("Launch URI").WithValue(steamGame).WithIsInline(true));
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("SourceAnimeImage"), Alias("srca", "sourcea", "src", "source", "sauce", "heinz", "ketchup", "barbecue", "BBQ", "brown sauce")]
@@ -593,7 +593,7 @@ namespace FloraCSharp.Modules
             e.AddField(efb);
 
             //Finally
-            await channel.BlankEmbedAsync(e);
+            await channel.BlankEmbedAsync(e.Build());
         }
 
         private string PlaytimeStringGen(uint playtime)
@@ -696,7 +696,7 @@ namespace FloraCSharp.Modules
                 .AddField(efb => efb.WithName("Hoisted?").WithValue(role.IsHoisted ? "✅" : "❌").WithIsInline(true))
                 .AddField(efb => efb.WithName("Mentionable?").WithValue(role.IsMentionable ? "✅" : "❌").WithIsInline(true));
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("ResetWeebPass")]

@@ -270,7 +270,7 @@ namespace FloraCSharp.Modules.Games
             embF = embF.WithValue(str);
 
             //Add to emb 
-            Embed embdone = emb.AddField(embF);
+            Embed embdone = emb.AddField(embF).Build();
 
             //Send
             await Context.Channel.BlankEmbedAsync(embdone);
@@ -354,7 +354,7 @@ namespace FloraCSharp.Modules.Games
             embF2 = embF2.WithValue(str2);
 
             //Add fields
-            Embed embDone = emb.AddField(embF).AddField(embF2).WithOkColour();
+            Embed embDone = emb.AddField(embF).AddField(embF2).WithOkColour().Build();
 
             //Respond
             await Context.Channel.BlankEmbedAsync(embDone);
@@ -792,7 +792,7 @@ namespace FloraCSharp.Modules.Games
                 embed.AddField(efb);
             }
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         private static long CalculateNextLevelEXP(int nextLevel)
@@ -844,7 +844,7 @@ namespace FloraCSharp.Modules.Games
                     .AddField(new EmbedFieldBuilder().WithName($"Con?").WithValue($"{consquence}?").WithIsInline(true))
                     .WithFooter(new EmbedFooterBuilder().WithText($"Type yes/no now! You have {timeout / 1000} seconds."));
 
-                await Context.Channel.BlankEmbedAsync(embed);
+                await Context.Channel.BlankEmbedAsync(embed.Build());
                 await Task.Delay(timeout);
                 await _pushButtonService.EndGameInChannel(Context.Guild, Context.Channel);
             }

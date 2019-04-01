@@ -146,7 +146,7 @@ namespace FloraCSharp.Modules
                 embed.AddField(efb);
             }
 
-            await Context.Channel.BlankEmbedAsync(embed);
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
     }
 }
