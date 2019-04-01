@@ -1,13 +1,14 @@
 ﻿using FloraCSharp.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace FloraCSharp.Services.Database
 {
-    public class FloraContextFactory : IDbContextFactory<FloraContext>
+    public class FloraContextFactory : IDesignTimeDbContextFactory<FloraContext>
     {
         private readonly FloraDebugLogger logger = new FloraDebugLogger();
-        public FloraContext Create(DbContextFactoryOptions options)
+        public FloraContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseSqlite("Filename=data/flora.db");
