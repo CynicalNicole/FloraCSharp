@@ -163,6 +163,24 @@ namespace FloraCSharp.Modules
 
             //Move it now
             await channel.ModifyAsync(x => x.CategoryId = category.Id);
+
+            //Get role overwrites
+            var everyoneOverwrite = category.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+            var adminOverwrite = category.GetPermissionOverwrite(Context.Guild.GetRole(217696310168518657));
+
+            //First remove all perms
+            var curPerms = channel.PermissionOverwrites;
+            foreach (Overwrite ow in curPerms)
+            {
+                if (ow.TargetType == PermissionTarget.Role)
+                    await channel.RemovePermissionOverwriteAsync(Context.Guild.GetRole(ow.TargetId));
+                else
+                    await channel.RemovePermissionOverwriteAsync(await Context.Guild.GetUserAsync(ow.TargetId));
+            }
+
+            //Okay now we set perms
+            await channel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, everyoneOverwrite.Value);
+            await channel.AddPermissionOverwriteAsync(Context.Guild.GetRole(217696310168518657), adminOverwrite.Value);
         }
 
         [Command("DeleteBL")]
