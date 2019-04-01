@@ -181,6 +181,9 @@ namespace FloraCSharp.Modules
             //Okay now we set perms
             await channel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, everyoneOverwrite.Value);
             await channel.AddPermissionOverwriteAsync(Context.Guild.GetRole(217696310168518657), adminOverwrite.Value);
+
+            //Will add an output
+            await Context.Channel.SendSuccessAsync($"The channel {channel.Name} has been archived.");
         }
 
         [Command("DeleteBL")]
