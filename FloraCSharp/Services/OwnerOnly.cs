@@ -9,7 +9,7 @@ namespace FloraCSharp.Services
 {
     public class OwnerOnly : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var config = (Configuration)services.GetService(typeof(Configuration));
 

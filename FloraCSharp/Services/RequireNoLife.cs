@@ -10,7 +10,7 @@ namespace FloraCSharp.Services
 {
     public class RequireNoLife : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             IGuildUser user = (IGuildUser)context.User;
 

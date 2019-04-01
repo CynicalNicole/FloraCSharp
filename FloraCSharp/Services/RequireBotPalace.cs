@@ -9,7 +9,7 @@ namespace FloraCSharp.Services
 {
     class RequireBotPalace : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var config = (Configuration)services.GetService(typeof(Configuration));
             

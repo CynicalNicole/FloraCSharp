@@ -10,7 +10,7 @@ namespace FloraCSharp.Services
 {
     class FirstOwner : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var configuration = (Configuration)services.GetService(typeof(Configuration));
             var firstOwner = configuration.Owners.First();
