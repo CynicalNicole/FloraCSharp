@@ -533,28 +533,6 @@ namespace FloraCSharp.Modules
             await Context.Channel.SendSuccessAsync($"Reset the cooldown for {user.Username}");
         }
 
-        struct Person
-        {
-            public IUser User;
-            public IUser Santa;
-        }
-
-        [Command("XmasRoleSolve")]
-        [OwnerOnly]
-        public async Task XmasRoleSolve()
-        {
-            var users = await Context.Guild.GetUsersAsync();
-            IRole xmas = Context.Guild.GetRole((ulong)516754224026222603);
-
-            users.ToList().ForEach(async x =>
-            {
-                if (!x.RoleIds.Contains(xmas.Id))
-                {
-                    await x.AddRoleAsync(xmas);
-                }
-            });
-        }
-
         /*[Command("SS")]
         [OwnerOnly]
         private async Task SS()
