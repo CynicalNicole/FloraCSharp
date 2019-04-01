@@ -145,7 +145,7 @@ namespace FloraCSharp
             _map.AddSingleton(_config);
         }
 
-        private async Task InitCommands(IServiceProvider prov)
+        private async Task InitCommands(ServiceProvider prov)
         {
             //For each module do the following
             await _commands.AddModuleAsync<NoLifes>(prov);
