@@ -36,7 +36,7 @@ namespace FloraCSharp.Modules.Games.Services
                     .AddField(new EmbedFieldBuilder().WithName("✅ Yes").WithValue(pushed).WithIsInline(true))
                     .AddField(new EmbedFieldBuilder().WithName("❌ No").WithValue(notpushed).WithIsInline(true));
 
-                await ChannelID.BlankEmbedAsync(embed);
+                await ChannelID.BlankEmbedAsync(embed.Build());
             }
         }
 

@@ -29,13 +29,13 @@ namespace FloraCSharp.Modules.Games.Services
 
                     await ChannelID.BlankEmbedAsync(new EmbedBuilder().WithOkColour()
                         .AddField(new EmbedFieldBuilder().WithName("📣 Keyword").WithValue(game.Answer))
-                        .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue(user.Username)));
+                        .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue(user.Username)).Build());
                 }
                 else
                 {
                     await ChannelID.BlankEmbedAsync(new EmbedBuilder().WithErrorColour()
                         .AddField(new EmbedFieldBuilder().WithName("📣 Keyword").WithValue(game.Answer))
-                        .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue("Nobody. That's sad.")));
+                        .AddField(new EmbedFieldBuilder().WithName("🎉 Winner").WithValue("Nobody. That's sad.")).Build());
                 }
             }
         }
