@@ -60,7 +60,7 @@ namespace FloraCSharp
             await _botGames.LoadBotGamesFromDB();
 
             //Services
-            await InitServices();
+            InitServices();
 
             var provider = _map.BuildServiceProvider();
 
@@ -123,7 +123,7 @@ namespace FloraCSharp
             return Task.CompletedTask;
         }
 
-        private async Task InitServices()
+        private void InitServices()
         {
             //Repeat for all service classes
             _map.AddSingleton(_client);
