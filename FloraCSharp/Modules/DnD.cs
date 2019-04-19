@@ -437,19 +437,19 @@ namespace FloraCSharp.Modules
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, [Remainder] string reason) => await PrivateRoll(username, roll, 0, "", reason);
+        public async Task PrivateRoll(string username, string roll, string reason) => await PrivateRoll(username, roll, 0, "", reason);
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, string advantage, [Remainder] string reason) => await PrivateRoll(username, roll, 0, advantage, reason);
+        public async Task PrivateRoll(string username, string roll, string advantage, string reason) => await PrivateRoll(username, roll, 0, advantage, reason);
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, int modifier, [Remainder] string reason) => await PrivateRoll(username, roll, modifier, "", reason);
+        public async Task PrivateRoll(string username, string roll, int modifier, string reason) => await PrivateRoll(username, roll, modifier, "", reason);
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, int modifier, string advantage, [Remainder] string reason)
+        public async Task PrivateRoll(string username, string roll, int modifier, string advantage, string reason)
         {
             //Is username a username
             username = username.Trim();
