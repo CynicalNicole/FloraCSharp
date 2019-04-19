@@ -212,7 +212,7 @@ namespace FloraCSharp.Modules
         }
 
         [Command("Roll"), Summary("Rolls xdy")]
-        public async Task Roll(string roll, int modifier = 0)
+        public async Task Roll(string roll, int modifier = 0, string advantage = "")
         {
             _logger.Log(roll, "DnD");
             roll = roll.Trim();
@@ -231,6 +231,7 @@ namespace FloraCSharp.Modules
 
             List<int> rolls = new List<int>();
 
+            if (advantage.ToLower().Equals("a") || !advantage.ToLower().Equals("d")) count = 2;
             for (int i = 0; i < count; i++)
             {
                 rolls.Add(_random.Next(dice) + 1);
@@ -245,7 +246,18 @@ namespace FloraCSharp.Modules
             }
 
             desc.TrimEnd();
-            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
+            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true));
+
+            string finaltotal = "";
+
+            if (advantage.ToLower().Equals("a"))
+                finaltotal += $"{rolls.Max() + modifier}";
+            else if (advantage.ToLower().Equals("d"))
+                finaltotal += $"{rolls.Min() + modifier}";
+            else
+                finaltotal += $"{rolls.Sum() + modifier}";
+
+            embed.AddField(efb => efb.WithName("Total").WithValue(finaltotal));
 
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
@@ -420,11 +432,19 @@ namespace FloraCSharp.Modules
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, [Remainder] string reason = "") => await PrivateRoll(username, roll, 0, reason);
+        public async Task PrivateRoll(string username, string roll, [Remainder] string reason = "") => await PrivateRoll(username, roll, 0, "", reason);
 
         [RequireContext(ContextType.DM)]
         [Command("PrivateRoll"), Alias("PR")]
-        public async Task PrivateRoll(string username, string roll, int modifier = 0, [Remainder] string reason = "")
+        public async Task PrivateRoll(string username, string roll, string advantage, [Remainder] string reason = "") => await PrivateRoll(username, roll, 0, advantage, reason);
+
+        [RequireContext(ContextType.DM)]
+        [Command("PrivateRoll"), Alias("PR")]
+        public async Task PrivateRoll(string username, string roll, int modifier, [Remainder] string reason = "") => await PrivateRoll(username, roll, modifier, "", reason);
+
+        [RequireContext(ContextType.DM)]
+        [Command("PrivateRoll"), Alias("PR")]
+        public async Task PrivateRoll(string username, string roll, int modifier = 0, string advantage = "", [Remainder] string reason = "")
         {
             //Is username a username
             username = username.Trim();
@@ -463,6 +483,7 @@ namespace FloraCSharp.Modules
 
             List<int> rolls = new List<int>();
 
+            if (advantage.ToLower().Equals("a") || !advantage.ToLower().Equals("d")) count = 2;
             for (int i = 0; i < count; i++)
             {
                 rolls.Add(_random.Next(dice) + 1);
@@ -477,13 +498,23 @@ namespace FloraCSharp.Modules
             }
 
             desc.TrimEnd();
-            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true)).AddField(efb => efb.WithName("Total").WithValue(rolls.Sum() + modifier));
+            embed.AddField(efb => efb.WithName("Rolls").WithValue(desc).WithIsInline(true)).AddField(efb => efb.WithName("Modifier").WithValue(modifier.ToString("+0;-#")).WithIsInline(true));
+            string finaltotal = "";
+
+            if (advantage.ToLower().Equals("a"))
+                finaltotal += $"{rolls.Max() + modifier}";
+            else if (advantage.ToLower().Equals("d"))
+                finaltotal += $"{rolls.Min() + modifier}";
+            else
+                finaltotal += $"{rolls.Sum() + modifier}";
+
+            embed.AddField(efb => efb.WithName("Total").WithValue(finaltotal));
 
             if (reason != "")
             {
                 embed.AddField(efb => efb.WithName("Reason").WithValue(reason));
             }
-            
+
             await dmchannel.BlankEmbedAsync(embed.Build());
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
