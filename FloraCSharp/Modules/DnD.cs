@@ -231,13 +231,18 @@ namespace FloraCSharp.Modules
 
             List<int> rolls = new List<int>();
 
-            if (advantage.ToLower().Equals("a") || !advantage.ToLower().Equals("d")) count = 2;
+            if (advantage.ToLower().Equals("a") || advantage.ToLower().Equals("d")) count = 2;
             for (int i = 0; i < count; i++)
             {
                 rolls.Add(_random.Next(dice) + 1);
             }
 
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")}");
+            string title = $"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")}";
+
+            if (advantage.ToLower().Equals("a")) title += " | Rolling with advantage.";
+            if (advantage.ToLower().Equals("d")) title += " | Rolling with disadvantage.";
+
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle(title);
             string desc = "";
 
             foreach(int i in rolls)
@@ -483,13 +488,18 @@ namespace FloraCSharp.Modules
 
             List<int> rolls = new List<int>();
 
-            if (advantage.ToLower().Equals("a") || !advantage.ToLower().Equals("d")) count = 2;
+            if (advantage.ToLower().Equals("a") || advantage.ToLower().Equals("d")) count = 2;
             for (int i = 0; i < count; i++)
             {
                 rolls.Add(_random.Next(dice) + 1);
             }
 
-            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")} | Rolled by: {Context.User.Username} / Sent to: {targetUser.Username}");
+            string title = $"Rolling {rolls.Count}d{dice} {modifier.ToString("+0;-#")} | Rolled by: {Context.User.Username} / Sent to: {targetUser.Username}";
+
+            if (advantage.ToLower().Equals("a")) title += " | Rolling with advantage.";
+            if (advantage.ToLower().Equals("d")) title += " | Rolling with disadvantage.";
+
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle(title);
             string desc = "";
 
             foreach (int i in rolls)
