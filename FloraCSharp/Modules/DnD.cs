@@ -212,6 +212,15 @@ namespace FloraCSharp.Modules
         }
 
         [Command("Roll"), Summary("Rolls xdy")]
+        public async Task Roll(string roll, string advantage) => await Roll(roll, 0, advantage);
+
+        [Command("Roll"), Summary("Rolls xdy")]
+        public async Task Roll(string roll, int modifier) => await Roll(roll, modifier, "");
+
+        [Command("Roll"), Summary("Rolls xdy")]
+        public async Task Roll(string roll, string advantage, int modifier) => await Roll(roll, modifier, advantage);
+
+        [Command("Roll"), Summary("Rolls xdy")]
         public async Task Roll(string roll, int modifier = 0, string advantage = "")
         {
             _logger.Log(roll, "DnD");
