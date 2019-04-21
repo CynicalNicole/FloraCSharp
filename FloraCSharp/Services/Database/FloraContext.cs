@@ -30,6 +30,7 @@ namespace FloraCSharp.Services.Database
         public DbSet<Attention> Attention { get; set; }
         public DbSet<BlockedLogs> BlockedLogs { get; set; }
         public DbSet<Guild> Guild { get; set; }
+        public DbSet<DndInspiration> DndInspiration { get; set; }
         private readonly FloraDebugLogger logger = new FloraDebugLogger();
 
         public FloraContext() : base()
@@ -143,6 +144,13 @@ namespace FloraCSharp.Services.Database
             var blockedLogsEntity = modelBuilder.Entity<BlockedLogs>();
             blockedLogsEntity
                 .HasIndex(d => d.ServerID)
+                .IsUnique();
+            #endregion
+
+            #region DndInspiration
+            var dndInsprationEntity = modelBuilder.Entity<DndInspiration>();
+            dndInsprationEntity
+                .HasIndex(d => d.CombinedNumber)
                 .IsUnique();
             #endregion
         }

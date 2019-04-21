@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using Discord.WebSocket;
 using System.IO;
 using FloraCSharp.Services.APIModels;
+using FloraCSharp.Services.Database.Models;
 
 namespace FloraCSharp.Modules
 {
@@ -89,6 +90,20 @@ namespace FloraCSharp.Modules
             _random = random;
             _logger = logger;
             _client = client;
+        }
+
+        private struct Table
+        {
+            public string Name;
+            public int TableNumber;
+            public int Weight;
+
+            public Table(string name, int table, int weight)
+            {
+                Name = name;
+                TableNumber = table;
+                Weight = weight;
+            }
         }
 
         [Command("QuickCS"), Summary("Gets all 6 charsheet stats at once. It'll speed it up.")]
@@ -208,6 +223,83 @@ namespace FloraCSharp.Modules
             embed.AddField(efb => efb.WithName($"Selected Rolls ({rolltype})").WithValue(selectField))
                 .AddField(efb => efb.WithName("Final Value").WithValue($"{selected.Sum()}"));
 
+            await Context.Channel.BlankEmbedAsync(embed.Build());
+        }
+
+        [Command("Inspiration"), Summary("Rolls inspiration")]
+        public async Task Inspiration()
+        {
+            //Table weights
+            List<Table> InspirationTables = new List<Table>()
+            {
+                new Table("Copper", 1, 10),
+                new Table("Silver", 2, 6),
+                new Table("Gold", 3, 3),
+                new Table("Platinum", 4, 1)
+            };
+
+            //Get the total table weight
+            int totalWeight = 0;
+            foreach (Table t in InspirationTables)
+            {
+                totalWeight += t.Weight;
+            }
+
+            //Sort the table by the probability low to high
+            InspirationTables = InspirationTables.OrderBy(x => x.Weight).ToList();
+
+            //Roll the result
+            Table selectedTable = new Table("", -1, -1);
+            int rngPick = _random.Next(0, totalWeight);
+
+            foreach (Table t in InspirationTables)
+            {
+                //If the weight is lower than the current table then we pick it
+                if (rngPick < t.Weight)
+                {
+                    selectedTable = t;
+                    break;
+                }
+
+                //This wont be reached if picked, if it is we knock the rngpick down by the weight and check again
+                rngPick -= t.Weight;
+            }
+
+            //Something went badly
+            if (selectedTable.TableNumber == -1)
+            {
+                await Context.Channel.SendErrorAsync("Error choosing table.");
+                return;
+            }
+
+            DndInspiration chosenInspiration = null;
+            int cardNumber;
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                //Woo woo
+                int totalCards = uow.DndInspiration.CountInTable(selectedTable.TableNumber);
+
+                //Now we roll for a card using the amount in the selected table
+                cardNumber = _random.Next(totalCards) + 1; //This rolls between 1-50 instead of 0-49.
+
+                //Now we have the table and card number we just need to get it
+                chosenInspiration = uow.DndInspiration.GetInspirationTableCard(selectedTable.TableNumber, cardNumber);
+            }
+
+            //Oh no
+            if (chosenInspiration == null)
+            {
+                await Context.Channel.SendErrorAsync($"Error choosing inspiration from table: {selectedTable.Name}.");
+                return;
+            }
+
+            //Embed
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Dramatic Inspiration. | {selectedTable.Name} / {cardNumber}");
+
+            //Add field
+            embed.AddField(efb => efb.WithName(chosenInspiration.Name).WithValue(chosenInspiration.Description));
+
+            //Send embed
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 

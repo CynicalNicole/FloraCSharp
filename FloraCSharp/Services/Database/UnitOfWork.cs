@@ -49,6 +49,9 @@ namespace FloraCSharp.Services.Database
         private IBlockedLogsRepository _blockedLogs;
         public IBlockedLogsRepository BlockedLogs => _blockedLogs ?? (_blockedLogs = new BlockedLogsRepository(_context));
 
+        private IDndInspirationRepository _dndInspiration;
+        public IDndInspirationRepository DndInspiration => _dndInspiration ?? (_dndInspiration = new DndInspirationRepository(_context));
+
         public UnitOfWork(FloraContext context)
         {
             _context = context;

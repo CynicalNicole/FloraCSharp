@@ -199,6 +199,72 @@ namespace FloraCSharp.Modules
             await Context.Channel.SendSuccessAsync("Deleted blocked log filter!");
         }
 
+        [Command("ImportInspirationsFromJson")]
+        [RequireOwner()]
+        public async Task ImportInspirationsFromJson(string jsonFilename)
+        {
+            //Server directory path
+            string path = @"data/dnd/" + jsonFilename;
+
+            //Does it end in .json
+            if (!path.EndsWith(".json")) path += ".json";
+
+            //Check for file
+            if (!File.Exists(path))
+            {
+                await Context.Channel.SendErrorAsync("Json file does not exist.");
+                return;
+            }
+
+            //Get json
+            string rawJson = File.ReadAllText(path);
+
+            //Ok we gucci
+            List<InspirationModel> inspirations = JsonConvert.DeserializeObject<List<InspirationModel>>(rawJson);
+
+            //Now we're in the money
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                foreach (InspirationModel i in inspirations)
+                {
+                    uow.DndInspiration.GetOrCreateInspiration(i.Name, i.Description, i.TableNumber, i.CardNumber);
+                }
+            }
+
+            //Confirm
+            await Context.Channel.SendSuccessAsync("Completed import of json file!");
+        }
+
+        [Command("AddInspiration")]
+        [RequireUserPermission(ChannelPermission.ManageMessages)]
+        public async Task AddInspriaton(string Name, int table, int card, [Remainder] string description)
+        {
+            //Basic var
+            DndInspiration insp = null;
+
+            //Add it
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                insp = uow.DndInspiration.GetOrCreateInspiration(Name, description, table, card);
+            }
+
+            //error oh no
+            if (insp == null)
+            {
+                await Context.Channel.SendErrorAsync("Error adding the inspiraton.");
+                return;
+            }
+
+            //Ok good
+            var embed = new EmbedBuilder().WithTitle($"Added Inspiration | Table: {insp.TableNumber}, Card: {insp.CardNumber}");
+
+            //Alright
+            embed.AddField(efb => efb.WithName(insp.Name).WithValue(insp.Description));
+
+            //Embed
+            await Context.Channel.BlankEmbedAsync(embed.Build());
+        }
+
         [Command("DeleteBL")]
         [Alias("DBL")]
         [RequireUserPermission(GuildPermission.Administrator)]

@@ -21,6 +21,7 @@ namespace FloraCSharp.Services.Database
         IChannelsRepository Channels { get; }
         IBlockedLogsRepository BlockedLogs { get; }
         IGuildRepository Guild { get; }
+        IDndInspirationRepository DndInspiration { get; }
 
         int Complete();
         Task<int> CompleteAsync();
