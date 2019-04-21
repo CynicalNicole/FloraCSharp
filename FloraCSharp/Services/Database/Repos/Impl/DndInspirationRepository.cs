@@ -50,6 +50,7 @@ namespace FloraCSharp.Services.Database.Repos.Impl
         {
             DndInspiration toRemove = GetInspirationTableCard(TNum, CNum);
             _set.Remove(toRemove);
+            _context.SaveChanges();
             return toRemove;
         }
 
