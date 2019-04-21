@@ -46,10 +46,11 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             return toReturn;
         }
 
-        public void RemoveInspiration(int TNum, int CNum)
+        public DndInspiration RemoveInspiration(int TNum, int CNum)
         {
             DndInspiration toRemove = GetInspirationTableCard(TNum, CNum);
             _set.Remove(toRemove);
+            return toRemove;
         }
 
         public int CountInTable(int TNum)

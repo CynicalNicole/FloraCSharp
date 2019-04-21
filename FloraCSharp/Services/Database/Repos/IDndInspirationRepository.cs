@@ -9,7 +9,7 @@ namespace FloraCSharp.Services.Database.Repos
     {
         DndInspiration GetOrCreateInspiration(string Name, string Desc, int TNum, int CNum);
         DndInspiration GetInspirationTableCard(int Tnum, int CNum);
-        void RemoveInspiration(int Tnum, int CNum);
+        DndInspiration RemoveInspiration(int Tnum, int CNum);
         int CountInTable(int TNum);
     }
 }

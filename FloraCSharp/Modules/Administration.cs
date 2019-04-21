@@ -265,6 +265,29 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
+        [Command("DeleteInspiration")]
+        [RequireUserPermission(ChannelPermission.ManageMessages)]
+        public async Task DeleteInspiration(int table, int card)
+        {
+            DndInspiration deleted = null;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                deleted = uow.DndInspiration.RemoveInspiration(table, card);
+            }
+
+            if (deleted == null) return;
+
+            //Ok good
+            var embed = new EmbedBuilder().WithTitle($"Deleted Inspiration | Table: {deleted.TableNumber}, Card: {deleted.CardNumber}");
+
+            //Alright
+            embed.AddField(efb => efb.WithName(deleted.Name).WithValue(deleted.Description));
+
+            //Embed
+            await Context.Channel.BlankEmbedAsync(embed.Build());
+        }
+
         [Command("DeleteBL")]
         [Alias("DBL")]
         [RequireUserPermission(GuildPermission.Administrator)]
