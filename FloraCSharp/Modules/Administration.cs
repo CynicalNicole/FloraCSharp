@@ -256,7 +256,7 @@ namespace FloraCSharp.Modules
             }
 
             //Ok good
-            var embed = new EmbedBuilder().WithTitle($"Added Inspiration | Table: {insp.TableNumber}, Card: {insp.CardNumber}");
+            var embed = new EmbedBuilder().WithTitle($"Added Inspiration | Table: {insp.TableNumber}, Card: {insp.CardNumber}").WithDnDColour();
 
             //Alright
             embed.AddField(efb => efb.WithName(insp.Name).WithValue(insp.Description));
@@ -279,7 +279,7 @@ namespace FloraCSharp.Modules
             if (deleted == null) return;
 
             //Ok good
-            var embed = new EmbedBuilder().WithTitle($"Deleted Inspiration | Table: {deleted.TableNumber}, Card: {deleted.CardNumber}");
+            var embed = new EmbedBuilder().WithTitle($"Deleted Inspiration | Table: {deleted.TableNumber}, Card: {deleted.CardNumber}").WithDnDColour();
 
             //Alright
             embed.AddField(efb => efb.WithName(deleted.Name).WithValue(deleted.Description));

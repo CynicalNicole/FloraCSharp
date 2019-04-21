@@ -319,7 +319,7 @@ namespace FloraCSharp.Modules
             }
 
             //Ok good
-            var embed = new EmbedBuilder().WithTitle($"Checked Inspiration | Table: {checkedInsp.TableNumber}, Card: {checkedInsp.CardNumber}");
+            var embed = new EmbedBuilder().WithTitle($"Checked Inspiration | Table: {checkedInsp.TableNumber}, Card: {checkedInsp.CardNumber}").WithDnDColour();
 
             //Alright
             embed.AddField(efb => efb.WithName(checkedInsp.Name).WithValue(checkedInsp.Description));
