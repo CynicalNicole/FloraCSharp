@@ -310,7 +310,7 @@ namespace FloraCSharp.Modules
 
             using (var uow = DBHandler.UnitOfWork())
             {
-                checkedInsp = uow.DndInspiration.RemoveInspiration(table, card);
+                checkedInsp = uow.DndInspiration.GetInspirationTableCard(table, card);
             }
 
             if (checkedInsp == null)
