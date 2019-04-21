@@ -265,7 +265,7 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
-        [Command("DeleteInspiration")]
+        [Command("DeleteInspiration"), Alias("RemoveInspiration")]
         [RequireUserPermission(ChannelPermission.ManageMessages)]
         public async Task DeleteInspiration(int table, int card)
         {

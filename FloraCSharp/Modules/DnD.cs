@@ -303,6 +303,31 @@ namespace FloraCSharp.Modules
             await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
+        [Command("CheckInspiration")]
+        public async Task CheckInspiration(int table, int card)
+        {
+            DndInspiration checkedInsp = null;
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                checkedInsp = uow.DndInspiration.RemoveInspiration(table, card);
+            }
+
+            if (checkedInsp == null)
+            {
+                await Context.Channel.SendErrorAsync($"No inspiration exists in table {table} at position {card}");
+            }
+
+            //Ok good
+            var embed = new EmbedBuilder().WithTitle($"Checked Inspiration | Table: {checkedInsp.TableNumber}, Card: {checkedInsp.CardNumber}");
+
+            //Alright
+            embed.AddField(efb => efb.WithName(checkedInsp.Name).WithValue(checkedInsp.Description));
+
+            //Embed
+            await Context.Channel.BlankEmbedAsync(embed.Build());
+        }
+
         [Command("Roll"), Summary("Rolls xdy")]
         public async Task Roll(string roll, string advantage) => await Roll(roll, 0, advantage);
 
