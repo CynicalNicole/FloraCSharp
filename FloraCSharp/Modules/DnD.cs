@@ -106,6 +106,39 @@ namespace FloraCSharp.Modules
             }
         }
 
+        [Command("AverageRollCalc")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task AverageRollCalc(string d, int count = 1000)
+        {
+            d = d.Trim();
+            if (!Regex.IsMatch(d, @"[d]\d*"))
+            {
+                await Context.Channel.SendErrorAsync("Invalid dice string");
+                return;
+            }
+
+            //Got the dice
+            int dice = Int32.Parse(d.Substring(1));
+
+            //Make a list of rolls
+            List<int> rolls = new List<int>();
+
+            //Roll
+            for (int i = 0; i < count; i++)
+            {
+                rolls.Add(_random.Next(dice) + 1);
+            }
+
+            //Average the list
+            double avg = rolls.Average();
+
+            //Output
+            var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Average for {count} rolls of a {d}").WithDescription(avg.ToString());
+
+            //Embed it
+            await Context.Channel.BlankEmbedAsync(embed.Build());
+        }
+
         [Command("QuickCS"), Summary("Gets all 6 charsheet stats at once. It'll speed it up.")]
         public async Task QuickCS(string alt = null)
         {
