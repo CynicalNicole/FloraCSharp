@@ -106,7 +106,7 @@ namespace FloraCSharp.Modules
             }
         }
 
-        [Command("AverageRollCalc")]
+        [Command("AverageRollCalc"), Alias("avgrc")]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task AverageRollCalc(string d, int count = 1000)
         {
