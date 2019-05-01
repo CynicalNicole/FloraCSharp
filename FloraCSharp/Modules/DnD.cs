@@ -108,7 +108,7 @@ namespace FloraCSharp.Modules
 
         [Command("AverageRollCalc"), Alias("avgrc")]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        public async Task AverageRollCalc(string d, int count = 1000)
+        public async Task AverageRollCalc(string d, int count = 1000000)
         {
             d = d.Trim();
             if (!Regex.IsMatch(d, @"[d]\d*"))
@@ -124,10 +124,16 @@ namespace FloraCSharp.Modules
             List<int> rolls = new List<int>();
 
             //Roll
-            for (int i = 0; i < count; i++)
+            //for (int i = 0; i < count; i++)
+            //{
+            //    rolls.Add(_random.Next(dice) + 1);
+            //}
+
+            //Using parallel for speed
+            Parallel.For(0, count, x =>
             {
                 rolls.Add(_random.Next(dice) + 1);
-            }
+            });
 
             //Average the list
             double avg = rolls.Average();
