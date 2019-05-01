@@ -136,7 +136,7 @@ namespace FloraCSharp.Modules
             });
 
             //Average the list
-            double avg = rolls.Average();
+            double avg = rolls.FloraAverage();
 
             //Output
             var embed = new EmbedBuilder().WithDnDColour().WithTitle($"Average for {count} rolls of a {d}").WithDescription(avg.ToString());

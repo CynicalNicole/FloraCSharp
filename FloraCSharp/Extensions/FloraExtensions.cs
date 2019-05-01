@@ -117,5 +117,22 @@ namespace FloraCSharp.Extensions
                 list[n] = value;
             }
         }
+
+        public static double FloraAverage(this IEnumerable<int> source)
+        {
+            if (source == null) throw new ArgumentException("Source cannot be null", "source");
+            double sum = 0;         // <=== NOTE: double
+            long count = 0;
+            checked
+            {
+                foreach (int v in source)
+                {
+                    sum += v;
+                    count++;
+                }
+            }
+            if (count > 0) return sum / count;
+            throw new ArgumentException("Source cannot be empty", "source");
+        }
     }
 }
