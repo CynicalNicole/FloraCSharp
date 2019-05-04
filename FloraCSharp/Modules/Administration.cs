@@ -14,6 +14,7 @@ using System.Globalization;
 using FloraCSharp.Services.Database.Models;
 using System.Net;
 using FloraCSharp.Services.APIModels;
+using System.Diagnostics;
 
 namespace FloraCSharp.Modules
 {
@@ -341,6 +342,23 @@ namespace FloraCSharp.Modules
 
             //Now tell the user we did it! Yay
             await Context.Channel.SendSuccessAsync("Restored roles for " + user.Mention);
+        }
+
+        [Command("BotHardwareStats"), Alias("HWStats", "Stats")]
+        [OwnerOnly]
+        public async Task BotHardwareStats()
+        {
+            //Get the process
+            Process proc = Process.GetCurrentProcess();
+
+            //Get stats
+            var embed = new EmbedBuilder().WithOkColour().WithTitle($"{proc}");
+
+            //Do stats
+            embed.AddField(efb => efb.WithName("Stats").WithValue($"Physical Memory Usage: {proc.WorkingSet64}\nBase Priority: {proc.BasePriority}\nPriority Class: {proc.PriorityClass}\nTotal Processor Time: {proc.TotalProcessorTime}"));
+
+            //Gogogog
+            await Context.Channel.BlankEmbedAsync(embed.Build());
         }
 
         [Command("SaveAll"), Summary("Saves all user's roles")]
