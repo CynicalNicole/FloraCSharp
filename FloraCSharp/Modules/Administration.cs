@@ -355,7 +355,7 @@ namespace FloraCSharp.Modules
             var embed = new EmbedBuilder().WithOkColour().WithTitle($"{proc}");
 
             //Do stats
-            embed.AddField(efb => efb.WithName("Stats").WithValue($"Physical Memory Usage: {proc.WorkingSet64}\nBase Priority: {proc.BasePriority}\nPriority Class: {proc.PriorityClass}\nTotal Processor Time: {proc.TotalProcessorTime}"));
+            embed.AddField(efb => efb.WithName("Stats").WithValue($"Physical Memory Usage: {proc.WorkingSet64.SizeSuffix(2)}\nBase Priority: {proc.BasePriority}\nPriority Class: {proc.PriorityClass}\nTotal Processor Time: {proc.TotalProcessorTime}"));
 
             //Gogogog
             await Context.Channel.BlankEmbedAsync(embed.Build());
