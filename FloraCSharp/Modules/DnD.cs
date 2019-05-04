@@ -124,16 +124,16 @@ namespace FloraCSharp.Modules
             List<int> rolls = new List<int>();
 
             //Roll
-            //for (int i = 0; i < count; i++)
-            //{
-            //    rolls.Add(_random.Next(dice) + 1);
-            //}
-
-            //Using parallel for speed
-            Parallel.For(0, count, x =>
+            for (int i = 0; i < count; i++)
             {
                 rolls.Add(_random.Next(dice) + 1);
-            });
+            }
+
+            //Using parallel sucks
+            //Parallel.For(0, count, x =>
+            //{
+            //    rolls.Add(_random.Next(dice) + 1);
+            //});
 
             //Average the list
             double avg = rolls.Average();
