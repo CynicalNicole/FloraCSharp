@@ -24,18 +24,36 @@ namespace FloraCSharp.Services
 
             _discord.MessageDeleted += DeletedAsync;
             _discord.ReactionAdded += _discord_ReactionAdded;
+            _discord.ReactionRemoved += _discord_ReactionRemoved;
+        }
+
+        private async Task _discord_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        {
+            var msg = await arg1.GetOrDownloadAsync();
+
+            //Has the bot reacted?
+            if (msg.Reactions[arg3.Emote].IsMe)
+            {
+                //Is the bot the only remaining reaction
+                if (msg.Reactions[arg3.Emote].ReactionCount == 1)
+                {
+                    //Remove her reaction
+                    await msg.RemoveReactionAsync(arg3.Emote, _discord.CurrentUser);
+                }
+            }
         }
 
         private async Task _discord_ReactionAdded(Discord.Cacheable<Discord.IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
             var msg = await arg1.GetOrDownloadAsync();
+            var user = arg3.User.GetValueOrDefault();
 
             if (msg.Reactions[arg3.Emote].IsMe) return;
+            if (user == null) return;
             
-            if (_config.Owners.Contains(msg.Author.Id))
+            if (_config.Owners.Contains(user.Id))
             {
                 await msg.AddReactionAsync(arg3.Emote);
-                return;
             }
         }
 
