@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord;
+using Discord.API;
 using FloraCSharp.Services;
 using System.Threading.Tasks;
 using System;
@@ -375,6 +376,44 @@ namespace FloraCSharp.Modules
 
             //Now tell the user we did it! Yay
             await Context.Channel.SendSuccessAsync("Saved all users");
+        }
+
+        [Command("ChangePFP"), Alias("cpfp")]
+        [OwnerOnly]
+        public async Task ChangePFP(string url = null)
+        {
+            //Handle differently for url
+            if (url == null)
+            {
+                //Get attachment url
+                if (Context.Message.Attachments.Count < 1) return;
+
+                url = Context.Message.Attachments.First().Url;
+            }
+
+            //is url a url?
+            Uri resultURL;
+            bool isURL = Uri.TryCreate(url, UriKind.Absolute, out resultURL) && (resultURL.Scheme == Uri.UriSchemeHttp || resultURL.Scheme == Uri.UriSchemeHttps);
+
+            //Nope? error
+            if (!isURL)
+            {
+                await Context.Channel.SendErrorAsync("You must enter a valid url");
+                return;
+            }
+
+            //Get stream
+            WebClient client = new WebClient();
+            Stream stream = client.OpenRead(url);
+
+            //Get image fro url
+            Image img = new Image(stream);
+
+            //If it is valid, we're good
+            await Context.Client.CurrentUser.ModifyAsync(x => x.Avatar = img);
+
+            //Success!
+            await Context.Channel.SendSuccessAsync("Image changed successfully!");
         }
 
         [Command("Shutdown"), Summary("Kills the bot")]
