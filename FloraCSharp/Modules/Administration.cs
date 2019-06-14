@@ -153,8 +153,8 @@ namespace FloraCSharp.Modules
         }
 
         [Command("ArchiveChannel"), Alias("ArchiveCH", "Archive")]
-        [RequireUserPermission(GuildPermission.ManageChannels)]
         [RequireContext(ContextType.Guild)]
+        [OwnerOnly]
         public async Task ArchiveChannel([Remainder] IGuildChannel channel)
         {
             //First we need to move channel 
