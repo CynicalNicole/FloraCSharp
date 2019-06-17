@@ -237,6 +237,60 @@ namespace FloraCSharp.Modules
             await Context.Channel.SendSuccessAsync("Completed import of json file!");
         }
 
+        [Command("gag")]
+        [Alias("chatmute", "mute")]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
+        [RequireContext(ContextType.Guild)]
+        public async Task Gag(IGuildUser user, IGuildChannel channel = null)
+        {
+            //If there's no specified channel, use the channel the command was sent in
+            if (channel == null)
+            {
+                channel = (IGuildChannel) Context.Channel;
+            }
+
+            //Add the perms to the channel to gag them
+            OverwritePermissions op = new OverwritePermissions(sendMessages: PermValue.Deny, addReactions: PermValue.Deny);
+            await channel.AddPermissionOverwriteAsync(user, op);
+
+            await Context.Channel.SendSuccessAsync($"{user.NicknameUsername()} has been muted.");
+        }
+
+        [Command("unmute")]
+        [Alias("chatunmute", "ungag")]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
+        [RequireContext(ContextType.Guild)]
+        public async Task Unmute(IGuildUser user, IGuildChannel channel = null)
+        {
+            //If there's no specified channel, use the channel the command was sent in
+            if (channel == null)
+            {
+                channel = (IGuildChannel)Context.Channel;
+            }
+
+            //Try and get the perms for teh user
+            var userPerms = channel.GetPermissionOverwrite(user);
+
+            //If there *are* user perms, it's safe to check to unmute them otherwise they aren't muted
+            if (userPerms == null)
+            {
+                await Context.Channel.SendErrorAsync($"{user.NicknameUsername()} is not muted.");
+                return;
+            }
+
+            //Check to see if they're muted
+            if (userPerms.Value.SendMessages != PermValue.Deny)
+            {
+                await Context.Channel.SendErrorAsync($"{user.NicknameUsername()} is not muted.");
+                return;
+            }
+
+            //Delete their perms, they're gucci
+            await channel.RemovePermissionOverwriteAsync(user);
+
+            await Context.Channel.SendSuccessAsync($"{user.NicknameUsername()} has been unmuted.");
+        }
+
         [Command("AddInspiration")]
         [RequireUserPermission(ChannelPermission.ManageMessages)]
         public async Task AddInspriaton(string Name, int table, int card, [Remainder] string description)
