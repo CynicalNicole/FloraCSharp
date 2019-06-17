@@ -241,12 +241,19 @@ namespace FloraCSharp.Modules
         [Alias("chatmute", "mute")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [RequireContext(ContextType.Guild)]
-        public async Task Gag(IGuildUser user, IGuildChannel channel = null)
+        public async Task Gag(IGuildUser user, ITextChannel channel = null)
         {
             //If there's no specified channel, use the channel the command was sent in
             if (channel == null)
             {
-                channel = (IGuildChannel) Context.Channel;
+                channel = (ITextChannel) Context.Channel;
+            }
+
+            //Ensure this is a text channel
+            if (channel == null)
+            {
+                await Context.Channel.SendErrorAsync($"{channel.Name} is not a text channel.");
+                return;
             }
 
             //Add the perms to the channel to gag them
@@ -265,7 +272,14 @@ namespace FloraCSharp.Modules
             //If there's no specified channel, use the channel the command was sent in
             if (channel == null)
             {
-                channel = (IGuildChannel)Context.Channel;
+                channel = (ITextChannel)Context.Channel;
+            }
+
+            //Ensure this is a text channel
+            if (channel == null)
+            {
+                await Context.Channel.SendErrorAsync($"{channel.Name} is not a text channel.");
+                return;
             }
 
             //Try and get the perms for teh user
