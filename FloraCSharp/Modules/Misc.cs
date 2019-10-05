@@ -141,6 +141,70 @@ namespace FloraCSharp.Modules
             await Context.Channel.SendSuccessAsync("Random Number", $"{_random.Next()}");
         }
 
+        [Command("Whois"), Summary("Who is this person?")]
+        [Alias("userdesc")]
+        public async Task WhoIs(IGuildUser user)
+        {
+            if (user == null)
+            {
+                await Context.Channel.SendErrorAsync("You must specify a user.");
+                return;
+            }
+
+            string userDescription = "This user has no description.";
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                //Get their desc from DB
+                string dbDesc = uow.User.GetDescription(user.Id);
+
+                if (!String.IsNullOrWhiteSpace(dbDesc))
+                    userDescription = dbDesc;
+            }
+
+            await Context.Channel.SendSuccessAsync($"{user.NicknameUsername()}'s description", userDescription);
+        }
+
+        [Command("SetUserDesc"), Summary("Set your own user desc")]
+        [Alias("setdesc")]
+        public async Task SetUserDescription([Remainder] string desc)
+        {
+            if (desc.Length > 40)
+            {
+                await Context.Channel.SendErrorAsync("Your description must be 40 characters or less.");
+                return;
+            }
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.User.setDescription(Context.User.Id, desc);
+            }
+
+            await Context.Channel.SendSuccessAsync($"Your description has been set to: {desc}");
+        }
+
+        [Command("SetUserDesc"), Summary("Set your own user desc")]
+        [Alias("setdesc")]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        public async Task SetUserDescription(IGuildUser user, [Remainder] string desc)
+        {
+            if (user == null)
+                user = (IGuildUser)Context.User;
+
+            if (desc.Length > 40)
+            {
+                await Context.Channel.SendErrorAsync("Your description must be 40 characters or less.");
+                return;
+            }
+
+            using (var uow = DBHandler.UnitOfWork())
+            {
+                uow.User.setDescription(Context.User.Id, desc);
+            }
+
+            await Context.Channel.SendSuccessAsync($"Your description has been set to: {desc}");
+        }
+
         [Command("Tastes"), Summary("Shitpost Generator (Tastes)")]
         public async Task Tastes([Remainder] [Summary("What is the kid's franchise?")] string taste)
         {

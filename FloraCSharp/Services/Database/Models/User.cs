@@ -9,5 +9,6 @@ namespace FloraCSharp.Services.Database.Models
         public ulong UserID { get; set; }
         public ulong SteamID { get; set; }
         public bool IsExempt { get; set; }
+        public string Description { get; set }
     }
 }

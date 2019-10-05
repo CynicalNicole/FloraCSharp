@@ -10,6 +10,8 @@ namespace FloraCSharp.Services.Database.Repos
         User GetOrCreateUser(ulong UserID, bool Expemption = false);
         int GetBotUserID(ulong UserDiscordID);
         ulong GetSteamID(ulong UserDiscordID);
+        string GetDescription(ulong UserDiscordID);
+        void setDescription(ulong UserDiscordID, string description);
         void SetSteamID(ulong UserDiscordID, ulong SteamID);
         void SetExemption(ulong UserDiscordID, bool Exemption);
     }

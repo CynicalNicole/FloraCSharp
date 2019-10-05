@@ -61,5 +61,20 @@ namespace FloraCSharp.Services.Database.Repos.Impl
             _set.Update(u);
             _context.SaveChanges();
         }
+
+        public string GetDescription(ulong UserDiscordID)
+        {
+            User u = GetOrCreateUser(UserDiscordID);
+            return u.Description;
+        }
+
+        public void setDescription(ulong UserDiscordID, string description)
+        {
+            User u = GetOrCreateUser(UserDiscordID);
+            u.Description = description;
+
+            _set.Update(u);
+            _context.SaveChanges();
+        }
     }
 }
